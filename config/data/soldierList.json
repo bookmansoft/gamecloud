@@ -1,0 +1,6 @@
+[
+	{"id":"1", "name":"悟空", "locStr":"5,2", "ActionList":"55,1", "profession":"1"},
+	{"id":"2", "name":"牛魔王", "locStr":"2", "ActionList":"55,1", "profession":"2"},
+	{"id":"3", "name":"哪吒", "locStr":"7", "ActionList":"55,1", "profession":"3"},
+	{"id":"4", "name":"铁扇公主", "locStr":"8", "ActionList":"55,1", "profession":"3"}
+]

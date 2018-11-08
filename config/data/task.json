@@ -1,0 +1,20 @@
+{
+	"1001":{"id":"1001", "condition":"20,3", "bonus":"1,10", "front":"0", "layer":"0"},
+	"1002":{"id":"1002", "condition":"20,5", "bonus":"1,10", "front":"1001", "layer":"0"},
+	"1003":{"id":"1003", "condition":"20,7", "bonus":"1,10", "front":"1002", "layer":"0"},
+	"1011":{"id":"1011", "condition":"203,3", "bonus":"1,10", "front":"0", "layer":"0"},
+	"1021":{"id":"1021", "condition":"205,5", "bonus":"1,10", "front":"0", "layer":"0"},
+	"1022":{"id":"1022", "condition":"205,10", "bonus":"1,10", "front":"0", "layer":"0"},
+	"1023":{"id":"1023", "condition":"205,15", "bonus":"1,10", "front":"1022", "layer":"0"},
+	"1024":{"id":"1024", "condition":"205,20", "bonus":"1,10", "front":"1023", "layer":"0"},
+	"1025":{"id":"1025", "condition":"205,25", "bonus":"1,10", "front":"1024", "layer":"0"},
+	"2001":{"id":"2001", "condition":"208,10", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2002":{"id":"2002", "condition":"209,10", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2003":{"id":"2003", "condition":"210,25", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2004":{"id":"2004", "condition":"211,1", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2005":{"id":"2005", "condition":"212,1", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2006":{"id":"2006", "condition":"213,1", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2007":{"id":"2007", "condition":"214,1", "bonus":"1,10", "front":"0", "layer":"0"},
+	"2101":{"id":"2101", "condition":"36,50", "bonus":"1,10", "front":"0", "layer":"0"},
+	"3001":{"id":"3001", "condition":"101,1", "bonus":"1,10", "front":"0", "layer":"0"}
+}

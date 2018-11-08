@@ -1,0 +1,11 @@
+{
+	"1":{
+		"id":1,
+		"name":"分享得奖",
+		"desc":"分享获取复活道具",
+		"type":9,
+		"num":1,
+		"pic":"ui/shop/jinbitubiao04",
+		"itemTag": {"type":"I", "id":20, "num":3}
+	}
+}

@@ -1,0 +1,28 @@
+{
+  "user":{
+      "icon":"http://thirdapp2.qlogo.cn/qzopenapp/7e23615195608a7d203b1027a1926f5f318f2a75cb5c15f0d3bcfe413e46ccbb/50"
+  },
+  "pvp" : {
+      "attackBonus" : 100000,
+      "destroyBonus": 300000,
+      "stealRate": 0.7
+  },
+  "threshold": {
+      "moneyOfRich" : 350000,
+      "moneyOfBeAttacked": 100000,
+      "moneyOfInit": 0,
+      "rankNumber": 50,
+      "oneDay": 30,
+      "desc": "阈值设定"
+  },
+  "action":{
+    "init": 20,
+    "max": 60,
+    "iHourSecond": 360,
+    "add": 1,
+    "desc": "max:最大体力值，受科技影响 iHourSecond:恢复周期，默认360秒 add:每个周期恢复点数"
+  },
+  "slave":{
+    "catchTime":172800
+  }
+}

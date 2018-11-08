@@ -1,0 +1,62 @@
+{
+  "bonus": 
+  {
+    "0": {
+      "bonus": [{"type":"C", "id":0, "num":2}],
+      "normalBonus": [{"type":"C", "id":0, "num":1}]
+    },
+    "1": {
+      "bonus": [{"type":"M", "num":500}],
+      "normalBonus": [{"type":"M", "num":200}]
+    },
+    "2": {
+      "bonus": [{"type":"I", "id":22, "num":15}],
+      "normalBonus": [{"type":"I", "id":22, "num":10}]
+    },
+    "3": {
+      "bonus": [{"type":"I", "id":20, "num":5}],
+      "normalBonus": [{"type":"I", "id":20, "num":3}]
+    },
+    "4": {
+      "bonus": [{"type":"M", "num":800}],
+      "normalBonus": [{"type":"M", "num":500}]
+    },
+    "5": {
+      "bonus": [{"type":"I", "id":22, "num":30}],
+      "normalBonus": [{"type":"I", "id":22, "num":20}]
+    },
+    "6": {
+      "bonus": [{"type":"D", "num":100}],
+      "normalBonus": [{"type":"D", "num":50}]
+    }
+  },
+  "skill": [
+    {
+      "desc":"体力回复速度提高",
+      "effect":"3, 0.33"
+    },
+    {
+      "desc":"闯关和无尽金币收益增加",
+      "effect":"4, 0.1"
+    },
+    {
+      "desc":"增加奴隶系统互动次数",
+      "effect":"5, 2"
+    }  
+  ],
+  "daily":[
+    {"type":"I","id":401,"num":3},
+	  {"type":"I","id":402,"num":3},
+	  {"type":"I","id":403,"num":3}
+  ],
+  "firstPurchase":[
+    {"type":"C","id":7,"num":60},
+    {"type":"M","num":20000},
+    {"type":"I","id":401,"num":5},
+    {"type":"I","id":402,"num":5},
+    {"type":"I","id":403,"num":5}
+  ],
+  "newbieGift":[{"type":"M","num":10000},{"type":"I", "id":22, "num":30}],
+  "festivalGift":[{"type":"C", "id":0, "num":3},{"type":"D", "num":50}],
+  "NinjaGift":[{"type":"C", "id":31, "num":10}]
+}

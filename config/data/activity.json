@@ -1,0 +1,33 @@
+{
+    "ActivityScoreBonus": {
+        "0":{
+            "0": {"score":60, "bonus":[{"type":1000, "id":0, "num":10},{"type":1, "num":10}]},
+            "1": {"score":120, "bonus":[{"type":1000, "id":0, "num":20},{"type":1, "num":20}]},
+            "2": {"score":360, "bonus":[{"type":1000, "id":0, "num":30},{"type":1, "num":30}]},
+            "3": {"score":480, "bonus":[{"type":1000, "id":0, "num":40},{"type":1, "num":40}]},
+            "4": {"score":600, "bonus":[{"type":1000, "id":0, "num":50},{"type":1, "num":50}]},
+            "5": {"score":720, "bonus":[{"type":1000, "id":0, "num":60},{"type":1, "num":60}]}
+        },
+        "1":{
+            "0": {"score":40, "bonus":[{"type":1000, "id":0, "num":10},{"type":2, "num":5}]},
+            "1": {"score":80, "bonus":[{"type":1000, "id":0, "num":20},{"type":2, "num":6}]},
+            "2": {"score":200, "bonus":[{"type":1000, "id":0, "num":30},{"type":2, "num":7}]},
+            "3": {"score":300, "bonus":[{"type":1000, "id":0, "num":40},{"type":2, "num":8}]},
+            "4": {"score":450, "bonus":[{"type":1000, "id":0, "num":50},{"type":2, "num":8}]},
+            "5": {"score":600, "bonus":[{"type":1000, "id":0, "num":60},{"type":2, "num":9}]}
+        }
+    },
+    
+    "ActivityRankBonus": {
+        "0":{
+            "1": {"rank":1, "bonus":[{"type":1000, "id":0, "num":10}, {"type":1, "num":150}]},
+            "2": {"rank":2, "bonus":[{"type":1000, "id":0, "num":8}, {"type":1, "num":120}]},
+            "3": {"rank":3, "bonus":[{"type":1000, "id":0, "num":5}, {"type":1, "num":100}]}
+        },
+        "1":{
+            "1": {"rank":1, "bonus":[{"type":1000, "id":0, "num":10}, {"type":1, "num":150}]},
+            "2": {"rank":2, "bonus":[{"type":1000, "id":0, "num":8}, {"type":1, "num":120}]},
+            "3": {"rank":3, "bonus":[{"type":1000, "id":0, "num":5}, {"type":1, "num":100}]}
+        }
+    }    
+}

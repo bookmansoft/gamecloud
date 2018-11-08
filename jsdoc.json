@@ -1,0 +1,31 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": [
+      "config/", 
+      "ctrl/", 
+      "facade/", 
+      "logic/", 
+      "model/", 
+      "util/"
+    ],
+    "exclude": [],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "opts": {
+    "template": "templates/default",
+    "encoding": "utf8",
+    "destination": "./docs/reference",
+    "recurse": true,
+    "private": true,
+    "pedantic": true
+  }
+}

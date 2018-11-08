@@ -1,0 +1,44 @@
+{
+	"1":{
+		"id":1,
+		"name":"80000金币",
+		"pic":"ui/shop/jinbitubiao03",
+		"itemTag":{"type":"M", "num":"80000"}
+	},
+	"2":{
+		"id":2,
+		"name":"20体力",
+		"pic":"ui/shop/tilitubiao03",
+		"itemTag":{"type":"A", "num":"20"}
+	},
+	"3":{
+		"id":3,
+		"name":"400000金币",
+		"pic":"ui/shop/jinbitubiao05",
+		"itemTag":{"type":"M", "num":"400000"}
+	},
+	"4":{
+		"id":3,
+		"name":"25体力",
+		"pic":"ui/shop/tilitubiao05",
+		"itemTag":{"type":"A", "num":"25"}
+	},
+	"5":{
+		"id":5,
+		"name":"宠物爱心",
+		"pic":"ui/shop/jinbitubiao01",
+		"itemTag":{"type":"I", "id":"1", "num":"3"}
+	},
+	"6":{
+		"id":6,
+		"name":"宠物食品",
+		"pic":"ui/shop/tilitubiao01",
+		"itemTag":{"type":"I", "id":"2", "num":"2"}
+	},
+	"7":{
+		"id":7,
+		"name":"1日vip卡",
+		"pic":"ui/qian_dao/vip_item",
+		"itemTag":{"type":"V", "num":"1"}
+	}
+}
