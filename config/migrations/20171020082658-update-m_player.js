@@ -27,7 +27,6 @@ exports.down = function(db) {
   return db.removeColumn('m_player', 'potential')           
   .then(result=>{db.removeColumn('m_player', 'execInfo');})  
   .then(result=>{db.removeColumn('m_player', 'pocket');})  
-  .then(result=>{db.removeColumn('m_player', 'rank');})  
   .then(result=>{db.removeColumn('m_player', 'shopInfo');})  
   .then(result=>{db.removeColumn('m_player', 'aid');})  
   .then(result=>{db.removeColumn('m_player', 'invite');})  
@@ -37,7 +36,11 @@ exports._meta = {
   "version": 1
 };
 
+//region 部分语法示例：
+
 //addColumn('m_player', 'test', { type: 'string', length: 200});})
 //renameColumn('m_player', 'test', 'tested')
 //changeColumn('m_player', 'tested', { type: 'string', length: 300})
 //removeColumn('m_player', 'tested');})
+
+//endregion

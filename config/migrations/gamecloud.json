@@ -3,6 +3,8 @@
     "driver": "mysql",
     "user": "root",
     "password": "helloworld",
-    "host": "localhost"
+    "host": "localhost",
+    "database": "gamecloud",
+    "multipleStatements": true
   }
 }

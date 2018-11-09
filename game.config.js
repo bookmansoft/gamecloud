@@ -1,7 +1,26 @@
 /**
  * Created by liub on 2017-04-03.
  */
-module.exports = {
+
+/**
+ * 统一的数据库连接串，如果不同服务器连接不同数据库，需要改写 config 中各个 mysql 字段
+ */
+let mysql = {
+    "logging" : false,          //记录日志
+    "db": "gamecloud",          //数据库名称    
+    "sa": "root",               //数据库用户名
+    "pwd": "helloworld",        //数据库用户密码
+    "host": "127.0.0.1",        //数据库服务器IP地址
+    "port": 3306                //数据库服务器端口号
+};
+
+let redis = {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "opts": {}
+};
+
+let config = {
     "servers":{
         "Index":{
             "1":{
@@ -14,19 +33,8 @@ module.exports = {
                 "game_name": "鸡小德",
                 "clientPath": "./client",
                 "adminPath": "./admin",
-                "redis": {
-                    "host": "127.0.0.1",
-                    "port": 6379,
-                    "opts": {}
-                },
-                "mysql": {
-                    "logging" : false,
-                    "db": "gamecloud",
-                    "sa": "root",
-                    "pwd": "helloworld",
-                    "host": "127.0.0.1",
-                    "port": 3306
-                },
+                "redis": redis,
+                "mysql": mysql,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -65,14 +73,7 @@ module.exports = {
         },
         "Image":{ //新增图片服务器
             "1":{
-                "mysql": {
-                    "logging" : false,
-                    "db": "gamecloud",
-                    "sa": "root",
-                    "pwd": "helloworld",
-                    "host": "127.0.0.1",
-                    "port": 3306
-                },
+                "mysql": mysql,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -82,14 +83,7 @@ module.exports = {
         },
         "IOS":{
             "1":{
-                "mysql": {
-                    "logging" : false,
-                    "db": "gamecloud",
-                    "sa": "root",
-                    "pwd": "helloworld",
-                    "host": "127.0.0.1",
-                    "port": 3306
-                },
+                "mysql": mysql,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -105,7 +99,7 @@ module.exports = {
     "apps" : [
         {
             "name"      : "Chick_IOS_1",
-            "script"    : "app/start.js",
+            "script"    : "facade/start.js",
             "cwd"         : "./",  // pm2运行目录相对main.js的路径
             //"out_file"   : "./logs/ios1/app-out.log",  // 普通日志路径
             "error_file" : "./logs/ios1/app-err.log",  // 错误日志路径
@@ -120,3 +114,5 @@ module.exports = {
         }
     ]
 }
+
+module.exports = config;
