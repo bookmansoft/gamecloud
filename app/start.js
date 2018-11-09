@@ -1,4 +1,4 @@
-let facade = require('../facade/Facade')
+let facade = require('../')
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型

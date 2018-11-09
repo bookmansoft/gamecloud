@@ -1,6 +1,6 @@
 {
   "name": "gamecloud",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -19,7 +19,6 @@
   "main": "index.js",
   "scripts": {
     "start": "pm2 startOrRestart game.config.js & pm2 monit",
-    "build": "webpack --config webpack.config.js",
     "log": "pm2 startOrRestart game.config.js & pm2 log",
     "stop": "pm2 delete game.config.js",
     "test": "mocha",
