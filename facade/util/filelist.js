@@ -26,6 +26,10 @@ class Filelist
     }
 
     read(recy, sofar, cname = "") {
+        if(!fs.existsSync(sofar)) {
+            return [];
+        }
+
         let files = fs.readdirSync(sofar);
         if(!!files){
             files.forEach(filename => {

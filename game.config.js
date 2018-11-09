@@ -21,7 +21,7 @@ module.exports = {
                 },
                 "mysql": {
                     "logging" : false,
-                    "db": "monkey",
+                    "db": "gamecloud",
                     "sa": "root",
                     "pwd": "helloworld",
                     "host": "127.0.0.1",
@@ -67,7 +67,7 @@ module.exports = {
             "1":{
                 "mysql": {
                     "logging" : false,
-                    "db": "monkey",
+                    "db": "gamecloud",
                     "sa": "root",
                     "pwd": "helloworld",
                     "host": "127.0.0.1",
@@ -84,7 +84,7 @@ module.exports = {
             "1":{
                 "mysql": {
                     "logging" : false,
-                    "db": "monkey",
+                    "db": "gamecloud",
                     "sa": "root",
                     "pwd": "helloworld",
                     "host": "127.0.0.1",

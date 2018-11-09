@@ -15,14 +15,13 @@ module.exports = {
    * 每个依赖项随即被处理，最后输出到称之为 bundles 的文件中
    */
   entry: {
-    'gamegold': './lib/gamegold-browser',
-    'gamegold-worker': './lib/workers/worker'
+    'gamecloud': './facade/gamecloud'
   },
   /**
    * 输出
    */
   output: {
-    path: path.join(__dirname, 'output/node'),
+    path: path.join(__dirname, 'lib'),
     filename: '[name].js',
     libraryTarget: 'commonjs2'
   },
@@ -53,13 +52,9 @@ module.exports = {
    * 插件
    */
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env.GAMEGOLD_NETWORK': str(env.GAMEGOLD_NETWORK || 'testnet'),
-      'process.env.GAMEGOLD_WORKER_FILE': str(env.GAMEGOLD_WORKER_FILE || 'gamegold-worker.js')
-    }),
     new webpack.IgnorePlugin(/^utf-8-validate|bufferutil$/),
     new UglifyJsPlugin({
-      sourceMap: false
+      sourceMap: true
     }),
   ]
 };
