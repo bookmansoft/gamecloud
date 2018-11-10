@@ -2,7 +2,7 @@ let facade = require('../../Facade')
 let {PotentialType, em_Effect_Comm} = facade.const
 let PetClientItem = require('./PetClientItem')
 let ConfigManager = require('./ConfigManager')
-let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let EffectObject = require('../../../facade/util/comm/EffectObject')
 

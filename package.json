@@ -1,6 +1,6 @@
 {
   "name": "gamecloud",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -24,7 +24,6 @@
     "test": "mocha",
     "docs": "jsdoc -c jsdoc.json",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec",
-    "maintain": "node ./facade/util/maintain.js",
     "admin": "node ./facade/util/cli.js",
     "commit": "cd config & db-migrate up --config migrations/gamecloud.json & cd..",
     "rollback": "cd config & db-migrate reset --config migrations/gamecloud.json & cd..",

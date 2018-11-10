@@ -1,6 +1,6 @@
 let facade = require('../../../facade/Facade')
 let {ResTypeStr, em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode} = facade.const
-let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
 let baseMgr = require('../baseAssistant');
 let {fileMap} = require('../../../facade/util/configInterface');
 let {isNumber} = require('../../util/reg')

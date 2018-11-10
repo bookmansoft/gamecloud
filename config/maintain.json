@@ -1,7 +1,0 @@
-{
-  "baseTask.js": true,
-  "nicknameToUTF8.js": true,
-  "getHeadIcon.js": true,
-  "resetGate.js": true,
-  "getHistory.js": true
-}

@@ -298,5 +298,5 @@ class LargeNumberCalculator{
  * 安全数值范围
  */
 LargeNumberCalculator.scope = 8;
-        
-exports.LargeNumberCalculator = LargeNumberCalculator;
+
+module.exports = LargeNumberCalculator;

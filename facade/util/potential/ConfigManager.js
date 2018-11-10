@@ -1,6 +1,6 @@
 let facade = require('../../Facade')
 let {em_Effect_Comm} = facade.const
-let {LargeNumberCalculator} = require('../../util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../util/comm/LargeNumberCalculator')
 let {ToUpgradeResInfo} = require('../../util/commonFunc')
 let EffectObject = require('../../util/comm/EffectObject');
 

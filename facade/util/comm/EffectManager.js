@@ -1,4 +1,4 @@
-let {LargeNumberCalculator} = require('./LargeNumberCalculator')
+let LargeNumberCalculator = require('./LargeNumberCalculator')
 
 /**
  * Created by liub on 2017-04-07.

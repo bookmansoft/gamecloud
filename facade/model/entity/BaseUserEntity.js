@@ -17,7 +17,7 @@ let vip = require('../assistant/vip')
 let {User} = require('../table/User')
 let InviteManager = require('../assistant/InviteMgr')
 let BaseEntity = require('../BaseEntity')
-let {LargeNumberCalculator} = require('../../util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../util/comm/LargeNumberCalculator')
 
 /**
  * 用户对象，对来自Model的User进一步封装

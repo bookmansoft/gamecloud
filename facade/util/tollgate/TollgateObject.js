@@ -1,6 +1,6 @@
 let facade = require('../../Facade')
 let {em_Effect_Comm, TollgateType} = facade.const
-let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
 
 /**
  * 根据指定的关卡号，创建的关卡对象

@@ -207,3 +207,24 @@ npm stop
 ```bash
 npm run test
 ```
+
+## 部署网站
+
+gamecloud 作为游戏服务端引擎的同时，也可以承担静态网站服务器功能：
+
+```js
+//设置静态资源映射, 注意必须在调用 facade.boot 之前设置
+facade.static('/client/', './web/client');
+```
+
+服务器启动后，可以通过浏览器访问 http://localhost:9901/client 访问工作目录的子目录 web/client 中的静态资源
+
+典型的工作场景为：
+1. 架设 gamecloud 作为 JSONP 服务器，并设置静态资源映射. 建议通过基于 gamecloud 的 gamegold-mgr-server 脚手架项目，制作高度可定制网站
+2. 使用 React / AngularJs / VUE / CocosCreator 开发单页面应用，打包并拷贝到已映射目录中，即可对外提供服务
+
+## Roadmap
+
+V1.5 和游戏金公链平台无缝整合，一键式开发DAPPS应用
+V1.6 内置 BTC / BCH / ETH 等主流数字货币的支付接口
+V2.0 支持 k8s 架构，进一步增强易用性和可伸缩性

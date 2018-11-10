@@ -1,4 +1,4 @@
-let {LargeNumberCalculator} = require('./LargeNumberCalculator')
+let LargeNumberCalculator = require('./LargeNumberCalculator')
 
 /**
  * Get current time in unix time (milliseconds).

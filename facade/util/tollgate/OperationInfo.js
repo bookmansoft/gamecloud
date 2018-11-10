@@ -1,5 +1,5 @@
 let facade = require('../../Facade')
-let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator')
+let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
 let {ReturnCode} = facade.const
 
 /**

@@ -6,7 +6,7 @@ let PotentialItem = require('../../util/potential/PotentialItem')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let UserEntity = require('../../model/entity/BaseUserEntity')
 let baseMgr = require('../baseAssistant')
-let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator') 
+let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator') 
 
 /**
  * 天赋管理对象，管理内容包括：

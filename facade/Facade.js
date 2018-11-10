@@ -6,11 +6,6 @@ let app = express();
 let EventEmitter = require('events').EventEmitter;
 EventEmitter.defaultMaxListeners = 0;
 
-if(module == require.main){  //判断当前模块是否是主模块
-}
-else{
-}
-
 //启用跨域访问
 app.all('*',function (req, res, next) {
     //	允许应用的跨域访问
@@ -201,6 +196,18 @@ class Facade
         return this.EntityList.UserEntity;
     }
 
+    static get BaseUserEntity() {
+        return require('./model/entity/BaseUserEntity');
+    }
+
+    static get BaseAllyObject() {
+        return require('./model/entity/BaseAllyObject');
+    }
+    
+    static get BaseLogEntity() {
+        return require('./model/entity/log');
+    }
+
     static get CoreOfBase(){
         return require('./core/CoreOfBase');
     }
@@ -378,5 +385,67 @@ class Facade
         };
     }
 }
+
+class Util
+{
+    static get BonusObject() {
+        return require('./util/comm/BonusObject');
+    }
+
+    static get TollgateObject() {
+        return require('./util/tollgate/TollgateObject');
+    }
+
+    static get OperationInfo() {
+        return require('./util/tollgate/OperationInfo');
+    }
+
+    static get PotentialClientItem() {
+        return require('./util/potential/PetClientItem');
+    }
+
+    static get BattleManager() {
+        return require('./util/battle/BattleManager');
+    }
+
+    static get ConfigManager() {
+        return require('./util/potential/ConfigManager');
+    }
+    
+    static get ConfigMgr() {
+        let {ConfigMgr} = require('./util/battle/Action');
+        return ConfigMgr;
+    }
+
+    static get BaseBattleParam() {
+        let {BaseBattleParam} = require('./util/battle/util');
+        return BaseBattleParam;
+    }
+
+    static get BattleHero() {
+        let {BattleHero} = require('./util/battle/hero');
+        return BattleHero;
+    }
+
+    static get LargeNumberCalculator() {
+        return require('./util/comm/LargeNumberCalculator');
+    }
+
+    static get EventData() {
+        return require('./util/comm/EventData');
+    }
+
+    static get autoSave() {
+        return require('./util/autoExec/autoSave');
+    }
+    static get clientComm() {
+        return require('./util/clientComm')();
+    }
+    static get maintain() {
+        return require('./util/maintain');
+    }
+}
+
+Facade.Util = Util;
 
 exports = module.exports = Facade;
