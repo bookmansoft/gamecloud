@@ -1,10 +1,10 @@
 /**
  * Created by liub on 2017-04-06.
  */
-let facade = require('../../../../facade/Facade')
+let facade = require('../../Facade')
 let {RecordType, UserStatus, GuideList, EntityType, RankType, em_Effect_Comm, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, ResType, OperEnum, ReturnCode} = facade.const
-let UserEntity = require('../../../model/entity/UserEntity')
-let BonusObject = require('../../../../facade/util/comm/BonusObject')
+let UserEntity = facade.UserEntity
+let BonusObject = require('../../util/comm/BonusObject')
 
 class index extends facade.Control
 {

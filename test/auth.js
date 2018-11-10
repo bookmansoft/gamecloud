@@ -17,45 +17,4 @@ describe('认证', function() {
             done();
         });
     });
-
-    it('路由基准测试', done=>{
-        remote.auth({}).fetch({}, msg=>{
-            console.log(msg);
-            done();
-        }, `test/ping.html`);
-    });
-
-    it.skip('登录 - 自动推送好友列表', done =>{
-        let first = true;
-        remote.watch(msg=>{
-            msg.map(item=>{
-                remote.log(item);
-            });
-            if(first){
-                first = false;
-                done();
-            }
-        }, NotifyType.friends).auth({}, msg => {
-            remote.isSuccess(msg,true);
-        });
-    });
-
-    /**
-     * NotifyType.action会在登录时或者冲关体力不足时自动下发,也可以调用 gate.checkAction 主动查询
-     */
-    it('登录 - 自动推送体力值', done =>{
-        let first = true;
-        remote.watch(msg=>{
-            //服务端下发当前体力、体力上限、下一点体力恢复时间戳
-            remote.log(msg);
-            if(first){
-                first = false;
-                done();
-            }
-        }, NotifyType.action)
-        .auth({}, msg => {
-            remote.isSuccess(msg,true);
-            console.log(`用户昵称:${decodeURIComponent(msg.data.name)}`); //中文解码
-        });
-    });
 });

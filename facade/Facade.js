@@ -109,11 +109,6 @@ class Facade
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         core.Start(app);
 
-        //region 输出静态资源, 请将客户端发布到指定目录下，并结合CDN路径
-        app.use('/client/', express.static(core.serversInfo["Index"][1].clientPath)); //客户端程序
-        app.use('/admin/', express.static(core.serversInfo["Index"][1].adminPath)); //后台管理程序
-        //endregion
-
         //下发404 必须在控制器路由、静态资源路由全部加载之后设定
         app.use(function(req, res, next) {
             res.status(404).send('Sorry cant find the path!');
@@ -124,6 +119,15 @@ class Facade
             console.error(err.stack);
             res.status(500).send('Something broke!');
         });
+    }
+
+    /**
+     * 静态资源路由和路径映射函数
+     * @param {*} route     静态资源的路由
+     * @param {*} path      静态资源的路径
+     */
+    static static(route, path) {
+        app.use(route, express.static(path));
     }
 
     /**

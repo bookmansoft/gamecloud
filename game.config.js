@@ -31,8 +31,6 @@ let config = {
                 "PoolMax": 500,             //最大数据库并发连接
                 "game_secret": "055c269fb1a866163c970d5b7f979f1c",
                 "game_name": "鸡小德",
-                "clientPath": "./client",
-                "adminPath": "./admin",
                 "redis": redis,
                 "mysql": mysql,
                 "webserver": {

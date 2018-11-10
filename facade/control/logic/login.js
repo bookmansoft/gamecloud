@@ -1,6 +1,5 @@
-let facade = require('../../../../facade/Facade')
+let facade = require('../../Facade')
 let {em_Effect_Comm, UserStatus, NotifyType, OperEnum, ReturnCode, ActionExecuteType} = facade.const
-let UserEntity = require('../../../model/entity/UserEntity')
 let mails = facade.EntityList.mails
 
 class login extends facade.Control

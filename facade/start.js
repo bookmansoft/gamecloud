@@ -1,4 +1,6 @@
 let facade = require('./Facade')
+//设置静态资源映射
+facade.static('/client/', './web/client');
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型
