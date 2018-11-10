@@ -112,15 +112,10 @@ class Remote {
             }, `auth360.html`);
         };
 
-        if(this.userInfo.directly){
-            rpc('127.0.0.1', 9101);
-        }
-        else{
-            this.locate(this.configOri.webserver.host, this.configOri.webserver.port).fetch({"func": "config.getServerInfo", "oemInfo":{"domain": this.userInfo.domain, "openid": this.userInfo.openid}}, msg => {
-                //console.log(msg);
-                rpc(msg.data.ip, msg.data.port);
-            });
-        }
+        this.locate(this.configOri.webserver.host, this.configOri.webserver.port).fetch({"func": "config.getServerInfo", "oemInfo":{"domain": this.userInfo.domain, "openid": this.userInfo.openid}}, msg => {
+            //console.log(msg);
+            rpc(msg.data.ip, msg.data.port);
+        });
     }
 
     /**
@@ -169,15 +164,10 @@ class Remote {
             });
         };
 
-        if(this.userInfo.directly){
-            rpc('127.0.0.1', 9101);
-        }
-        else{
-            this.locate(this.configOri.webserver.host, this.configOri.webserver.port).fetch({"func": "config.getServerInfo", "oemInfo":{"domain": this.userInfo.domain, "openid": this.userInfo.openid}}, msg => {
-                //console.log(msg);
-                rpc(msg.data.ip, msg.data.port);
-            });
-        }
+        this.locate(this.configOri.webserver.host, this.configOri.webserver.port).fetch({"func": "config.getServerInfo", "oemInfo":{"domain": this.userInfo.domain, "openid": this.userInfo.openid}}, msg => {
+            //console.log(msg);
+            rpc(msg.data.ip, msg.data.port);
+        });
     }
 
     /**

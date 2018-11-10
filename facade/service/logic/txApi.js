@@ -1,5 +1,5 @@
 ﻿let crypto = require('crypto'); //加密模块
-let facade = require('../../../facade/Facade')
+let facade = require('../../Facade')
 let req = facade.req   //异步http请求
 let sys = facade.ini.servers["Index"][1]; //索引服运行参数
 

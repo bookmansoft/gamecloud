@@ -24,7 +24,6 @@ class CoreOfBase
      * @param {env} $env
      */
     constructor($env){
-        //缓存this指针用于一些特殊情形下，例如map函数内部
         let self = this;
 
         /**
@@ -49,6 +48,72 @@ class CoreOfBase
             default: ['parseParams', 'commonHandle']
         };
 
+        //扩展服务对象列表
+        this.service = {};
+        //载入框架预定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
+        facade.config.filelist.mapPath('/facade/service', false).map(srv=>{
+            let srvObj = require(srv.path);
+            this.service[srv.name.split('.')[0]] = new srvObj(this);
+        });
+
+        //中间件列表
+        this.middleware = {};
+        //载入框架规定的中间件
+        facade.config.filelist.mapPath('/facade/middleware').map(srv => {
+            let handle = require(srv.path).handle;
+            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+            this.middleware[handleName] = handle;
+        });
+
+        //挂载plugin函数到核心类
+        facade.config.filelist.mapPath('/facade/plugin', false).map(srv=>{
+            let funcList = require(srv.path);
+            let moduleName = srv.name.split('.')[0];
+            Object.keys(funcList).map(key=>{
+                if(moduleName == 'default'){
+                    this[key] = function(...arg){
+                        return funcList[key](self, ...arg);
+                    }
+                }
+                else{
+                    if(!this[moduleName]){
+                        this[moduleName] = {};
+                    }
+                    this[moduleName][key] = function(...arg){
+                        return funcList[key](self, ...arg);
+                    }
+                }
+            });
+        });
+
+        /**
+         * Control列表 由子类构造函数载入实际内容
+         * @type {Array<Control>}
+         */
+        this.control = {};
+
+        //系统内部事件映射表，由子类视需要载入实际内容
+        this.eventHandleList = {};
+
+        //定时任务管理器
+        this.autoTaskMgr = new facade.AutoTaskManager(this);
+
+        //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
+        this.facade = facade;
+    }
+
+    /**
+     * 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     */
+    static mapping(){
+        return [];
+    }
+
+    /**
+     * 加载用户自定义模块
+     */
+    async loadModel() {
+        let self = this;
         //挂载用户自定义的plugin函数到核心类
         facade.config.filelist.mapPath('/app/plugin', false).map(srv=>{
             let funcList = require(srv.path);
@@ -70,73 +135,18 @@ class CoreOfBase
             });
         });
 
-        //扩展服务对象列表
-        this.service = {};
-        //载入框架预定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
-        facade.config.filelist.mapPath('/facade/service', false).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
         //载入用户自定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
         facade.config.filelist.mapPath('/app/service', false).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
 
-        //中间件列表
-        this.middleware = {};
-        //载入框架规定的中间件
-        facade.config.filelist.mapPath('/facade/middleware').map(srv => {
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.middleware[handleName] = handle;
-        });
         //载入用户自定义中间件，@note:将覆盖同名系统中间件
         facade.config.filelist.mapPath('/app/middleware').map(srv => {
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.middleware[handleName] = handle;
         });
-
-        /**
-         * Control列表 由子类构造函数载入实际内容
-         * @type {Array<Control>}
-         */
-        this.control = {};
-
-        //系统内部事件映射表，由子类视需要载入实际内容
-        this.eventHandleList = {};
-
-        //定时任务管理器
-        this.autoTaskMgr = new facade.AutoTaskManager(this);
-
-        //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
-        this.facade = facade;
-
-        //region pm2统计信息 - 暂不启用
-
-        // let probe = require('pmx').probe();
-        // this.metric = probe.metric({
-        //     name    : 'Realtime user',
-        //     value   : () => {
-        //         return this.numOfTotal;
-        //     }
-        // });
-        //
-        // // The counter will start at 0
-        // this.counter = probe.counter({
-        //     name : '鉴权失败次数'
-        // });
-
-        // 流量统计
-        // this.flowRate = probe.meter({
-        //     name      : 'req/sec',
-        //     samples   : 1,
-        //     timeframe : 60
-        // });
-        // this.flowRate.mark();
-
-        //endregion
     }
 
     /**
@@ -409,10 +419,10 @@ class CoreOfBase
         if(!!middles){
             for(let func of middles){
                 if(ini.recy && this.middleware[func]){
-                    try{
+                    try {
                         await this.middleware[func](ini);
                     }
-                    catch(e){
+                    catch(e) {
                         console.error(e);
                     }
                 }

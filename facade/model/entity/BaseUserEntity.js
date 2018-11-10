@@ -1,5 +1,6 @@
 let facade = require('../../../facade/Facade')
-let {RecordType, UserVipLevelSetting, em_UserVipLevel, EntityType,IndexType, ResType, RankType,  DomainTable, em_Effect_Comm, 
+let CommonFunc = facade.util
+let {UserVipLevelSetting, em_UserVipLevel, EntityType,IndexType, ResType, RankType,  DomainTable, em_Effect_Comm, 
     DomainType, DomainList,GetDomainType, em_Condition_Type,em_Condition_Checkmode, UserStatus, ReturnCode} = facade.const
 let BonusObject = require('../../../facade/util/comm/BonusObject')
 let ChatPrivateManager = require('../../../facade/util/comm/ChatPrivateManager')
@@ -52,10 +53,6 @@ class BaseUserEntity extends BaseEntity
             let srvObj = require(srv.path);
             this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
         });
-        facade.config.filelist.mapPath('/app/model/assistant').map(srv=>{
-            let srvObj = require(srv.path);
-            this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
-        });
 
         //利用反序列化对象，填充各个成员对象
         Object.keys(this.baseMgr).map($key=>{
@@ -68,7 +65,7 @@ class BaseUserEntity extends BaseEntity
 		//效果管理器
         this.effectMgr = new EffectManager();
     }
-    
+
     /**
      * 固定时间间隔的滴答操作，由底层自动调用
      */

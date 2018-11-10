@@ -1,6 +1,5 @@
 let facade = require('../../../facade/Facade')
-let {RecordType, GuideList, ActionExecuteType, ResType, UserStatus, NotifyType, ActivityType, em_Condition_Type, em_Condition_Checkmode, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType, TollgateState, ReturnCode, OperEnum} = facade.const
-let {UserEntity} = facade.UserEntity
+let {RecordType, GuideList, ActionExecuteType, ResType, UserStatus, NotifyType, ActivityType, em_Condition_Type, em_Condition_Checkmode, em_Effect_Comm, TollgateState, ReturnCode, OperEnum} = facade.const
 let baseMgr = require('../baseAssistant');
 let BonusObject = require('../../../facade/util/comm/BonusObject')
 let EffectManager = require('../../../facade/util/comm/EffectManager');
@@ -464,7 +463,7 @@ class vip extends baseMgr
                     let tm = ct - this.battle.time;
                     if($params.blood == 0){
                         //region 任务检测
-                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:facade.const.em_Condition_Type.death, value:1}});
+                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.death, value:1}});
                         //endregion
 
                         this.dirty = true;
@@ -498,7 +497,7 @@ class vip extends baseMgr
                         this.parent.getBonus(ret.data.bonus);   //发放奖励
 
                         //region 任务检测
-                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:facade.const.em_Condition_Type.totalMoney, value:_money}})
+                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.totalMoney, value:_money}})
                         //endregion
 
                         this.parent.baseMgr.info.UnsetStatus(UserStatus.gaming);
@@ -587,7 +586,7 @@ class vip extends baseMgr
                             }
 
                             if(this.v.gate[$gate.id].s > oldStar){
-                                facade.current.notifyEvent('user.task', {user:this.parent, data:{type:facade.const.em_Condition_Type.gateStar, value:this.v.gate[$gate.id].s - oldStar}});
+                                facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.gateStar, value:this.v.gate[$gate.id].s - oldStar}});
                             }
 
                             ret.data.starM = this.v.gate[$gate.id].s;
@@ -606,8 +605,8 @@ class vip extends baseMgr
 
                             //region 任务检测
                             facade.current.notifyEvent('user.task', {user:this.parent, data:[
-                                {type:facade.const.em_Condition_Type.totalRound, value:1},
-                                {type:facade.const.em_Condition_Type.totalMoney, value:_money}
+                                {type:em_Condition_Type.totalRound, value:1},
+                                {type:em_Condition_Type.totalMoney, value:_money}
                             ]});
                             //endregion
 
@@ -855,9 +854,9 @@ class vip extends baseMgr
             if(!!this.parent.router.config.fileMap.chapterdata[nextGateId]){//进入下一关
                 this.parent.hisGateNo = nextGateId;
                 facade.current.notifyEvent('user.task', {user:this.parent, data:{
-                    type:facade.const.em_Condition_Type.gateMaxNo, 
+                    type:em_Condition_Type.gateMaxNo, 
                     value:$gate.id, 
-                    mode:facade.const.em_Condition_Checkmode.absolute}
+                    mode:em_Condition_Checkmode.absolute}
                 });
                 
                 return true;

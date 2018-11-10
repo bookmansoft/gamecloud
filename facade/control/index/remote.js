@@ -1,4 +1,4 @@
-let facade = require('../../../facade/Facade')
+let facade = require('../../Facade')
 let {ReturnCode} = facade.const
 /**
  * Updated by liub on 2017-05-05.

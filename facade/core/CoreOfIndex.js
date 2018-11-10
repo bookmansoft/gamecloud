@@ -21,6 +21,36 @@ class CoreOfIndex extends facade.CoreOfBase
         
         //载入控制器
         this.$router = {};
+
+        //载入框架规定的Service
+        facade.config.filelist.mapPath('/facade/service/index').map(srv=>{
+            let srvObj = require(srv.path);
+            this.service[srv.name.split('.')[0]] = new srvObj(this);
+        });
+
+        facade.config.filelist.mapPath('/facade/control/index').map(ctrl=>{
+            let ctrlObj = require(ctrl.path);
+            this.control[ctrl.name.split('.')[0]] = new ctrlObj(this);
+            let token = ctrl.name.split('.')[0];
+            this.control[token] = new ctrlObj(this);
+
+            //读取控制器自带的中间件设置
+            if(!!this.control[token].middleware){
+                this.middlewareSetting[token] = this.control[token].middleware;
+            }
+            //读取控制器自带的Url路由设置
+            if(!!this.control[token].router){
+                this.$router[token] = this.control[token].router;
+            }
+        });
+    }
+
+    /**
+     * 加载用户自定义模块
+     */
+    async loadModel() {
+        super.loadModel();
+
         facade.config.filelist.mapPath('/app/control/index').map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             this.control[ctrl.name.split('.')[0]] = new ctrlObj(this);
@@ -37,11 +67,6 @@ class CoreOfIndex extends facade.CoreOfBase
             }
         });
 
-        //载入框架规定的Service
-        facade.config.filelist.mapPath('/facade/service/index').map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
         //载入用户自定义Service
         facade.config.filelist.mapPath('/app/service/index').map(srv=>{
             let srvObj = require(srv.path);

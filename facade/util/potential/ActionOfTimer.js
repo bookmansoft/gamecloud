@@ -1,9 +1,7 @@
-let facade = require('../../Facade')
-let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = facade.const
+let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../define/comm')
 let commonFunc = require('../commonFunc')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let EffectObject = require('../../../facade/util/comm/EffectObject')
-let UserEntity = facade.UserEntity
 let ConfigManager = require('../../util/potential/ConfigManager')
 
 /**

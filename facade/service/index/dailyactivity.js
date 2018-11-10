@@ -1,9 +1,9 @@
 /**
  * 每日活动管理
  */
-let facade = require('../../../facade/Facade')
+let facade = require('../../Facade')
 let {ReturnCode, NotifyType, ResType, DailyActivityStatus} = facade.const
-let CoreOfIndex = require('../../../facade/core/CoreOfIndex')
+let CoreOfIndex = require('../../core/CoreOfIndex')
 
 class dailyactivity extends facade.Service
 {

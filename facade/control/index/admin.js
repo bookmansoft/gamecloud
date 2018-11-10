@@ -1,6 +1,6 @@
-let facade = require('../../../facade/Facade')
+let facade = require('../../Facade')
 let Sequelize = require('sequelize');
-let query = require('../../../facade/util/mysql');
+let query = require('../../util/mysql');
 
 /**
  * 配置管理器

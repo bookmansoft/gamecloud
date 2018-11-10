@@ -22,6 +22,42 @@ class CoreOfLogic extends CoreOfBase
         
         //载入控制器
         this.$router = {};
+
+        //载入框架规定的Service
+        facade.config.filelist.mapPath('/facade/service/logic').map(srv=>{
+            let srvObj = require(srv.path);
+            this.service[srv.name.split('.')[0]] = new srvObj(this);
+        });
+
+        //事件映射
+        this.eventHandleList = {};
+        //载入框架规范的逻辑事件
+        facade.config.filelist.mapPath('/facade/events').map(srv=>{
+            let handle = require(srv.path).handle;
+            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+            this.eventHandleList[handleName] = handle.bind(this);
+        });
+
+        facade.config.filelist.mapPath('/facade/control/logic').map(ctrl=>{
+            let ctrlObj = require(ctrl.path);
+            let token = ctrl.name.split('.')[0];
+            this.control[token] = new ctrlObj(this);
+
+            //读取控制器自带的中间件设置
+            if(!!this.control[token].middleware){
+                this.middlewareSetting[token] = this.control[token].middleware;
+            }
+
+            //读取控制器自带的Url路由设置
+            if(!!this.control[token].router){
+                this.$router[token] = this.control[token].router;
+            }
+        });
+    }
+
+    async loadModel() {
+        super.loadModel();
+
         facade.config.filelist.mapPath('/app/control/logic').map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
@@ -38,25 +74,12 @@ class CoreOfLogic extends CoreOfBase
             }
         });
 
-        //载入框架规定的Service
-        facade.config.filelist.mapPath('/facade/service/logic').map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
         //载入用户自定义Service
         facade.config.filelist.mapPath('/app/service/logic').map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
 
-        //事件映射
-        this.eventHandleList = {};
-        //载入框架规范的逻辑事件
-        facade.config.filelist.mapPath('/facade/events').map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
-        });
         //载入用户自定义的逻辑事件
         facade.config.filelist.mapPath('/app/events').map(srv=>{
             let handle = require(srv.path).handle;
@@ -189,7 +212,7 @@ class CoreOfLogic extends CoreOfBase
                     this.remoting.user = {stype: this.options.serverType, sid: this.options.serverId, socket: this.remoting};
                 }
                 else{
-                    console.log(`${this.options.serverType}.${this.options.serverId} failed login`);
+                    console.log(`${this.options.serverType}.${this.options.serverId} failed login: ${msg.code}`);
                 }
             })
         });

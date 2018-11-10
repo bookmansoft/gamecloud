@@ -6,7 +6,6 @@ let PotentialItem = require('../../util/potential/PotentialItem')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let UserEntity = require('../../model/entity/BaseUserEntity')
 let baseMgr = require('../baseAssistant')
-let {ToUpgradeResInfo} = require('../../util/commonFunc')
 let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator') 
 
 /**

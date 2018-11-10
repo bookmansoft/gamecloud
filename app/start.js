@@ -1,4 +1,6 @@
 let facade = require('../')
+//加载用户自定义模块
+facade.addition = true;
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型
@@ -12,9 +14,11 @@ if(env.constructor == String){
 
 //系统主引导流程，除了必须传递运行环境变量 env，也可以搭载任意变量，这些变量都将合并为核心类的options对象的属性，供运行时访问
 if(env.portal) { //如果该服务器兼任门户，则启动索引服务
-    facade.boot({env:{
-        serverType: "Index",
-        serverId: 1
-    }});
+    facade.boot({
+        env:{
+            serverType: "Index",
+            serverId: 1
+        }
+    });
 }
-facade.boot({env:env});
+facade.boot({env: env});

@@ -1600,8 +1600,8 @@ const SkillType = {     // 技能类型枚举
     Insight:55,         //顿悟
 };
 
-    //cid
-    const cid = 'd7e702f0-cedf-11e8-9a23-ad6cb6e286a0';
+const cid = 'd7e702f0-cedf-11e8-9a23-ad6cb6e286a0';
+
 /**
  * 卡牌稀有度
  */

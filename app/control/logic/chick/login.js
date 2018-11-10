@@ -42,7 +42,8 @@ class login extends facade.Control
      * @returns {Promise.<void>}
      */
     async getFriendList(user, objData){
-        try{
+        let result = {data:{list:[]}, code:ReturnCode.Success};
+        try {
             let list = await user.getTxFriendMgr().refreshSocialNetwork();
             if(list.length > 0){
                 //分包下行

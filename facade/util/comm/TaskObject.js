@@ -1,5 +1,4 @@
 let facade = require('../../Facade')
-let UserEntity = facade.UserEntity
 let constList = facade.const
 let commonFunc = facade.util
 let BonusObject = require('./BonusObject')

@@ -66,10 +66,6 @@ for(let fl of filelist.mapPath('/facade/define')){
         extendObj(constList, n);
     }
 }
-for(let fl of filelist.mapPath('/app/define')){
-    let n = require(fl.path);
-    extendObj(constList, n);
-}
 
 /**
  * 门面对象
@@ -80,12 +76,35 @@ class Facade
      * 系统主引导流程
      * @param {*} options 启动参数数组
      */
-    static boot(options){
-        this.registerServer();
+    static boot(options) {
+        this.serverTypeMapping = {};
+
+        if(this.$addition) {
+            for(let fl of filelist.mapPath('/app/define')){
+                let n = require(fl.path);
+                extendObj(constList, n);
+            }
+        }
+
+        //自动从指定目录载入系统定义和用户自定义的核心类
+        let corelist = filelist.mapPath('/facade/core', false);
+        if(this.$addition) {
+            corelist.concat(filelist.mapPath('/app/core', false));
+        }
+        corelist.map(srv=>{
+            let srvObj = require(srv.path);
+            srvObj.mapping().map(key=>{
+                this.serverTypeMapping[key] = srvObj;
+            });
+        });
 
         //主程序启动，提供包括Http、Socket、路由解析等服务
         let core = this.FactoryOfCore(!!options?options.env:{});
         extendObj(core.options, options);
+
+        if(this.$addition) { //加载用户自定义模块
+            core.loadModel();
+        }
         
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         core.Start(app);
@@ -126,30 +145,28 @@ class Facade
     }    
 
     /**
+     * 读取加载附加自定义模块标志
+     */
+    static get addition() {
+        this.$addition = true;
+    }
+    /**
+     * 设置加载附加自定义模块标志，链式操作
+     */
+    static set addition(val) {
+        this.$addition = val;
+        return this;
+    }
+
+    /**
      * 建立关键字和核心类之间的映射关系，用于建立核心对象的类工厂中
      * @param {Array} pair 形如[keyword, CoreClassName]的数组
      * 
      * @note 核心类的静态mapping方法规定了服务器类型映射关系，但可以随时调用registerServer补充新的映射关系
      */
     static registerServer(pair) {
-        if(!this.serverTypeMapping){
-            this.serverTypeMapping = {};
-        }
-
-        if(!!pair){//带参数表示补录映射关系
+        if(!!pair) { //带参数表示补录映射关系
             this.serverTypeMapping[pair[0]] = pair[1];
-        }
-        else{ //不带参数时，自动从指定目录载入系统定义和用户自定义的核心类
-            filelist.mapPath('/app/core', false)
-            .concat(filelist.mapPath('/facade/core', false))
-            .map(srv=>{
-                let srvObj = require(srv.path);
-                if(!!srvObj.mapping){
-                    srvObj.mapping().map(key=>{
-                        this.serverTypeMapping[key] = srvObj;
-                    });
-                }
-            });
         }
     }
 
@@ -189,13 +206,19 @@ class Facade
         return req;
     }
     static get EntityList(){
-        if(!this.$EntityList){
-            this.$EntityList = {
-                UserEntity: require('../app/model/entity/UserEntity'),  //指向用户自定义的角色类
-                AllyObject: require('../app/model/entity/AllyObject'),
-                AllyNews: require('./model/entity/AllyNews'),
-                mails: require('./model/entity/mails'),
+        if(!this.$EntityList) {
+            this.$EntityList = {};
+            if(this.$addition) {
+                this.$EntityList['UserEntity'] = require('../app/model/entity/UserEntity');  //指向用户自定义的角色类
+                this.$EntityList['AllyObject'] = require('../app/model/entity/AllyObject');  //指向用户自定义的角色类
             }
+            else {
+                this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向用户自定义的角色类
+                this.$EntityList['AllyObject'] = require('./model/entity/BaseAllyObject');  //指向用户自定义的角色类
+            }
+
+            this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向用户自定义的角色类
+            this.$EntityList['mails'] = require('./model/entity/mails');        //指向用户自定义的角色类
         }
 
         return this.$EntityList;
@@ -279,10 +302,12 @@ class Facade
                 let mid = mod.name.split('.')[0];
                 this.$models[mid] = require(mod.path)[mid];
             });
-            filelist.mapPath('/app/model/table').map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.$models[mid] = require(mod.path)[mid];
-            });
+            if(this.$addition) {
+                filelist.mapPath('/app/model/table').map(mod=>{
+                    let mid = mod.name.split('.')[0];
+                    this.$models[mid] = require(mod.path)[mid];
+                });
+            }
         }
         return this.$models;
     }
@@ -294,10 +319,12 @@ class Facade
                 let mid = mod.name.split('.')[0];
                 this.entities[mid] = require(mod.path);
             });
-            filelist.mapPath('/app/model/entity').map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.entities[mid] = require(mod.path);
-            });
+            if(this.$addition) {
+                filelist.mapPath('/app/model/entity').map(mod=>{
+                    let mid = mod.name.split('.')[0];
+                    this.entities[mid] = require(mod.path);
+                });
+            }
         }
         return this.$entities;
     }

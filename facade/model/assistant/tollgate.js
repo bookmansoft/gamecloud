@@ -3,7 +3,6 @@ let facade = require('../../../facade/Facade')
 let {NotifyType, EntityType, PurchaseType, em_Condition_Checkmode, em_Condition_Type, ResType, TollgateConstant, StayStatus, EventEnum, TollgateType, em_Effect_Comm, ReturnCode, OperEnum} = facade.const
 let baseMgr = require('../baseAssistant');
 let {LargeNumberCalculator} = require('../../../facade/util/comm/LargeNumberCalculator');
-let UserEntity = require('../entity/BaseUserEntity')
 let OperationInfo = require('../../../facade/util/tollgate/OperationInfo')
 let TollgateObject = require('../../../facade/util/tollgate/TollgateObject')
 let TollgateHangup = require('../../../facade/util/tollgate/TollgateHangup')

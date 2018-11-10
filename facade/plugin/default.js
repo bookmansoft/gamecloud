@@ -1,4 +1,4 @@
-let CoreOfBase = require('../../facade/core/CoreOfBase')
+let CoreOfBase = require('../core/CoreOfBase')
 
 /**
  * URL转CDN地址

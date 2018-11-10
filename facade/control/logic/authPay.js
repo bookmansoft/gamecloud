@@ -1,4 +1,4 @@
-let facade = require('../../../facade/Facade')
+let facade = require('../../Facade')
 /**
  * Created by liub on 2017-04-06.
  */
