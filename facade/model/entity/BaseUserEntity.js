@@ -49,7 +49,7 @@ class BaseUserEntity extends BaseEntity
 
         //载入全部全局服务对象
         this.baseMgr = {};
-        facade.config.filelist.mapPath('/facade/model/assistant').map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`).map(srv=>{
             let srvObj = require(srv.path);
             this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
         });

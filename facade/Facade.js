@@ -59,7 +59,7 @@ let iniFile = require('../game.config');
 
 //加载所有常量定义
 let constList = require( './define/comm')
-for(let fl of filelist.mapPath('/facade/define')){
+for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
     let id = fl.name.split('.')[0];
     if(id != 'comm'){
         let n = require(fl.path);
@@ -80,16 +80,16 @@ class Facade
         this.serverTypeMapping = {};
 
         if(this.$addition) {
-            for(let fl of filelist.mapPath('/app/define')){
+            for(let fl of filelist.mapPath('app/define')){
                 let n = require(fl.path);
                 extendObj(constList, n);
             }
         }
 
         //自动从指定目录载入系统定义和用户自定义的核心类
-        let corelist = filelist.mapPath('/facade/core', false);
+        let corelist = filelist.mapPackagePath(`${__dirname}/./core`, false);
         if(this.$addition) {
-            corelist.concat(filelist.mapPath('/app/core', false));
+            corelist.concat(filelist.mapPath('app/core', false));
         }
         corelist.map(srv=>{
             let srvObj = require(srv.path);
@@ -152,7 +152,7 @@ class Facade
      * 读取加载附加自定义模块标志
      */
     static get addition() {
-        this.$addition = true;
+        return this.$addition || false;
     }
     /**
      * 设置加载附加自定义模块标志，链式操作
@@ -213,8 +213,8 @@ class Facade
         if(!this.$EntityList) {
             this.$EntityList = {};
             if(this.$addition) {
-                this.$EntityList['UserEntity'] = require('../app/model/entity/UserEntity');  //指向用户自定义的角色类
-                this.$EntityList['AllyObject'] = require('../app/model/entity/AllyObject');  //指向用户自定义的角色类
+                this.$EntityList['UserEntity'] = require(`${process.cwd()}/app/model/entity/UserEntity`);  //指向用户自定义的角色类
+                this.$EntityList['AllyObject'] = require(`${process.cwd()}/app/model/entity/AllyObject`);  //指向用户自定义的角色类
             }
             else {
                 this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向用户自定义的角色类
@@ -302,12 +302,12 @@ class Facade
         if(!this.$models){
             //载入全部ORM模块
             this.$models = {};
-            filelist.mapPath('/facade/model/table').map(mod=>{
+            filelist.mapPackagePath(`${__dirname}/./model/table`).map(mod=>{
                 let mid = mod.name.split('.')[0];
                 this.$models[mid] = require(mod.path)[mid];
             });
             if(this.$addition) {
-                filelist.mapPath('/app/model/table').map(mod=>{
+                filelist.mapPath('app/model/table').map(mod=>{
                     let mid = mod.name.split('.')[0];
                     this.$models[mid] = require(mod.path)[mid];
                 });
@@ -319,12 +319,12 @@ class Facade
         if(!this.$entities){
             //载入全部Entity模块
             this.$entities = {};
-            filelist.mapPath('/facade/model/entity').map(mod=>{
+            filelist.mapPackagePath(`${__dirname}/./model/entity`).map(mod=>{
                 let mid = mod.name.split('.')[0];
                 this.entities[mid] = require(mod.path);
             });
             if(this.$addition) {
-                filelist.mapPath('/app/model/entity').map(mod=>{
+                filelist.mapPath('app/model/entity').map(mod=>{
                     let mid = mod.name.split('.')[0];
                     this.entities[mid] = require(mod.path);
                 });

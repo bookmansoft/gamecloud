@@ -23,12 +23,12 @@ class CoreOfIndex extends facade.CoreOfBase
         this.$router = {};
 
         //载入框架规定的Service
-        facade.config.filelist.mapPath('/facade/service/index').map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../service/index`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
 
-        facade.config.filelist.mapPath('/facade/control/index').map(ctrl=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../control/index`).map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             this.control[ctrl.name.split('.')[0]] = new ctrlObj(this);
             let token = ctrl.name.split('.')[0];
@@ -51,7 +51,7 @@ class CoreOfIndex extends facade.CoreOfBase
     async loadModel() {
         super.loadModel();
 
-        facade.config.filelist.mapPath('/app/control/index').map(ctrl=>{
+        facade.config.filelist.mapPath('app/control/index').map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             this.control[ctrl.name.split('.')[0]] = new ctrlObj(this);
             let token = ctrl.name.split('.')[0];
@@ -68,7 +68,7 @@ class CoreOfIndex extends facade.CoreOfBase
         });
 
         //载入用户自定义Service
-        facade.config.filelist.mapPath('/app/service/index').map(srv=>{
+        facade.config.filelist.mapPath('app/service/index').map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });

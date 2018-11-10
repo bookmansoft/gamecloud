@@ -24,7 +24,7 @@ class CoreOfLogic extends CoreOfBase
         this.$router = {};
 
         //载入框架规定的Service
-        facade.config.filelist.mapPath('/facade/service/logic').map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../service/logic`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
@@ -32,13 +32,13 @@ class CoreOfLogic extends CoreOfBase
         //事件映射
         this.eventHandleList = {};
         //载入框架规范的逻辑事件
-        facade.config.filelist.mapPath('/facade/events').map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../events`).map(srv=>{
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.eventHandleList[handleName] = handle.bind(this);
         });
 
-        facade.config.filelist.mapPath('/facade/control/logic').map(ctrl=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../control/logic`).map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
             this.control[token] = new ctrlObj(this);
@@ -58,7 +58,7 @@ class CoreOfLogic extends CoreOfBase
     async loadModel() {
         super.loadModel();
 
-        facade.config.filelist.mapPath('/app/control/logic').map(ctrl=>{
+        facade.config.filelist.mapPath('app/control/logic').map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
             this.control[token] = new ctrlObj(this);
@@ -75,13 +75,13 @@ class CoreOfLogic extends CoreOfBase
         });
 
         //载入用户自定义Service
-        facade.config.filelist.mapPath('/app/service/logic').map(srv=>{
+        facade.config.filelist.mapPath('app/service/logic').map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
 
         //载入用户自定义的逻辑事件
-        facade.config.filelist.mapPath('/app/events').map(srv=>{
+        facade.config.filelist.mapPath('app/events').map(srv=>{
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.eventHandleList[handleName] = handle.bind(this);

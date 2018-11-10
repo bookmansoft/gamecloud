@@ -3,10 +3,10 @@ let io = require('socket.io')
 let fs = require('fs')
 
 let facade = require('../Facade')
-let {MiddlewareParam, ReturnCode, EntityType, IndexType, CommMode} = facade.const
+let {ReturnCode, EntityType, IndexType, CommMode} = facade.const
 let {env} = require('../define/env')
 let Control = facade.Control
-let UserEntity = facade.UserEntity
+let UserEntity = facade.UserEntity;
 let connectMonitor = require('../util/autoExec/connectMonitor')
 let rpc = require('../util/mixin/rpc')
 
@@ -51,7 +51,7 @@ class CoreOfBase
         //扩展服务对象列表
         this.service = {};
         //载入框架预定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
-        facade.config.filelist.mapPath('/facade/service', false).map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../service`, false).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
@@ -59,14 +59,14 @@ class CoreOfBase
         //中间件列表
         this.middleware = {};
         //载入框架规定的中间件
-        facade.config.filelist.mapPath('/facade/middleware').map(srv => {
+        facade.config.filelist.mapPackagePath(`${__dirname}/../middleware`).map(srv => {
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.middleware[handleName] = handle;
         });
 
         //挂载plugin函数到核心类
-        facade.config.filelist.mapPath('/facade/plugin', false).map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../plugin`, false).map(srv=>{
             let funcList = require(srv.path);
             let moduleName = srv.name.split('.')[0];
             Object.keys(funcList).map(key=>{
@@ -115,7 +115,7 @@ class CoreOfBase
     async loadModel() {
         let self = this;
         //挂载用户自定义的plugin函数到核心类
-        facade.config.filelist.mapPath('/app/plugin', false).map(srv=>{
+        facade.config.filelist.mapPath('app/plugin', false).map(srv=>{
             let funcList = require(srv.path);
             let moduleName = srv.name.split('.')[0];
             Object.keys(funcList).map(key=>{
@@ -136,13 +136,13 @@ class CoreOfBase
         });
 
         //载入用户自定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
-        facade.config.filelist.mapPath('/app/service', false).map(srv=>{
+        facade.config.filelist.mapPath('app/service', false).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
 
         //载入用户自定义中间件，@note:将覆盖同名系统中间件
-        facade.config.filelist.mapPath('/app/middleware').map(srv => {
+        facade.config.filelist.mapPath('app/middleware').map(srv => {
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.middleware[handleName] = handle;
