@@ -635,6 +635,7 @@ const NotifyType = {
 
     roleShare:7001,                 //角色分享
     sceneShare:7002,                //场景分享
+    test: 9999,                     //test
 };
 
 /**

@@ -5,7 +5,6 @@ let facade = require('../Facade')
 let CoreOfBase = facade.CoreOfBase
 let {serverType, EntityType, ReturnCode, CommMode} = facade.const
 let socketClient = require('socket.io-client')
-let um = require('../util/updateMgr');
 let {User} = require('../model/table/User');
 /**
  * 逻辑服对应的门面类
@@ -53,6 +52,14 @@ class CoreOfLogic extends CoreOfBase
                 this.$router[token] = this.control[token].router;
             }
         });
+
+        this.loadingList = [
+            EntityType.User,            //载入用户
+            EntityType.Ally,            //载入联盟信息
+            EntityType.AllyNews,        //载入联盟新闻
+            EntityType.Mail,            //载入邮件
+            EntityType.BuyLog           //载入消费日志
+        ];
     }
 
     async loadModel() {
@@ -111,13 +118,7 @@ class CoreOfLogic extends CoreOfBase
         console.time('Load Db');
         await this.service.activity.loadDb(); //首先载入活动信息，后续的用户积分信息才能顺利注册
 
-        Promise.all([
-            facade.GetMapping(EntityType.User).loadAll(),   //载入用户
-            facade.GetMapping(EntityType.Ally).loadAll(),   //载入联盟信息
-            facade.GetMapping(EntityType.AllyNews).loadAll(),     //载入联盟新闻
-            facade.GetMapping(EntityType.Mail).loadAll(),        //载入邮件
-            facade.GetMapping(EntityType.BuyLog).loadAll(),          //载入消费日志
-        ]).then(()=>{
+        Promise.all(this.loadingList.map(it=>facade.GetMapping(it).loadAll())).then(()=>{
             console.timeEnd('Load Db');
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 

@@ -100,6 +100,12 @@ class Facade
         if(this.$addition) { //加载用户自定义模块
             core.loadModel();
         }
+
+        if(options.loading) {
+            options.loading.map(table=>{
+                core.addLoadingModel(table);
+            });
+        }
         
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         core.Start(app);
@@ -196,6 +202,10 @@ class Facade
         return this.EntityList.UserEntity;
     }
 
+    static get BaseEntity(){
+        return this.EntityList.BaseEntity;
+    }
+
     static get BaseUserEntity() {
         return require('./model/entity/BaseUserEntity');
     }
@@ -212,7 +222,6 @@ class Facade
         return require('./core/CoreOfBase');
     }
     
-
     static get req(){
         return req;
     }
@@ -230,6 +239,7 @@ class Facade
 
             this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向用户自定义的角色类
             this.$EntityList['mails'] = require('./model/entity/mails');        //指向用户自定义的角色类
+            this.$EntityList['BaseEntity'] = require('./model/BaseEntity');        //指向用户自定义的角色类
         }
 
         return this.$EntityList;
@@ -377,12 +387,19 @@ class Facade
         return this.GetRanking(etype).result(id, type);
     }
 
-    static get tools(){
+    static get tools() {
         return {
             mixin:  applyMixins,
             extend: extendObj,
             clone:  clone,
         };
+    }
+
+    static get sequlize() {
+        return {
+            Sequelize: require('sequelize'),
+            conn: require('./util/sequel')
+        }
     }
 }
 

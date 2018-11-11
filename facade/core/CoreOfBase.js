@@ -100,6 +100,16 @@ class CoreOfBase
 
         //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
         this.facade = facade;
+
+        this.loadingList = {};
+    }
+
+    /**
+     * 添加启动阶段载入的模型
+     * @param {*} ty        模型的类型
+     */
+    addLoadingModel(ty) {
+        this.loadingList.push(ty);
     }
 
     /**
