@@ -12,6 +12,10 @@ class baseCtl
     {
         this.parent = parent;
     }
+
+    echo() {
+        return {code: 0, data: 'Hello World'};
+    }
 }
 
 exports = module.exports = baseCtl;

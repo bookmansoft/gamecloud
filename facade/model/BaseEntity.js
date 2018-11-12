@@ -7,14 +7,14 @@ class BaseEntity
 {
     /**
      * 构造函数
-     * @param {*} orm 
-     * @param {CoreOfBase} router 
+     * @param {*}           orm     底层ORM对象 
+     * @param {CoreOfBase}  router  节点对象
      */
     constructor(orm, router){
-        this.orm = orm; //存储ORM对象
+        this.orm = orm;
         this.router = router;
-        this.dirty = false;
     }
+
     /**
      * 获取指定字段的原始数据
      * @param {*} field 
@@ -43,12 +43,57 @@ class BaseEntity
      */
     set dirty(val){
         this.isDirty = val;
-        if(this.isDirty){
+        if(this.isDirty) {
             this.onUpdate();
         }
     }
 
-    onUpdate(){
+    /**
+     * 读操作：ORM对象属性
+     */
+	getAttr(name) {
+        return !!this.orm ? this.orm[name] : null;
+	}
+
+    /**
+     * 写操作：ORM对象属性
+     */
+	setAttr(name, val) {
+        if(!!this.orm){
+            this.orm[name] = val;
+            this.dirty = true;
+        }
+	}
+
+    /**
+     * 脏数据存储
+     */
+    Save() {
+        if(this.dirty){
+            this.dirty = false;
+            this.orm.save().then(e=>{});
+        }
+    }
+
+    /**
+     * 更新记录
+     */
+    onUpdate() {
+        this.Save();
+    }
+
+    /**
+     * 索引值，用于配合Mapping类的索引/反向索引
+     */
+    IndexOf() {
+        return this.orm.id;
+    }
+
+    /**
+     * 删除记录
+     * @param {*} entity 
+     */
+    static async onDelete(entity){
     }
 }
 

@@ -76,6 +76,7 @@ npm i -g --production windows-build-tools
 
 ```bash
 git clone https://github.com/bookmansoft/gamecloud
+cd gamecloud
 npm i
 ```
 
@@ -220,7 +221,9 @@ facade.static('/client/', './web/client');
 服务器启动后，可以通过浏览器访问 http://localhost:9901/client 访问工作目录的子目录 web/client 中的静态资源
 
 典型的工作场景为：
-1. 架设 gamecloud 作为 JSONP 服务器，并设置静态资源映射. 建议通过基于 gamecloud 的 gamegold-mgr-server 脚手架项目，制作高度可定制网站
+1. 架设 gamecloud 作为 JSONP 服务器，并设置静态资源映射. 建议通过基于 gamecloud 的 gamegold-mgr-server 脚手架项目进行二次开发
+https://github.com/bookmansoft/gamegold-mgr-server
+
 2. 使用 React / AngularJs / VUE / CocosCreator 开发单页面应用，打包并拷贝到已映射目录中，即可对外提供服务
 
 ## Roadmap

@@ -237,7 +237,12 @@ class CoreOfBase
      * @returns {Promise.<*>}
      */
     async callFunc(ctrl, type, user, objData){
-        if(this.control.hasOwnProperty(ctrl) && (this.control[ctrl].__proto__.hasOwnProperty(type) || this.control[ctrl].hasOwnProperty(type))){
+        if(this.control.hasOwnProperty(ctrl) && 
+            (this.control[ctrl].__proto__.hasOwnProperty(type) 
+            || this.control[ctrl].hasOwnProperty(type))
+            || (typeof this.control[ctrl][type] === 'function')
+            )
+        {
             try{
                 return await this.control[ctrl][type](user, objData);
             }
