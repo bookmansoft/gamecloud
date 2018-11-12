@@ -7,3 +7,5 @@ coverage/
 .idea/workspace.xml
 *.zip
 package-lock.json
+app/
+config/migrations/20191111062616-create-test.js

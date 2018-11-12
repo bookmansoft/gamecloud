@@ -1,4 +1,10 @@
+<<<<<<< HEAD:facade/start.js
 let facade = require('./Facade')
+=======
+const facade = require('gamecloud')
+//加载用户自定义模块
+facade.addition = true;
+>>>>>>> ...:app/start.js
 //设置静态资源映射
 facade.static('/client/', './web/client');
 
@@ -14,9 +20,17 @@ if(env.constructor == String){
 
 //系统主引导流程，除了必须传递运行环境变量 env，也可以搭载任意变量，这些变量都将合并为核心类的options对象的属性，供运行时访问
 if(env.portal) { //如果该服务器兼任门户，则启动索引服务
-    facade.boot({env:{
-        serverType: "Index",
-        serverId: 1
-    }});
+    facade.boot({
+        env:{
+            serverType: "Index",
+            serverId: 1
+        }
+    });
 }
-facade.boot({env:env});
+
+facade.boot({
+    env: env,
+    loading: [
+        101,        //指示加载 test 表
+    ],
+});
