@@ -1,10 +1,4 @@
-<<<<<<< HEAD:facade/start.js
 let facade = require('./Facade')
-=======
-const facade = require('gamecloud')
-//加载用户自定义模块
-facade.addition = true;
->>>>>>> ...:app/start.js
 //设置静态资源映射
 facade.static('/client/', './web/client');
 
