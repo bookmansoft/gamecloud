@@ -101,6 +101,7 @@ class Facade
             core.loadModel();
         }
 
+        //将用户自定义表添加到自动加载列表中
         if(options.loading) {
             options.loading.map(table=>{
                 core.addLoadingModel(table);
@@ -230,16 +231,16 @@ class Facade
             this.$EntityList = {};
             if(this.$addition) {
                 this.$EntityList['UserEntity'] = require(`${process.cwd()}/app/model/entity/UserEntity`);  //指向用户自定义的角色类
-                this.$EntityList['AllyObject'] = require(`${process.cwd()}/app/model/entity/AllyObject`);  //指向用户自定义的角色类
+                this.$EntityList['AllyObject'] = require(`${process.cwd()}/app/model/entity/AllyObject`);  //指向用户自定义的联盟类
             }
             else {
-                this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向用户自定义的角色类
-                this.$EntityList['AllyObject'] = require('./model/entity/BaseAllyObject');  //指向用户自定义的角色类
+                this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向原生定义的角色类
+                this.$EntityList['AllyObject'] = require('./model/entity/BaseAllyObject');  //指向原生定义的联盟类
             }
 
-            this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向用户自定义的角色类
-            this.$EntityList['mails'] = require('./model/entity/mails');        //指向用户自定义的角色类
-            this.$EntityList['BaseEntity'] = require('./model/BaseEntity');        //指向用户自定义的角色类
+            this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向原生联盟新闻类
+            this.$EntityList['mails'] = require('./model/entity/mails');        //指向原生邮箱类
+            this.$EntityList['BaseEntity'] = require('./model/BaseEntity');     //指向原生基础实体类
         }
 
         return this.$EntityList;
@@ -387,19 +388,38 @@ class Facade
         return this.GetRanking(etype).result(id, type);
     }
 
+    /**
+     * 工具箱
+     */
     static get tools() {
         return {
-            mixin:  applyMixins,
-            extend: extendObj,
-            clone:  clone,
+            mixin:  applyMixins,                    //混合对象属性函数
+            extend: extendObj,                      //扩展对象函数
+            clone:  clone,                          //深度复刻对象函数
+            Sequelize: require('sequelize'),        //sequelize类
+            seqconn: require('./util/sequel'),      //mysql连接器
+            maintain: require('./util/maintain'),   //执行数据维护任务
         };
     }
 
-    static get sequlize() {
-        return {
-            Sequelize: require('sequelize'),
-            conn: require('./util/sequel')
+    /**
+     * 所有自动化执行类的列表
+     */
+    static get autoExec() {
+        if(!this.$autoExec){
+            this.$autoExec = {};
+            filelist.mapPackagePath(`${__dirname}/./util/autoExec`).map(mod=>{
+                let mid = mod.name.split('.')[0];
+                this.$autoExec[mid] = require(mod.path);
+            });
+            if(this.$addition) {
+                filelist.mapPath('app/util/autoExec').map(mod=>{
+                    let mid = mod.name.split('.')[0];
+                    this.$autoExec[mid] = require(mod.path);
+                });
+            }
         }
+        return this.$autoExec;
     }
 }
 
@@ -450,16 +470,6 @@ class Util
 
     static get EventData() {
         return require('./util/comm/EventData');
-    }
-
-    static get autoSave() {
-        return require('./util/autoExec/autoSave');
-    }
-    static get clientComm() {
-        return require('./util/clientComm')();
-    }
-    static get maintain() {
-        return require('./util/maintain');
     }
 }
 
