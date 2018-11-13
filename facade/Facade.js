@@ -277,6 +277,25 @@ class Facade
         return this.muster[etype];
     }
     /**
+     * 返回全部助手类
+     */
+    static get assistants() {
+        if(!this.$assistants){
+            this.$assistants = {};
+            filelist.mapPackagePath(`${__dirname}/./model/assistant`).map(mod=>{
+                let mid = mod.name.split('.')[0];
+                this.$assistants[mid] = require(mod.path);
+            });
+            if(this.$addition) {
+                filelist.mapPath('app/model/assistant').map(mod=>{
+                    let mid = mod.name.split('.')[0];
+                    this.$assistants[mid] = require(mod.path);
+                });
+            }
+        }
+        return this.$assistants;
+    }
+    /**
      * 返回全部表映射类
      */
     static get models() {
@@ -376,6 +395,7 @@ class Facade
             Indicator: Indicator,                   //标志位管理
             updateMgr: updateMgr,                   //定时刷新器
             getAsnyc: getAsnyc,
+            Lock: require('./util/Lock')
         };
     }
 
@@ -471,7 +491,8 @@ class Util
     }
 
     static get EventData() {
-        return require('./util/comm/EventData');
+        let {EventData}  = require('./util/comm/EventData');
+        return EventData;
     }
 }
 

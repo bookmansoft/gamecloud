@@ -71,10 +71,7 @@ async function handle(sofar) {
                         break;
                     }
             }
-            //sofar.msg.oemInfo.token = facade.util.sign({ did: sofar.msg.domainId }, sofar.facade.options.game_secret); //为用户生成令牌
-            sofar.msg.oemInfo.token = sofar.msg.token;
-            //获取token
-            let address = null; //sofar.msg.token.data.addr;
+            sofar.msg.oemInfo.token = facade.util.sign({ did: sofar.msg.domainId }, sofar.facade.options.game_secret); //为用户生成令牌
             let usr = facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
             if (!!usr) {//老用户登录
                 usr.socket = sofar.socket; //更新通讯句柄
@@ -117,9 +114,6 @@ async function handle(sofar) {
 
                     //写入账号信息
                     usr.WriteUserInfo(appId, serverId, CommonFunc.now(), sofar.msg.oemInfo.token);
-                    if(!!address){
-                        usr.getInfoMgr().SetRecord(RecordType.address,address);//info字段中添加address
-                    }
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
                 }
