@@ -18,7 +18,7 @@ let TaskStaticList = {};
 let commonFunc = facade.util;
 
 //从静态配置表中遍历全部任务
-Object.keys(facade.configration.task).map($k=>{
+Object.keys(facade.config.fileMap.task).map($k=>{
     //创建新对象
     let $taskObj = new TaskObject();
     $taskObj.id = $k;

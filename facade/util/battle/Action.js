@@ -130,7 +130,7 @@ const ConfigMgr = {
         if(!ConfigMgr.$SkillList){
             ConfigMgr.$SkillList = {};
             
-            facade.configration.skillList.map(it=>{
+            facade.config.fileMap.skillList.map(it=>{
                 let fi = ConfigMgr.func(it.tid);
                 if(!!fi){ 
                     //从技能类型对象中，复制部分属性
@@ -194,7 +194,7 @@ const ConfigMgr = {
     PetList: function(){
         //id 编号，type 卡牌类型, loc 站位, ActionList 后天技能, 格式："技能ID,技能等级;..."
         if(!ConfigMgr._PetList){
-            ConfigMgr._PetList = facade.configration.HeroList.reduce((sofar, cur) => {
+            ConfigMgr._PetList = facade.config.fileMap.HeroList.reduce((sofar, cur) => {
                 //对数据做一些预处理
                 cur.loc = cur.locStr.split(',');
                 cur.boot = parseInt(cur.boot);

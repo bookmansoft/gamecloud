@@ -1,6 +1,6 @@
 let facade = require('../../../facade/Facade')
 let {RankType} = facade.const;
-let UserEntity = facade.UserEntity;
+let UserEntity = facade.entities.UserEntity;
 let baseMgr = require('../baseAssistant')
 let BonusObject = require('../../../facade/util/comm/BonusObject')
 let um = require('../../util/updateMgr')

@@ -1,7 +1,7 @@
 let facade = require('../../../facade/Facade')
 let {em_Effect_Comm, ActionExecuteType, NotifyType} = facade.const
 let baseMgr = require('../baseAssistant')
-let DataConst = facade.configration.DataConst;
+let DataConst = facade.config.fileMap.DataConst;
 
 /**
  * 用户每日行为管理类，限制每日可执行次数限制
@@ -28,7 +28,7 @@ class action extends baseMgr {
         Object.keys(this.v.time).map(key=>{
             ret.time[key] = Math.max(0, this.v.time[key] + this.GetCd(key) - $now);
         });
-        ret.max = facade.configration.ExecuteMaxNumList;
+        ret.max = facade.config.fileMap.ExecuteMaxNumList;
 
         return ret;
     }
@@ -132,7 +132,7 @@ class action extends baseMgr {
      */
     Roolback($_type, $sum = 1){
         if(!!this.v.num[$_type]){
-            this.v.num[$_type] = Math.min(facade.configration.ExecuteMaxNumList[$_type].num - $sum, Math.max(0, this.GetExecuteNum($_type) - $sum));
+            this.v.num[$_type] = Math.min(facade.config.fileMap.ExecuteMaxNumList[$_type].num - $sum, Math.max(0, this.GetExecuteNum($_type) - $sum));
             this.isDirty = true;
 
             this.parent.notify({type: NotifyType.actions, info: this.getInfo()});
@@ -212,7 +212,7 @@ class action extends baseMgr {
      */
     GetLeftNum($_type) {
         let ex = this.GetExtraNum($_type);
-        let max = facade.configration.ExecuteMaxNumList[$_type].num;
+        let max = facade.config.fileMap.ExecuteMaxNumList[$_type].num;
         let cur = this.GetExecuteNum($_type)
         return ex + max - cur;
     }
@@ -222,8 +222,8 @@ class action extends baseMgr {
      * @param {*}  
      */
     GetCd($_type){
-        if(!!facade.configration.ExecuteMaxNumList[$_type]){
-            return facade.configration.ExecuteMaxNumList[$_type].cd;
+        if(!!facade.config.fileMap.ExecuteMaxNumList[$_type]){
+            return facade.config.fileMap.ExecuteMaxNumList[$_type].cd;
         }
         return 0;
     }

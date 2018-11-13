@@ -98,7 +98,7 @@ class CoreOfIndex extends facade.CoreOfBase
         });
 
         //缓存管理器
-        this.cacheMgr = new facade.cache(this);
+        this.cacheMgr = new facade.tools.cache(this);
 
         console.time(`${this.options.serverType}${this.options.serverId} Load Db`);
         await this.service.dailyactivity.loadDb(); //载入世界Boss活动信息
@@ -162,7 +162,7 @@ class CoreOfIndex extends facade.CoreOfBase
 
         let uo = this.cacheMgr.get(domainId);
         if(!!uo){
-            uo.status = facade.Indicator.inst(uo.status).unSet(UserStatus.isNewbie).value;
+            uo.status = facade.tools.Indicator.inst(uo.status).unSet(UserStatus.isNewbie).value;
         }
         else if(register){ //新用户注册
             //检测逻辑服类型

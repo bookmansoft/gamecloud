@@ -4,7 +4,7 @@
 let facade = require('../../Facade')
 let {EntityType, IndexType, DomainType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 
 class authPay extends facade.Control {
     /**

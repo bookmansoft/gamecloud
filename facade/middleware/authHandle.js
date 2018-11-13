@@ -127,7 +127,7 @@ async function handle(sofar) {
 
             if (!!usr) {
                 if(sofar.facade.options.debug){//模拟填充测试数据/用户头像信息
-                    ret.figureurl = facade.configration.DataConst.user.icon;
+                    ret.figureurl = facade.config.fileMap.DataConst.user.icon;
                 }
                 //console.log(usr.getPocket().getList());获得当前用户的item
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件

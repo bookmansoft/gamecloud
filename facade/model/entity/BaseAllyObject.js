@@ -1,6 +1,6 @@
 let facade = require('../../../facade/Facade')
 let {EntityType, IndexType, AllyPower, InviteType, AllyNewsType, ReturnCode} = facade.const
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 let {ally} = require('../table/ally')
 let BaseEntity = require('../BaseEntity')
 

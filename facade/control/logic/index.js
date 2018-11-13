@@ -3,7 +3,7 @@
  */
 let facade = require('../../Facade')
 let {RecordType, UserStatus, GuideList, EntityType, RankType, em_Effect_Comm, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, ResType, OperEnum, ReturnCode} = facade.const
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 let BonusObject = require('../../util/comm/BonusObject')
 
 class index extends facade.Control
@@ -287,8 +287,8 @@ class index extends facade.Control
         }
 
         try{
-            if(!!facade.configration[objData.file]){
-                return {code:ReturnCode.Success, data:facade.configration[objData.file]};
+            if(!!facade.config.fileMap[objData.file]){
+                return {code:ReturnCode.Success, data:facade.config.fileMap[objData.file]};
             }
             else{
                 return {code:ReturnCode.Error};

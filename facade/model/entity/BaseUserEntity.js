@@ -797,7 +797,7 @@ class BaseUserEntity extends BaseEntity
     static getDefaultValue(userName, domain, openid){
         return {
             name:userName,
-            info:`{"name": "", "id": 0, "domain":"${domain}", "uuid": "${openid}","invCode": "","headIcon": "","level": 0,"ap": ${facade.configration.DataConst.action.init},"money": ${facade.configration.DataConst.threshold.moneyOfInit}, "diamond":0, "rank": 0,"status": 0}`,
+            info:`{"name": "", "id": 0, "domain":"${domain}", "uuid": "${openid}","invCode": "","headIcon": "","level": 0,"ap": ${facade.config.fileMap.DataConst.action.init},"money": ${facade.config.fileMap.DataConst.threshold.moneyOfInit}, "diamond":0, "rank": 0,"status": 0}`,
             task:'',
             login: '{}',
             item: '{}',

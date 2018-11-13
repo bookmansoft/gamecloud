@@ -23,8 +23,5 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
 }
 
 facade.boot({
-    env: env,
-    loading: [
-        101,        //指示加载 test 表
-    ],
+    env: env
 });

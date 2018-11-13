@@ -58,7 +58,7 @@ class ConfigManager
     static getPetList(){
         if(ConfigManager.HeroList == null){
             ConfigManager.HeroList = {};
-            facade.configration.HeroList.map(item=>{
+            facade.config.fileMap.HeroList.map(item=>{
                 //升级消耗公式
                 let ren = ToUpgradeResInfo(item.upgrade);
                 item.upgrade = {type:ren.type, id: ren.id, calc: $lv => {

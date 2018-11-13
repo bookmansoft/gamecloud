@@ -214,7 +214,7 @@ class slave extends baseMgr {
             let ret = this.parent.baseMgr.item.useItem(403, 1);
             if(ret.code == ReturnCode.Success){
                 if(this.parent.getActionMgr().GetExecuteNum(ActionExecuteType.slaveFlattery)<=3){
-                    mst.time -= facade.configration.DataConst.slave.catchTime * 0.05;
+                    mst.time -= facade.config.fileMap.DataConst.slave.catchTime * 0.05;
                 }
                 this.CheckStatus();
                 let fri = this.parent.getTxFriendMgr().getFriend(openid);
@@ -347,10 +347,10 @@ class slave extends baseMgr {
 
     calcSlaveTime(t){
         let $now = facade.util.now();
-        return Math.ceil(Math.max(0, $now - (t - facade.configration.DataConst.slave.catchTime)) / 3600.0);
+        return Math.ceil(Math.max(0, $now - (t - facade.config.fileMap.DataConst.slave.catchTime)) / 3600.0);
     }
     fullSlaveTime(t){
-        return t >= facade.configration.DataConst.slave.catchTime;
+        return t >= facade.config.fileMap.DataConst.slave.catchTime;
     }
 
     removeSlaveByIdx(idx){
@@ -405,7 +405,7 @@ class slave extends baseMgr {
             this.releaseAll();
 
             //添加新的主人条目
-            this.v.master.push({openid:openid, time: facade.configration.DataConst.slave.catchTime + facade.util.now()});
+            this.v.master.push({openid:openid, time: facade.config.fileMap.DataConst.slave.catchTime + facade.util.now()});
             this.dirty = true;
 
             return ReturnCode.Success;
@@ -435,7 +435,7 @@ class slave extends baseMgr {
             return ReturnCode.socialCatchedBySelf;
         }
         else {
-            this.v.slave.push({openid:openid, time: facade.configration.DataConst.slave.catchTime + facade.util.now()});
+            this.v.slave.push({openid:openid, time: facade.config.fileMap.DataConst.slave.catchTime + facade.util.now()});
             this.dirty = true;
 
             this.parent.baseMgr.info.SetStatus(UserStatus.master); //修改奴隶主状态位

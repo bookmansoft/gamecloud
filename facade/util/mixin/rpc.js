@@ -12,7 +12,7 @@ class rpc
     async getUrl(url){
         try{
             return await new Promise((resolve,reject)=>{
-                facade.getAsnyc.get(url).then(function(r){
+                facade.tools.getAsnyc.get(url).then(function(r){
                     resolve(r.body);
                 }).catch(function(e){
                     reject(e);

@@ -1,5 +1,5 @@
 let facade = require('../../Facade')
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 
 /**
  * 远程终端

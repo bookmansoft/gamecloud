@@ -1,6 +1,6 @@
 let facade = require('../../Facade')
 let {ReturnCode, EntityType, PurchaseStatus} = facade.const
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 
 /**
  * 路由消息控制器

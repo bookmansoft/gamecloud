@@ -43,11 +43,8 @@ let cache = require('./util/cache')
 let formula = require('./util/formula')
 let Indicator = require('./util/Indicator')
 let updateMgr = require('./util/updateMgr')
-let AutoTaskManager = require('./util/taskManager')
 let Collection = require('./util/Collection')
 let config = require('./util/configInterface')  //配置文件管理
-let req = require('./util/req')
-let conn = require('./util/sequel')
 let {applyMixins, extendObj, clone} = require('./util/mixin/comm')
 let filelist = require('./util/filelist')
 let iniFile = require('../game.config');
@@ -72,6 +69,7 @@ class Facade
      * @param {*} options 启动参数数组
      */
     static boot(options) {
+        this.serverType = {};
         this.serverTypeMapping = {};
 
         if(this.$addition) {
@@ -86,10 +84,11 @@ class Facade
         if(this.$addition) {
             corelist.concat(filelist.mapPath('app/core', false));
         }
-        corelist.map(srv=>{
+        corelist.map(srv => {
             let srvObj = require(srv.path);
+            this.serverType[srv.name.split('.')[0]] = srvObj; //节点类列表
             srvObj.mapping().map(key=>{
-                this.serverTypeMapping[key] = srvObj;
+                this.serverTypeMapping[key] = srvObj; //节点类映射列表，每个节点类可能映射多个条目
             });
         });
 
@@ -101,6 +100,7 @@ class Facade
             core.loadModel();
         }
 
+        //将用户自定义表添加到自动加载列表中
         if(options.loading) {
             options.loading.map(table=>{
                 core.addLoadingModel(table);
@@ -176,121 +176,82 @@ class Facade
     }
 
     /**
-     * 返回运行环境配置文件
-     */
-    static get ini(){
-        return iniFile;
-    }
-
-    /**
-     * 获取核心对象
+     * 获取当前运行环境的节点对象
      */
     static get current(){
         return this.$current;
     }
     /**
-     * 设置核心对象
+     * 设置当前运行环境的节点对象
      */
     static set current(val){
         this.$current = val;
         return this.$current;
     }
+
+    //region 内置的节点类
+    static get CoreOfBase() {
+        return require('./core/CoreOfBase');
+    }
+    static get CoreOfIndex() {
+        return require('./core/CoreOfIndex');
+    }
+    static get CoreOfLogic() {
+        return require('./core/CoreOfLogic');
+    }
+    //endregion
+
+    //region 可用于继承的基础类
+
     /**
-     * @return {UserEntity}
+     * 集合管理类
      */
-    static get UserEntity(){
-        return this.EntityList.UserEntity;
+    static get Collection(){
+        return Collection;
     }
 
+    /**
+     * 基础控制器类
+     */
+    static get Control(){
+        return require('./util/baseCtl');
+    }
+    /**
+     * 基础服务类
+     */
+    static get Service(){
+        return require('./util/baseService');
+    }
+
+    /**
+     * 指向原生基础实体类
+     */
     static get BaseEntity(){
-        return this.EntityList.BaseEntity;
+        return require('./model/BaseEntity');
     }
 
+    /**
+     * 指向原生基础用户类
+     */
     static get BaseUserEntity() {
         return require('./model/entity/BaseUserEntity');
     }
 
+    /**
+     * 指向原生基础联盟类
+     */
     static get BaseAllyObject() {
         return require('./model/entity/BaseAllyObject');
     }
     
+    /**
+     * 指向原生基础日志类
+     */
     static get BaseLogEntity() {
         return require('./model/entity/log');
     }
 
-    static get CoreOfBase(){
-        return require('./core/CoreOfBase');
-    }
-    
-    static get req(){
-        return req;
-    }
-    static get EntityList(){
-        if(!this.$EntityList) {
-            this.$EntityList = {};
-            if(this.$addition) {
-                this.$EntityList['UserEntity'] = require(`${process.cwd()}/app/model/entity/UserEntity`);  //指向用户自定义的角色类
-                this.$EntityList['AllyObject'] = require(`${process.cwd()}/app/model/entity/AllyObject`);  //指向用户自定义的角色类
-            }
-            else {
-                this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向用户自定义的角色类
-                this.$EntityList['AllyObject'] = require('./model/entity/BaseAllyObject');  //指向用户自定义的角色类
-            }
-
-            this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向用户自定义的角色类
-            this.$EntityList['mails'] = require('./model/entity/mails');        //指向用户自定义的角色类
-            this.$EntityList['BaseEntity'] = require('./model/BaseEntity');        //指向用户自定义的角色类
-        }
-
-        return this.$EntityList;
-    }
-    static get Control(){
-        return require('./util/baseCtl');
-    }
-    static get Service(){
-        return require('./util/baseService');
-    }
-    static get config(){
-        return config;
-    }
-    static get configration(){
-        return config.fileMap;
-    }
-    static get Indicator(){
-        return Indicator;
-    }
-    static get conn(){
-        return conn;
-    }
-    static get AutoTaskManager(){
-        return AutoTaskManager;
-    }
-    static get updateMgr(){
-        return updateMgr;
-    }
-    /**
-     * 获取常用函数集
-     */
-    static get util(){
-        return commonFunc;
-    }
-    static get Collection(){
-        return Collection;
-    }
-    /**
-     * 获取常用枚举集
-     */
-    static get const(){
-        return constList;
-    }
-
-    static get getAsnyc(){
-        return getAsnyc;
-    }
-    
-    static get cache(){
-        return cache;
-    }
+    //endregion
 
     /**
      * 获取实体对象的集合映射体
@@ -309,13 +270,10 @@ class Facade
         }
         return this.muster[etype];
     }
-    static get formula(){
-        return formula;
-    }
     /**
-     * 返回全部ORM模型列表
+     * 返回全部表映射类
      */
-    static get models(){
+    static get models() {
         if(!this.$models){
             //载入全部ORM模块
             this.$models = {};
@@ -332,18 +290,27 @@ class Facade
         }
         return this.$models;
     }
+    /**
+     * 返回全部 ORM 映射类
+     */
     static get entities(){
-        if(!this.$entities){
-            //载入全部Entity模块
+        if(!this.$entities) {
             this.$entities = {};
+
+            //载入原生Entity模块
             filelist.mapPackagePath(`${__dirname}/./model/entity`).map(mod=>{
                 let mid = mod.name.split('.')[0];
-                this.entities[mid] = require(mod.path);
+                this.$entities[mid] = require(mod.path);
             });
+            //将 UserEntity AllyObject 也指向原生模块 
+            this.$entities.UserEntity = require('./model/entity/BaseUserEntity');  //指向原生定义的角色类
+            this.$entities.AllyObject = require('./model/entity/BaseAllyObject');  //指向原生定义的联盟类
+
             if(this.$addition) {
+                //载入用户自定义Entity模块，如果用户有重载 UserEntity AllyObject 则自动覆盖之前的设置
                 filelist.mapPath('app/model/entity').map(mod=>{
                     let mid = mod.name.split('.')[0];
-                    this.entities[mid] = require(mod.path);
+                    this.$entities[mid] = require(mod.path);
                 });
             }
         }
@@ -387,19 +354,68 @@ class Facade
         return this.GetRanking(etype).result(id, type);
     }
 
+    /**
+     * 工具箱
+     */
     static get tools() {
         return {
-            mixin:  applyMixins,
-            extend: extendObj,
-            clone:  clone,
+            mixin:  applyMixins,                    //混合对象属性函数
+            extend: extendObj,                      //扩展对象函数
+            clone:  clone,                          //深度复刻对象函数
+            Sequelize: require('sequelize'),        //sequelize类
+            seqconn: require('./util/sequel'),      //mysql连接器
+            maintain: require('./util/maintain'),   //执行数据维护任务
+            formula: formula,                       //表达式计算
+            cache: cache,                           //缓存管理
+            Indicator: Indicator,                   //标志位管理
+            updateMgr: updateMgr,                   //定时刷新器
+            getAsnyc: getAsnyc,
         };
     }
 
-    static get sequlize() {
-        return {
-            Sequelize: require('sequelize'),
-            conn: require('./util/sequel')
+    /**
+     * 所有自动化执行类的列表
+     */
+    static get autoExec() {
+        if(!this.$autoExec){
+            this.$autoExec = {};
+            filelist.mapPackagePath(`${__dirname}/./util/autoExec`).map(mod=>{
+                let mid = mod.name.split('.')[0];
+                this.$autoExec[mid] = require(mod.path);
+            });
+            if(this.$addition) {
+                filelist.mapPath('app/util/autoExec').map(mod=>{
+                    let mid = mod.name.split('.')[0];
+                    this.$autoExec[mid] = require(mod.path);
+                });
+            }
         }
+        return this.$autoExec;
+    }
+
+    /**
+     * 返回运行环境配置文件
+     */
+    static get ini(){
+        return iniFile;
+    }
+    /**
+     * 业务配置文件管理
+     */
+    static get config(){
+        return config;
+    }
+    /**
+     * 获取常用函数集
+     */
+    static get util(){
+        return commonFunc;
+    }
+    /**
+     * 获取常用枚举集
+     */
+    static get const(){
+        return constList;
     }
 }
 
@@ -450,16 +466,6 @@ class Util
 
     static get EventData() {
         return require('./util/comm/EventData');
-    }
-
-    static get autoSave() {
-        return require('./util/autoExec/autoSave');
-    }
-    static get clientComm() {
-        return require('./util/clientComm')();
-    }
-    static get maintain() {
-        return require('./util/maintain');
     }
 }
 

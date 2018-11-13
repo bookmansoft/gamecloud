@@ -1,6 +1,6 @@
 let facade = require('../../Facade')
 let {EntityType, UserStatus} = facade.const
-let UserEntity = facade.UserEntity
+let UserEntity = facade.entities.UserEntity
 
 /**
  * UserEntity综合监控

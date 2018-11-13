@@ -6,8 +6,9 @@ let facade = require('../Facade')
 let {ReturnCode, EntityType, IndexType, CommMode} = facade.const
 let {env} = require('../define/env')
 let Control = facade.Control
-let UserEntity = facade.UserEntity;
+let UserEntity = facade.entities.UserEntity;
 let connectMonitor = require('../util/autoExec/connectMonitor')
+let AutoTaskManager = require('../util/taskManager')
 let rpc = require('../util/mixin/rpc')
 
 /**
@@ -96,7 +97,7 @@ class CoreOfBase
         this.eventHandleList = {};
 
         //定时任务管理器
-        this.autoTaskMgr = new facade.AutoTaskManager(this);
+        this.autoTaskMgr = new AutoTaskManager(this);
 
         //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
         this.facade = facade;

@@ -22,7 +22,7 @@ class info extends baseMgr
             //	体力
             ap 			: 15,
             //	金钱
-            money		: facade.configration.DataConst.threshold.moneyOfInit,
+            money		: facade.config.fileMap.DataConst.threshold.moneyOfInit,
             diamond		: 0,
 
             date: '',     //刷新日期，用于每日任务
@@ -51,8 +51,8 @@ class info extends baseMgr
                 "invCode": "",
                 "headIcon": "",
                 "level": 0,
-                "ap": facade.configration.DataConst.action.init,
-                "money": facade.configration.DataConst.threshold.moneyOfInit,
+                "ap": facade.config.fileMap.DataConst.action.init,
+                "money": facade.config.fileMap.DataConst.threshold.moneyOfInit,
                 "diamond":0,
                 "status": 0
             };
@@ -72,7 +72,7 @@ class info extends baseMgr
     }
 
     SetStatus(val, send=true){
-        let ns = facade.Indicator.inst(this.v.status).set(val).value;
+        let ns = facade.tools.Indicator.inst(this.v.status).set(val).value;
         if(this.v.status != ns){
             this.v.status = ns;
             this.parent.orm.status = this.v.status;
@@ -101,7 +101,7 @@ class info extends baseMgr
         }
     }
 	UnsetStatus(val, send=true){
-        let ns = facade.Indicator.inst(this.v.status).unSet(val).value;
+        let ns = facade.tools.Indicator.inst(this.v.status).unSet(val).value;
         if(this.v.status != ns){
             this.v.status = ns;
             this.parent.orm.status = this.v.status;
@@ -129,7 +129,7 @@ class info extends baseMgr
         }
     }
     CheckStatus(val){
-    	return facade.Indicator.inst(this.v.status).check(val);
+    	return facade.tools.Indicator.inst(this.v.status).check(val);
     }
     GetStatus(){
         return this.v.status;

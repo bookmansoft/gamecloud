@@ -39,7 +39,7 @@ class TaskObject {
      * 从静态配置表中，获取并填充条件阈值和奖励信息
      */
     loadFromStatic(){
-        let curItem = facade.configration.task[this.id];
+        let curItem = facade.config.fileMap.task[this.id];
 
         curItem.condition.split(';').map($value2=>{
             let $staticConItem = $value2.split(',');
