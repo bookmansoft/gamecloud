@@ -42,17 +42,22 @@ class BaseUserEntity extends BaseEntity
 		this.appId = '';
 		this.serverId = '';
 
-		//腾讯大厅
+		//region 腾讯大厅
 		this.openkey = '';//这个值是有时效的，所以不保存入数据库，每次去获取
 		this.pf = '';//标识腾讯的来源渠道
-		//腾讯大厅 end
+		//endregion
 
-        //载入全部全局服务对象
+        //region 载入assistant对象
         this.baseMgr = {};
-        facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`).map(srv=>{
+        let assistants = facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`);
+        if(this.$addition) {
+            assistants.concat(facade.config.filelist.mapPath('app/model/assistant', false));
+        }
+        assistants.map(srv=>{
             let srvObj = require(srv.path);
             this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
         });
+        //endregion
 
         //利用反序列化对象，填充各个成员对象
         Object.keys(this.baseMgr).map($key=>{

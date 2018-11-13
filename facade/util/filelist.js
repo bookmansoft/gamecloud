@@ -43,13 +43,15 @@ class Filelist
         let files = fs.readdirSync(sofar);
         if(!!files){
             files.forEach(filename => {
-                let stats = fs.statSync(path.join(sofar, filename));
-                if(stats.isFile()){
-                    this.flist.push({name: filename, path: path.join(sofar, filename), cname:cname});
-                }
-                else if(stats.isDirectory()){
-                    if(recy){
-                        this.read(recy, path.join(sofar, filename), !!cname ? `${cname}.${filename}` : filename);
+                if(filename !== '.gitkeeper') { //跳过占位符文件
+                    let stats = fs.statSync(path.join(sofar, filename));
+                    if(stats.isFile()){
+                        this.flist.push({name: filename, path: path.join(sofar, filename), cname:cname});
+                    }
+                    else if(stats.isDirectory()){
+                        if(recy){
+                            this.read(recy, path.join(sofar, filename), !!cname ? `${cname}.${filename}` : filename);
+                        }
                     }
                 }
             });

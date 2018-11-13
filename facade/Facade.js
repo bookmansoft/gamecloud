@@ -222,6 +222,12 @@ class Facade
     static get Service(){
         return require('./util/baseService');
     }
+    /**
+     * 基础服务类
+     */
+    static get Assistant(){
+        return require('./model/baseAssistant');
+    }
 
     /**
      * 指向原生基础实体类

@@ -1,5 +1,4 @@
 let StatusMachine = require('javascript-state-machine')
-let CoreOfBase = require('../core/CoreOfBase')
 
 /**
  * 扩展服务类的基类
@@ -11,6 +10,9 @@ class baseService extends StatusMachine
      */
     constructor(...args){
         super(args[1]);
+        /**
+         * 节点对象
+         */
         this.parent = args[0];
     }
 }
