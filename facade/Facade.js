@@ -196,12 +196,31 @@ class Facade
     static get CoreOfIndex() {
         return require('./core/CoreOfIndex');
     }
+<<<<<<< HEAD
     static get CoreOfLogic() {
         return require('./core/CoreOfLogic');
     }
     //endregion
 
     //region 可用于继承的基础类
+=======
+    static get EntityList(){
+        if(!this.$EntityList) {
+            this.$EntityList = {};
+            if(this.$addition) {
+                this.$EntityList['UserEntity'] = require(`${process.cwd()}/app/model/entity/UserEntity`);  //指向用户自定义的角色类
+                this.$EntityList['AllyObject'] = require(`${process.cwd()}/app/model/entity/AllyObject`);  //指向用户自定义的联盟类
+            }
+            else {
+                this.$EntityList['UserEntity'] = require('./model/entity/BaseUserEntity');  //指向原生定义的角色类
+                this.$EntityList['AllyObject'] = require('./model/entity/BaseAllyObject');  //指向原生定义的联盟类
+            }
+
+            this.$EntityList['AllyNews'] = require('./model/entity/AllyNews');  //指向原生联盟新闻类
+            this.$EntityList['mails'] = require('./model/entity/mails');        //指向原生邮箱类
+            this.$EntityList['BaseEntity'] = require('./model/BaseEntity');     //指向原生基础实体类
+        }
+>>>>>>> 22fecfa57688bd296b176a74573484fbb25f4695
 
     /**
      * 集合管理类
@@ -365,11 +384,14 @@ class Facade
             Sequelize: require('sequelize'),        //sequelize类
             seqconn: require('./util/sequel'),      //mysql连接器
             maintain: require('./util/maintain'),   //执行数据维护任务
+<<<<<<< HEAD
             formula: formula,                       //表达式计算
             cache: cache,                           //缓存管理
             Indicator: Indicator,                   //标志位管理
             updateMgr: updateMgr,                   //定时刷新器
             getAsnyc: getAsnyc,
+=======
+>>>>>>> 22fecfa57688bd296b176a74573484fbb25f4695
         };
     }
 
@@ -391,6 +413,7 @@ class Facade
             }
         }
         return this.$autoExec;
+<<<<<<< HEAD
     }
 
     /**
@@ -416,6 +439,8 @@ class Facade
      */
     static get const(){
         return constList;
+=======
+>>>>>>> 22fecfa57688bd296b176a74573484fbb25f4695
     }
 }
 
