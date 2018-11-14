@@ -1,6 +1,4 @@
 let facade = require('./Facade')
-//设置静态资源映射
-facade.static('/client/', './web/client');
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型
@@ -23,5 +21,6 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
 }
 
 facade.boot({
-    env: env
+    env: env,
+    static: [['/client/', './web/client']]  //设置静态资源映射
 });

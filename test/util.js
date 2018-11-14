@@ -3,7 +3,7 @@ let {gameconn} = require('gamegoldtoolkit');
 
 //创建连接器对象
 let remote = new gameconn(
-    gameconn.CommMode.ws,               //使用 WebSocket 连接方式
+    gameconn.CommMode.ws,               //指定连接方式 get / post / ws
     {
         "UrlHead": "http",              //协议选择: http/https
         "webserver": {

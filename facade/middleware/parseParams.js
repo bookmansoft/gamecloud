@@ -35,7 +35,6 @@ async function handle(sofar) {
     if(sofar.msg.userinfo.constructor == String){
         sofar.msg.userinfo = JSON.parse(sofar.msg.userinfo);
     }
-    //sofar.msg.oemInfo.openid = sofar.msg.openid;
     sofar.msg.domainId = !!sofar.msg.oemInfo.openid ? sofar.msg.oemInfo.domain + '.' + sofar.msg.oemInfo.openid : '';
 }
 

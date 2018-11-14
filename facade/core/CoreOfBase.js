@@ -106,6 +106,17 @@ class CoreOfBase
     }
 
     /**
+     * 设置静态资源映射
+     * @param {*} route 
+     * @param {*} path 
+     */
+    static(route, path) {
+        if(this.app) {
+            this.app.use(route, express.static(path));
+        }
+    }
+
+    /**
      * 添加启动阶段载入的模型
      * @param {*} ty        模型的类型
      */
@@ -177,6 +188,31 @@ class CoreOfBase
                 req.query.userip = req.ip.match(/\d+.\d+.\d+.\d+/)[0];
                 let ini = {socket:_socket, msg: req.query, fn: res.send.bind(res), recy:true, facade: this};
                 let middles = (req.query.control && !!this.middlewareSetting[req.query.control]) ? this.middlewareSetting[req.query.control] : this.middlewareSetting["default"];
+                if(!!middles){
+                    for(let func of middles){
+                        if(ini.recy && this.middleware[func]){
+                            await this.middleware[func](ini);
+                        }
+                    }
+                }
+                else{
+                    res.end();
+                }
+            }catch(e){
+                res.end();
+            }
+        });
+        app.post('/index.html', async (req, res) => {
+            console.log(`来访URL(${Date()})：${JSON.stringify(req.body)}`);
+
+            let _socket = {};
+            try{
+                _socket.user = await facade.GetObject(EntityType.User, req.body.oemInfo.token, IndexType.Token);
+                
+                //提取客户端IP信息
+                req.body.userip = req.ip.match(/\d+.\d+.\d+.\d+/)[0];
+                let ini = {socket:_socket, msg: req.body, fn: res.send.bind(res), recy:true, facade: this};
+                let middles = (req.body.control && !!this.middlewareSetting[req.body.control]) ? this.middlewareSetting[req.body.control] : this.middlewareSetting["default"];
                 if(!!middles){
                     for(let func of middles){
                         if(ini.recy && this.middleware[func]){

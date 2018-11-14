@@ -2,30 +2,8 @@
  * bootstrap
  */
 let express = require('express');
-let app = express();
 let EventEmitter = require('events').EventEmitter;
 EventEmitter.defaultMaxListeners = 0;
-
-//启用跨域访问
-app.all('*',function (req, res, next) {
-    //	允许应用的跨域访问
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-
-    if (req.method == 'OPTIONS') {
-        //让options请求快速返回
-        res.send(200);
-    } else {
-        next();
-    }
-});
-
-//region 添加POST模式下的body解析器
-let bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json());
-//endregion
 
 //注入通用函数
 require('./util/mixin/base');
@@ -107,8 +85,37 @@ class Facade
             });
         }
         
+        let app = express();
+        //启用跨域访问
+        app.all('*',function (req, res, next) {
+            //	允许应用的跨域访问
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+            res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+        
+            if (req.method == 'OPTIONS') {
+                //让options请求快速返回
+                res.send(200);
+            } else {
+                next();
+            }
+        });
+        
+        //region 添加POST模式下的body解析器
+        let bodyParser = require('body-parser');
+        app.use(bodyParser.urlencoded({extended: true}))
+        app.use(bodyParser.json());
+        //endregion
+        
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         core.Start(app);
+        core.app = app;
+
+        if(options.static) {
+            for(let [route, path] of options.static) {
+                app.use(route, express.static(path));
+            }
+        }
 
         //下发404 必须在控制器路由、静态资源路由全部加载之后设定
         app.use(function(req, res, next) {
@@ -120,15 +127,8 @@ class Facade
             console.error(err.stack);
             res.status(500).send('Something broke!');
         });
-    }
 
-    /**
-     * 静态资源路由和路径映射函数
-     * @param {*} route     静态资源的路由
-     * @param {*} path      静态资源的路径
-     */
-    static static(route, path) {
-        app.use(route, express.static(path));
+        return core;
     }
 
     /**
