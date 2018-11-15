@@ -174,25 +174,25 @@ class task extends baseMgr {
         }
     }
 
-    // GetTaskBonus($tid, $oper=0){
-    //     let $ret = constList.ReturnCode.Success;
-    //     if($oper == 1){
-    //         $ret = this.forceFinish($tid);
-    //         if($ret != constList.ReturnCode.Success){
-    //             return {code: $ret};
-    //         }
-    //     }
+    GetTaskBonus($tid, $oper=0) {
+        let $ret = constList.ReturnCode.Success;
+        if($oper == 1){
+            $ret = this.forceFinish($tid);
+            if($ret != constList.ReturnCode.Success){
+                return {code: $ret};
+            }
+        }
 
-    //     $ret = this.getBonus($tid);
+        $ret = this.getBonus($tid);
 
-    //     if($ret != '-1' && $ret != '-2'){
-    //         this.dirty = true;//设置脏数据标志
-    //         return {code: constList.ReturnCode.Success, bonus: $ret};
-    //     }
-    //     else{
-    //         return {code: constList.ReturnCode.paramError};
-    //     }
-    // }
+        if($ret != '-1' && $ret != '-2'){
+            this.dirty = true;//设置脏数据标志
+            return {code: constList.ReturnCode.Success, bonus: $ret};
+        }
+        else{
+            return {code: constList.ReturnCode.paramError};
+        }
+    }
 
     forceFinish($id){
         if(!!this.taskList[$id]){
