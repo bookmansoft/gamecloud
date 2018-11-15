@@ -269,10 +269,12 @@ class index extends facade.Control
      * @param objData
      * @returns {Promise.<*>}
      */
-    async 2001(user, objData){
+    async 2001(user, objData) {
         try{
             return await this.parent.control.item.list(user);
-        }catch(e){}
+        } catch(e) {
+            return {code: ReturnCode.illegalData};
+        }
     }
 
     /**
