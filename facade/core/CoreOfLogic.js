@@ -97,9 +97,16 @@ class CoreOfLogic extends CoreOfBase
 
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     * @returns {Array}
      */
-    static mapping(){
-        return ['IOS', 'Android'];
+    static get mapping() {
+        if(!this.$mapping) {
+            this.$mapping = ['IOS', 'Android'];
+        }
+        return this.$mapping;
+    }
+    static set mapping(val) {
+        this.$mapping = val;
     }
 
     /**

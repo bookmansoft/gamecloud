@@ -4,13 +4,12 @@
 let facade = require('../../Facade')
 let {EntityType, IndexType, DomainType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
-let UserEntity = facade.entities.UserEntity
 
 class authPay extends facade.Control {
     /**
      * 针对Url访问的路由设置
      */
-    get router(){
+    get router() {
         return [
             ['/auth360.html', 'auth360'],         //模拟 360 网关下发签名集
             ['/pay360.html', 'pay360'],           //360 发货回调路由

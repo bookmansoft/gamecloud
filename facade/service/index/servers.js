@@ -106,7 +106,7 @@ class servers extends facade.Service
     forServers($cb){
         return Object.keys(this.serverList).map(idx=>{
             let srv = this.serverList[idx];
-            if(srv.stype == "IOS" || srv.stype== "Android"){
+            if(facade.CoreOfLogic.mapping.indexOf(srv.stype) != -1) {
                 return $cb(srv);
             }
         });

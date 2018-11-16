@@ -73,9 +73,16 @@ class CoreOfIndex extends facade.CoreOfBase
 
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     * @returns {Array}
      */
-    static mapping(){
-        return ['Index'];
+    static get mapping() {
+        if(!this.$mapping) {
+            this.$mapping = ['Index'];
+        }
+        return this.$mapping;
+    }
+    static set mapping(val) {
+        this.$mapping = val;
     }
 
     routeList(){
@@ -132,22 +139,23 @@ class CoreOfIndex extends facade.CoreOfBase
         return ret;
     }
 
-    async getExcellentUser(openid){
-        let uList = await this.getUserIndexOfAll([`tx.IOS.${openid}`, `tx.Android.${openid}`]); 
+    async getExcellentUser(openid) {
+        let uList = await this.getUserIndexOfAll(facade.CoreOfLogic.mapping.reduce((sofar, cur)=>{
+            sofar.push(`tx.${cur}.${openid}`);
+            return sofar;
+        }, []));
         
-        let u1 = uList[`tx.IOS.${openid}`];
-        let u2 = uList[`tx.Android.${openid}`];
-
         let sim = null;
-        if(!!u1 && !!u2){
-            sim = u1.score > u2.score ? u1 : u2;
-        }
-        else if(!!u1){
-            sim = u1;
-        }
-        else if(!!u2){
-            sim = u2;
-        }
+        facade.CoreOfLogic.mapping.map(lt=>{
+            let u = uList[`tx.${lt}.${openid}`];
+            if(!sim) {
+                sim = u;
+            }
+            if(!!sim && !!u) {
+                sim = u.score > sim.score ? u : sim;
+            }
+        });
+ 
         return sim;
     }
 
@@ -164,20 +172,18 @@ class CoreOfIndex extends facade.CoreOfBase
         if(!!uo){
             uo.status = facade.tools.Indicator.inst(uo.status).unSet(UserStatus.isNewbie).value;
         }
-        else if(register){ //新用户注册
+        else if(register) { //新用户注册
             //检测逻辑服类型
-            let stype = "IOS"; //默认的逻辑服类型
+            let stype = facade.CoreOfLogic.mapping[0]; //默认的逻辑服类型
+
             let pl = domain.split('.');
-            if(pl.length > 1){
-                switch(pl[1]){//穷举所有有效的逻辑服类型
-                    case "IOS":
-                    case "Android":
-                    case "Test":
-                        stype = pl[1];
-                        break;
+            if(pl.length > 1) {
+                if(facade.CoreOfLogic.mapping.indexOf(pl[1]) != -1) {
+                    stype = pl[1];
                 }
             }
-            if(!this.serversInfo[stype]){//非法类型
+
+            if(!this.serversInfo[stype]) {//非法类型
                 return null;
             }
 
@@ -240,8 +246,8 @@ class CoreOfIndex extends facade.CoreOfBase
     async loadAllUsers(cb){
         try{
             //遍历所有服务器，以便加载所有逻辑服用户的索引
-            for(let stype in this.serversInfo){
-                if(stype == "IOS" || stype == "Android"){
+            for(let stype in this.serversInfo) {
+                if(facade.CoreOfLogic.mapping.indexOf(stype) != -1) {
                     for(let id in this.serversInfo[stype]){
                         let item = this.serversInfo[stype][id];
                         await this.service.servers.loadIndex(item.mysql.db, item.mysql.sa, item.mysql.pwd, stype, id); //载入分服的用户

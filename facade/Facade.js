@@ -65,7 +65,7 @@ class Facade
         corelist.map(srv => {
             let srvObj = require(srv.path);
             this.serverType[srv.name.split('.')[0]] = srvObj; //节点类列表
-            srvObj.mapping().map(key=>{
+            srvObj.mapping.map(key => {
                 this.serverTypeMapping[key] = srvObj; //节点类映射列表，每个节点类可能映射多个条目
             });
         });

@@ -13,40 +13,21 @@
  * 实现图像服务端中转的门面类
  */
 class CoreOfImage extends CoreOfBase {
-    async Start(app){
-        let hrv = this.options.UrlHead == "https" ? require(this.options.UrlHead).createServer(this.credentials, app) : require(this.options.UrlHead).createServer(app);
-
-        //启动网络服务
-        hrv.listen(this.options.webserver.port, this.options.webserver.host, () => {
-            console.log(`图片服务在端口 ${this.options.webserver.port} 上准备就绪`);
-        });
-
-        //抓取跨域图片
-        app.get('/socialImg', (req, res) => {
-            if(!!req.query.m) {
-                try {
-                    rp({uri: decodeURIComponent(req.query.m),headers: {'User-Agent': 'Request-Promise',}}).pipe(res);
-                } catch(e) {
-                    console.error(e);
-                    res.end();
-                }
-            }
-            else {
-                try {
-                    rp({uri: decodeURIComponent(this.facade.configration.DataConst.user.icon),headers: {'User-Agent': 'Request-Promise',}}).pipe(res);
-                } catch(e) { 
-                    console.error(e);
-                    res.end();
-                }
-            }
-        });
+    async Start(app) {
+        //... 代码略
     }
 
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
      */
-    static mapping(){
-        return ['Image'];
+    static get mapping() {
+        if(!this.$mapping) {
+            this.$mapping = ['Image']; //game.config.js 中类型为 Image 的节点，都将用 CoreOfImage 完成实例化
+        }
+        return this.$mapping;
+    }
+    static set mapping(val) {
+        this.$mapping = val;
     }
 }
 
@@ -90,7 +71,7 @@ let config = {
                 "sys":{
                     "serverType": "IOS",
                     "serverId": 1,
-                    "portal": true //指示该服务器兼任门户
+                    "portal": true              //指示该服务器兼任门户
                 }
             }
         }

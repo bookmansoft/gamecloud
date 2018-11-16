@@ -69,16 +69,6 @@ let config = {
                 }
             }
         },
-        "Image":{ //新增图片服务器
-            "1":{
-                "mysql": mysql,
-                "webserver": {
-                    "mapping": "127.0.0.1",
-                    "host": "127.0.0.1",
-                    "port": 9401
-                }
-            }
-        },
         "IOS":{
             "1":{
                 "mysql": mysql,

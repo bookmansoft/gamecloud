@@ -30,7 +30,7 @@ LICENSE             版权声明
         指示对造访控制器test的信息流，依次应用 userDefine1、userDefine2 这两个中间件进行处理
 
 -    core: 存放自定义的核心类。
-        在当前框架中，每个独立进程启动时唯一创建一种核心类的单态实例，承载一定的功能集合。内置的核心类包括Index(注册码'Index')、Logic(注册码'IOS'、'Android')
+        在当前框架中，每个独立进程启动时唯一创建一种核心类的单态实例，承载一定的功能集合。内置的核心类包括Index(注册码'Index'，可重定义)、Logic(注册码'IOS'、'Android'，可重定义)
         app/core 下有一个实现范例 CoreOfImage(注册码'Image')，承载抓取网络图片（例如社交网络的头像）的功能
         核心类的注册码可用于运行环境配置文件game.config.js中
 

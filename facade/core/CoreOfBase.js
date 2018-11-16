@@ -126,8 +126,9 @@ class CoreOfBase
 
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     * @returns {Array}
      */
-    static mapping(){
+    static get mapping() {
         return [];
     }
 

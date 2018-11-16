@@ -94,34 +94,30 @@ class remote extends facade.Control {
      * @param input
      * @returns {{code: number}}
      *
-     * @note
-     *      1、如果IOS、Android都有，那么取分数高的
+     * @note 如果多个分组都存在相关记录，取分数最高的记录
      */
     async getFriendRankList(svr, input){
-        let uList = await this.parent.getUserIndexOfAll(input.msg.list.reduce((sofar, cur)=>{
-            sofar.push(`tx.IOS.${cur.openid}`);
-            sofar.push(`tx.Android.${cur.openid}`);
+        let uList = await this.parent.getUserIndexOfAll(input.msg.list.reduce((sofar, cur) => {
+            facade.CoreOfLogic.mapping.map(lt=>{
+                sofar.push(`tx.${lt}.${cur.openid}`);
+            });
             return sofar;
         }, [])); //需要查询的好友列表
 
         let list = []; //最终的查询结果
-        input.msg.list.map(item=>{
+        input.msg.list.map(item => {
             let sim = null;
+            facade.CoreOfLogic.mapping.map(lt=>{
+                let u = uList[`tx.${lt}.${item.openid}`];
+                if(!sim) {
+                    sim = u;
+                }
+                if(!!sim && !!u) {
+                    sim = u.score > sim.score ? u : sim;
+                }
+            });
 
-            let u1 = uList[`tx.IOS.${item.openid}`];
-            let u2 = uList[`tx.Android.${item.openid}`];
-
-            if(!!u1 && !!u2){
-                sim = u1.score > u2.score ? u1 : u2;
-            }
-            else if(!!u1){
-                sim = u1;
-            }
-            else if(!!u2){
-                sim = u2;
-            }
-
-            if(!!sim){
+            if(!!sim) {
                 if(input.msg.filter){//有过滤数据的要求
                     if(sim.score > 0){
                         list.push(sim);

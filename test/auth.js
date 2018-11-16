@@ -18,7 +18,7 @@ describe('认证', function() {
 
             if(remote.isSuccess(msg)) {
                 try {
-                    msg = await remote.fetching({func: "2001"});
+                    msg = await remote.fetching({func: "getEffect"});
                     remote.isSuccess(msg, true);
                 }
                 catch(e) {

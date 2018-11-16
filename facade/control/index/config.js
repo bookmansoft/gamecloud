@@ -50,8 +50,11 @@ class config extends facade.Control {
     async getServerInfo(pUser, info){
         try{
             //优先路由:强制切换到Test域
-            if(this.parent.testRoute.has(info.oemInfo.openid)){
-                info.oemInfo.domain = info.oemInfo.domain.replace(/IOS/g, "Test").replace(/Android/g, "Test");
+            if(this.parent.testRoute.has(info.oemInfo.openid)) {
+                facade.CoreOfLogic.mapping.map(lt => {
+                    let regx = new RegExp(lt, 'g');
+                    info.oemInfo.domain = info.oemInfo.domain.replace(regx, "Test");
+                });
             }
 
             //判断是否已注册

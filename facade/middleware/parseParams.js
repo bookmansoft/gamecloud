@@ -25,7 +25,10 @@ async function handle(sofar) {
     }
     sofar.msg.oemInfo.domain = !!sofar.msg.oemInfo.domain ? sofar.msg.oemInfo.domain : "official";
     if (sofar.facade.options.serverType == "Test") {
-        sofar.msg.oemInfo.domain = sofar.msg.oemInfo.domain.replace(/IOS/g, "Test").replace(/Android/g, "Test");
+        facade.CoreOfLogic.mapping.map(lt=>{
+            let reg = new RegExp(lt, 'g');
+            sofar.msg.oemInfo.domain = sofar.msg.oemInfo.domain.replace(reg, "Test");
+        });
     }
     sofar.msg.token = sofar.msg.token || {};
     if(sofar.msg.token.constructor == String){

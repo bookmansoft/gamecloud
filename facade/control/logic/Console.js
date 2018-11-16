@@ -33,8 +33,8 @@ class Console extends facade.Control
                     }
                     else{ //否则，首先在所有逻辑服务器上执行指令，然后在Index上执行指令
                         info.data.unshift(func);
-                        for(let stype of Object.keys(this.parent.serversInfo)){
-                            if(stype == "Android" || stype == "IOS"){
+                        for(let stype of Object.keys(this.parent.serversInfo)) {
+                            if(facade.CoreOfLogic.mapping.indexOf(stype) != -1) {
                                 for(let sid of Object.keys(this.parent.serversInfo[stype])){
                                     result[`${stype}.${sid}`] = await this.parent.remoteCall('rpc', info.data, msg=>{return msg}, {stype:stype, sid:sid});
                                 }
