@@ -14,7 +14,7 @@ class authPay extends facade.Control
     /**
      * 控制器自带的Url路由信息
      */
-    get router(){
+    get router() {
         return [
             ['/auth360.html', 'auth360'],         //模拟 360 网关下发签名集
             ['/pay360.html', 'pay360'],           //360 发货回调路由
@@ -30,12 +30,12 @@ class authPay extends facade.Control
      */
     async auth360(objData){
         let ret = {
-            t: now(),             //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
-            nonce: Math.random()*1000 | 0,              //随机数
-            plat_user_id: objData.id,                       //平台用户 ID
-            nickname: objData.id,                           //用户昵称
-            avatar: objData.id,                             //头像
-            is_tourist: 1,                              //是否为游客
+            t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
+            nonce: Math.random()*1000 | 0,          //随机数
+            plat_user_id: objData.id,               //平台用户 ID
+            nickname: objData.id,                   //用户昵称
+            avatar: objData.id,                     //头像
+            is_tourist: 1,                          //是否为游客
         };
         ret.sign = sign(ret, this.parent.options[DomainType.D360].game_secret);
         return ret;
@@ -103,7 +103,11 @@ class authPay extends facade.Control
         }
     }
     
-    async pay360(req){
+    /**
+     * 360发货回调函数
+     * @param {*} req 
+     */
+    async pay360(req) {
         let params = {
             game_key: this.parent.options[DomainType.D360].game_key, //采信己方预设值
             plat_user_id: req.plat_user_id,

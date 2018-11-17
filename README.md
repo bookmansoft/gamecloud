@@ -82,7 +82,7 @@ npm i
 
 3. 创建并初始化数据库
 
-**该项工作在集群的每台服务器上都需要独立执行**
+**该项工作在集群的每台数据库服务器上都需要独立执行**
 
 **如何快速执行**
 如果当前服务器已安装mysql，且用户名密码对为 root / helloworld 时，可直接执行如下指令，并跳过 3.1 3.2 3.3 各步骤
@@ -214,8 +214,10 @@ npm run test
 gamecloud 作为游戏服务端引擎的同时，也可以承担静态网站服务器功能：
 
 ```js
-//设置静态资源映射, 注意必须在调用 facade.boot 之前设置
-facade.static('/client/', './web/client');
+//在启动节点的同时，设置静态资源映射
+facade.boot({
+    static: [['/client/', './web/client']],
+});
 ```
 
 服务器启动后，可以通过浏览器访问 http://localhost:9901/client 访问工作目录的子目录 web/client 中的静态资源

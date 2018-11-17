@@ -13,7 +13,7 @@ let remote = new gameconn(
         "auth": {
             "openid": "18681223392",    //用户标识
             "openkey": "18681223392",   //和用户标识关联的用户令牌
-            "domain": "tx.IOS",         //用户所在的域，tx是提供登录验证服务的厂商类别，IOS是该厂商下的服务器组别
+            "domain": "official",       //用户验证域
         }
     }
 )

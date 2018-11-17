@@ -4,13 +4,13 @@
 
 所有的用户自定义节点存储于 /app/core/ 目录下
 
-## 节点类的书写
+## 开发新的节点类
 
 所有的节点类都是 CoreOfBase 的子类。以 CoreOfImage 为例：
 
 ```js
 /**
- * 实现图像服务端中转的门面类
+ * 实现图像服务端中转的节点类
  */
 class CoreOfImage extends CoreOfBase {
     async Start(app) {
@@ -18,7 +18,7 @@ class CoreOfImage extends CoreOfBase {
     }
 
     /**
-     * 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     * 映射节点类的服务器类型数组，提供给类工厂使用
      */
     static get mapping() {
         if(!this.$mapping) {
@@ -26,11 +26,13 @@ class CoreOfImage extends CoreOfBase {
         }
         return this.$mapping;
     }
+    /**
+     * 设置节点类的服务器类型数组
+     */
     static set mapping(val) {
         this.$mapping = val;
     }
 }
-
 ```
 
 ## 节点的运行
@@ -82,4 +84,10 @@ let config = {
 
 ```js
 facade.boot({ env: { serverType: "Index", serverId: 1 } });
+```
+
+通过如下语句，可以重置内置节点类的分组类型
+
+```js
+facade.CoreOfLogic.mapping = ['IOS', 'Android', 'Windows', 'Test'];
 ```

@@ -1,6 +1,6 @@
 {
   "name": "gamecloud",
-  "version": "1.1.17",
+  "version": "1.1.18",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -85,7 +85,7 @@
     "encodeurl": "^1.0.1",
     "escape-html": "^1.0.3",
     "exit-on-epipe": "^1.0.0",
-    "gamegoldtoolkit": "^1.5.6",
+    "gamegoldtoolkit": "^1.5.7",
     "getpass": "^0.1.7",
     "has-cors": "^1.1.0",
     "has-flag": "^2.0.0",

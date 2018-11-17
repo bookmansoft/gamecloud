@@ -15,18 +15,18 @@ class authPay extends facade.Control {
             ['/pay360.html', 'pay360'],           //360 发货回调路由
             ['/txpay.html', 'txpay'],             //腾讯发货回调接口
             ['/authAdmin.html', 'authAdmin'],     //管理后台登录验证页面
-            ['/test/ping.html', 'ping'],               //PING测试接口
+            ['/test/ping.html', 'ping'],          //PING测试接口
         ]
     }
 
     async auth360(objData){
         let ret = {
-            t: now(),             //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
-            nonce: Math.random()*1000 | 0,              //随机数
-            plat_user_id: objData.id,                       //平台用户 ID
-            nickname: objData.id,                           //用户昵称
-            avatar: objData.id,                             //头像
-            is_tourist: 1,                              //是否为游客
+            t: now(),                           //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
+            nonce: Math.random()*1000 | 0,      //随机数
+            plat_user_id: objData.id,           //平台用户 ID
+            nickname: objData.id,               //用户昵称
+            avatar: objData.id,                 //头像
+            is_tourist: 1,                      //是否为游客
         };
         ret.sign = sign(ret, this.parent.options[DomainType.D360].game_secret);
         return ret;

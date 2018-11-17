@@ -23,7 +23,6 @@ async function handle(sofar) {
                             ret = await sofar.facade.service.txApi.Get_Info(sofar.msg.oemInfo.openid, sofar.msg.oemInfo.openkey, sofar.msg.oemInfo.pf, sofar.msg.userip);
                         }
                         if (ret.ret != 0) { //验证未通过
-                            //sofar.facade.counter.inc(); //pm2监控：错误计数，目前已经禁用
                             sofar.fn({ code: ReturnCode.authThirdPartFailed, data: ret });
                             sofar.recy = false;
                             return;
@@ -34,44 +33,34 @@ async function handle(sofar) {
                         break;
                     }
 
-                case DomainType.D360: {//360平台，本地校验
-                        // auth = {
-                        //     t: 当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
-                        //     nonce: 随机数
-                        //     plat_user_id: 平台用户 ID
-                        //     nickname: 用户昵称
-                        //     avatar: 头像
-                        //     is_tourist: 是否为游客
-                        // };
-                        let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options[DomainType.D360].game_secret));
-                        let _exp = (Math.abs(sofar.msg.oemInfo.auth.t - CommonFunc.now()) <= 300);
-                        if (!_sign || !_exp) {
-                            sofar.fn({ code: ReturnCode.authThirdPartFailed });
-                            sofar.recy = false;
-                            return;
-                        }
-                        //360认证模式不同于TX，此处要对domainId、openid重新赋值
-                        sofar.msg.oemInfo.openid = sofar.msg.oemInfo.auth.plat_user_id;
-                        sofar.msg.domainId = sofar.msg.oemInfo.domain + '.' + sofar.msg.oemInfo.openid;
-                        break;
-                    }
-
-                case DomainType.OFFICIAL: {
-                        if(!!sofar.msg.oemInfo.auth){//用于兼容直连模式下的单元测试，为其转换产生openid
-                            let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options[DomainType.D360].game_secret));
-                            let _exp = (Math.abs(sofar.msg.oemInfo.auth.t - CommonFunc.now()) <= 300);
-                            if (!_sign || !_exp) {
-                                sofar.fn({ code: ReturnCode.authThirdPartFailed });
-                                sofar.recy = false;
-                                return;
+                default: {
+                        if(!!sofar.msg.oemInfo.auth) {
+                            if(!!sofar.msg.oemInfo.authControl) { //自定义验签流程
+                                try {
+                                    sofar.msg.oemInfo.openid = await facade.current.control[sofar.msg.oemInfo.authControl].check(sofar.msg.oemInfo);
+                                } catch(e) {
+                                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                                    sofar.recy = false;
+                                    return;
+                                }
+                            } else { // 通用验签流程
+                                let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options[DomainType.D360].game_secret));
+                                let _exp = (Math.abs(sofar.msg.oemInfo.auth.t - CommonFunc.now()) <= 300);
+                                if (!_sign || !_exp) {
+                                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                                    sofar.recy = false;
+                                    return;
+                                }
+                                sofar.msg.oemInfo.openid = sofar.msg.oemInfo.auth.plat_user_id;
                             }
-                            sofar.msg.oemInfo.openid = sofar.msg.oemInfo.auth.plat_user_id;
                         }
-                        sofar.msg.domainId = sofar.msg.oemInfo.domain + '.' + sofar.msg.oemInfo.openid;
+                        sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${sofar.msg.oemInfo.openid}`;
                         break;
                     }
             }
+
             sofar.msg.oemInfo.token = facade.util.sign({ did: sofar.msg.domainId }, sofar.facade.options.game_secret); //为用户生成令牌
+            
             let usr = facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
             if (!!usr) {//老用户登录
                 usr.socket = sofar.socket; //更新通讯句柄
@@ -123,7 +112,6 @@ async function handle(sofar) {
                 if(sofar.facade.options.debug){//模拟填充测试数据/用户头像信息
                     ret.figureurl = facade.config.fileMap.DataConst.user.icon;
                 }
-                //console.log(usr.getPocket().getList());获得当前用户的item
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
                 if(usr.domainType == DomainType.TX) { //设置腾讯会员属性
                     await usr.SetTxInfo(ret); //异步执行，因为涉及到了QQ头像的CDN地址转换
