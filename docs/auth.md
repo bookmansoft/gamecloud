@@ -15,6 +15,17 @@ if(!!msg && msg.code == ReturnCode.Success) {
 }
 ```
 
+关于客户端上行字段oemInfo的说明
+```json
+{
+    "domain"    : "用户验证域",
+    "openid"    : "用户ID",
+    "openkey"   : "和openid配套的认证令牌，用于单阶段登录模式",
+    "auth"      : "两阶段登录模式下，服务端签发的登录签名集",
+    "token"     : "两阶段登录模式下，服务端认证登录签名集后，发放的登录令牌",
+}
+```
+
 2. 申请登录令牌
 
 - 单阶段登录模式
@@ -41,15 +52,6 @@ let msg = await remote.fetching({
     'func': '1000',
     "oemInfo": oemInfo
 });
-
-{
-        "domain": domain,    /*用户验证域*/
-        "auth": token        /*登录令牌*/
-}
-{
-        "domain": domain,   //用户验证域
-        "openid": openid    //用户标识
-}
 
 if(!!msg && msg.code == ReturnCode.Success && !!msg.data) {
     console.log(msg.data.id);
