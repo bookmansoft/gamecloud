@@ -96,7 +96,7 @@ class slave extends baseMgr {
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶收到鞭挞推送消息
                     if(!!fri) {
-                        let desc = this.parent.router.config.slaveMsg["lash"].desc;
+                        let desc = facade.config.slaveMsg["lash"].desc;
                         this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
 					}
                 }
@@ -128,7 +128,7 @@ class slave extends baseMgr {
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶主收到赎身推送消息
                     if(!!fri) {
-                        let desc = this.parent.router.config.slaveMsg["ransom"].desc;
+                        let desc = facade.config.slaveMsg["ransom"].desc;
                         this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                     }
                     return ReturnCode.Success;
@@ -160,7 +160,7 @@ class slave extends baseMgr {
                 let fri = this.parent.getTxFriendMgr().getFriend(openid);
                 // 奴隶收到喂食推送消息
                 if(!!fri) {
-                    let desc = this.parent.router.config.slaveMsg["food"].desc;
+                    let desc = facade.config.slaveMsg["food"].desc;
                     desc = desc.replace("&slave",decodeURIComponent(fri.name));
                     this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
@@ -188,7 +188,7 @@ class slave extends baseMgr {
             let fri = this.parent.getTxFriendMgr().getFriend(openid);
             // 奴隶主收到报复推送消息
             if(!!fri) {
-                let desc = this.parent.router.config.slaveMsg["avange"].desc;
+                let desc = facade.config.slaveMsg["avange"].desc;
                 this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
             }
             return ReturnCode.Success;
@@ -220,7 +220,7 @@ class slave extends baseMgr {
                 let fri = this.parent.getTxFriendMgr().getFriend(openid);
                 // 奴隶主收到谄媚推送消息
                 if(!!fri) {
-                    let desc = this.parent.router.config.slaveMsg["flattery"].desc;
+                    let desc = facade.config.slaveMsg["flattery"].desc;
                     this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
             }

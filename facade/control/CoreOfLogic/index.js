@@ -147,7 +147,7 @@ class index extends facade.Control
     async 1003(user, objData){
         objData.num = Math.max(0, Math.min(200, !!objData.num ? objData.num : 1));
 
-        let bi = this.parent.config.fileMap.shopdata[objData.id];
+        let bi = facade.config.fileMap.shopdata[objData.id];
         if(!!bi){
             let tm = bi.price * objData.num;
             //判断折扣
@@ -225,7 +225,7 @@ class index extends facade.Control
      * @returns {Promise.<{code: number, data: {scene: (*|number), road: (*|number), role: (*|number)}}>}
      */
     async 1009(user, objData){
-        let bi = this.parent.config.fileMap.itemdata[objData.id];
+        let bi = facade.config.fileMap.itemdata[objData.id];
         if(!!bi){
             if(!user.getPocket().GetRes(bi.type, bi.id)){
                 return {code:ReturnCode.itemNotExist};
@@ -350,7 +350,7 @@ class index extends facade.Control
             case 1:
                 if(!user.baseMgr.info.CheckStatus(UserStatus.isGetNewbieBonus)){
                     user.baseMgr.info.SetStatus(UserStatus.isGetNewbieBonus);
-                    bonus = this.parent.config.fileMap.vip.newbieGift;
+                    bonus = facade.config.fileMap.vip.newbieGift;
                     user.getBonus(bonus);
                     return {code:ReturnCode.Success,data:{bonus:bonus}};
                 }
@@ -370,7 +370,7 @@ class index extends facade.Control
             case 3:
                 if(!user.baseMgr.info.CheckStatus(UserStatus.isGetFestivalGift)){
                     user.baseMgr.info.SetStatus(UserStatus.isGetFestivalGift);
-                    bonus = this.parent.config.fileMap.vip.festivalGift;
+                    bonus = facade.config.fileMap.vip.festivalGift;
                     user.getBonus(bonus);
                     return {code:ReturnCode.Success,data:{bonus:bonus}};
                 }
@@ -402,7 +402,7 @@ class index extends facade.Control
                 }
                 if(!user.baseMgr.info.CheckStatus(UserStatus.isGetNinjaGift)){
                     user.baseMgr.info.SetStatus(UserStatus.isGetNinjaGift);
-                    bonus = this.parent.config.fileMap.vip.NinjaGift;
+                    bonus = facade.config.fileMap.vip.NinjaGift;
                     user.getBonus(bonus);
                     return {code:ReturnCode.Success,data:{bonus:bonus}};
                 }
