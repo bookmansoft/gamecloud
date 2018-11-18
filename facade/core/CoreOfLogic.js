@@ -23,7 +23,7 @@ class CoreOfLogic extends CoreOfBase
         this.$router = {};
 
         //载入框架规定的Service
-        facade.config.filelist.mapPackagePath(`${__dirname}/../service/logic`).map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
@@ -37,7 +37,7 @@ class CoreOfLogic extends CoreOfBase
             this.eventHandleList[handleName] = handle.bind(this);
         });
 
-        facade.config.filelist.mapPackagePath(`${__dirname}/../control/logic`).map(ctrl=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../control/${this.constructor.name}`).map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
             this.control[token] = new ctrlObj(this);
@@ -65,7 +65,7 @@ class CoreOfLogic extends CoreOfBase
     async loadModel() {
         super.loadModel();
 
-        facade.config.filelist.mapPath('app/control/logic').map(ctrl=>{
+        facade.config.filelist.mapPath(`app/control/${this.constructor.name}`).map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
             this.control[token] = new ctrlObj(this);
@@ -82,7 +82,7 @@ class CoreOfLogic extends CoreOfBase
         });
 
         //载入用户自定义Service
-        facade.config.filelist.mapPath('app/service/logic').map(srv=>{
+        facade.config.filelist.mapPath(`app/service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });

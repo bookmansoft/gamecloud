@@ -7,7 +7,9 @@ service 是指一类继承自FSM(有限状态机)的特殊类
 
 ## 目录结构
 
-用户自定义 service 类的文件集中放置于 /app/service 中，按照节点类型分类放置
+用户自定义 service 类的文件集中放置于 /app/service 中，**按照节点类型分类放置**，目前包括两个类别：
+- CoreOfIndex: 门户服务器专用
+- CoreOfLogic: 逻辑服务器专用
 
 ## service 的开发和使用
 

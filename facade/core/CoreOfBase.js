@@ -24,7 +24,10 @@ class CoreOfBase
      * 构造器，传入外部配置信息
      * @param {env} $env
      */
-    constructor($env){
+    constructor($env) {
+        //为节点命名，外部不可更改
+        this.$nodeName = 'base';
+
         let self = this;
 
         /**
@@ -51,7 +54,7 @@ class CoreOfBase
 
         //扩展服务对象列表
         this.service = {};
-        //载入框架预定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
+        //载入框架预定义的全局扩展服务对象(不包括子目录)，子类会加载对应子目录中的专用扩展服务对象
         facade.config.filelist.mapPackagePath(`${__dirname}/../service`, false).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
@@ -67,7 +70,7 @@ class CoreOfBase
         });
 
         //挂载plugin函数到核心类
-        facade.config.filelist.mapPackagePath(`${__dirname}/../plugin`, false).map(srv=>{
+        facade.config.filelist.mapPackagePath(`${__dirname}/../plugin`).map(srv=>{
             let funcList = require(srv.path);
             let moduleName = srv.name.split('.')[0];
             Object.keys(funcList).map(key=>{
@@ -105,6 +108,8 @@ class CoreOfBase
         this.loadingList = {};
     }
 
+    
+
     /**
      * 设置静态资源映射
      * @param {*} route 
@@ -138,16 +143,15 @@ class CoreOfBase
     async loadModel() {
         let self = this;
         //挂载用户自定义的plugin函数到核心类
-        facade.config.filelist.mapPath('app/plugin', false).map(srv=>{
+        facade.config.filelist.mapPath('app/plugin').map(srv=>{
             let funcList = require(srv.path);
             let moduleName = srv.name.split('.')[0];
             Object.keys(funcList).map(key=>{
-                if(moduleName == 'default'){
+                if(moduleName == 'default') {
                     this[key] = function(...arg){
                         return funcList[key](self, ...arg);
                     }
-                }
-                else{
+                } else {
                     if(!this[moduleName]){
                         this[moduleName] = {};
                     }
@@ -158,7 +162,7 @@ class CoreOfBase
             });
         });
 
-        //载入用户自定义的全局扩展服务对象，子类会加载对应子目录中的扩展服务对象
+        //载入用户自定义的全局扩展服务对象(不扫描子目录)，子类会加载对应子目录中的专用扩展服务对象
         facade.config.filelist.mapPath('app/service', false).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
