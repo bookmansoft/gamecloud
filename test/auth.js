@@ -3,7 +3,7 @@
  * Creted by liub 2017.3.24
  */
 
-const remote = require('./util')
+const remote = require('./js/util')
 
 //一组单元测试流程
 describe('认证', function() {
