@@ -3,9 +3,10 @@ let {ReturnCode} = facade.const
 let baseCtl = facade.Control
 
 /**
- * 配置管理器
+ * 基础服务：任务管理
  * Updated by liub on 2017-05-05.
  */
+
 class task extends baseCtl {
     async list(user, objData){
         return {

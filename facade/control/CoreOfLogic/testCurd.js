@@ -1,9 +1,11 @@
 let facade = require('../../Facade')
 let {ReturnCode, NotifyType, EntityType} = facade.const
+
 /**
- * 部分测试流程
+ * 范例：增删查改
  * Updated by liub on 2017-05-05.
  */
+
 class test extends facade.Control
 {
     /**

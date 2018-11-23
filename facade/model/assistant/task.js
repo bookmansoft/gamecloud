@@ -11,11 +11,12 @@
  *  如果对任务ID做了删/改，则需要清理数据库表中的task字段，如果只是新增任务条目则无此必要
  */
 let facade = require('../../../facade/Facade')
-let baseMgr = require('../baseAssistant');
 let constList = facade.const;
+let commonFunc = facade.util;
+
+let baseMgr = require('../baseAssistant');
 let TaskObject = require('../../../facade/util/comm/TaskObject');
 let TaskStaticList = {};
-let commonFunc = facade.util;
 
 //从静态配置表中遍历全部任务
 Object.keys(facade.config.fileMap.task).map($k=>{
