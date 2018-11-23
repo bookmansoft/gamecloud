@@ -14,6 +14,21 @@ Array.prototype.array_diff = function(...params){
 }
 
 /**
+ * 安全读取属性函数，兼容 BaseEntity 类(ORM 封装类)
+ * @param {*} obj       对象
+ * @param {*} attr      属性名称
+ */
+function GetAttr(obj, attr) {
+    if(!!obj) {
+        if(typeof obj.attr == 'undefined' && typeof obj.getAttr == 'function') {
+            return obj.getAttr(attr);
+        }
+    }
+
+    return null;
+}
+
+/**
  * 集合类，类似PHP中的Collection
  */
 class Collection
@@ -43,12 +58,12 @@ class Collection
         switch(mode){
             case 'desc':
                 this.items = this.items.sort((a,b)=>{
-                    return b[attr] - a[attr];
+                    return GetAttr(b, attr) - GetAttr(a, attr);
                 });
                 break;
             case 'asc':
                 this.items = this.items.sort((a,b)=>{
-                    return a[attr] - b[attr];
+                    return GetAttr(a, attr) - GetAttr(b, attr);
                 });
                 break;
         }
@@ -115,7 +130,7 @@ class Collection
 
             if(!!this.attrs && this.attrs.constructor == Array){
                 $pageItems.push(this.attrs.reduce((sofar,cur)=>{
-                    sofar[cur] = self.items[i][cur];
+                    sofar[cur] = GetAttr(self.items[i], cur);
                     return sofar;
                 }, {}));
             }

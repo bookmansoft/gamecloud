@@ -5,9 +5,6 @@
  * Added by Liub 2017.8.13
  */
 
-let {CommMode} = require('../define/comm');
-let serversInfo = require('../../game.config').servers;
-
 //引入远程连接器
 let {gameconn} = require('gamegoldtoolkit');
 

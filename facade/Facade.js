@@ -25,7 +25,7 @@ let Collection = require('./util/Collection')
 let config = require('./util/configInterface')  //配置文件管理
 let {applyMixins, extendObj, clone} = require('./util/mixin/comm')
 let filelist = require('./util/filelist')
-let iniFile = require('../game.config');
+let iniFile = require(`${process.cwd()}/game.config`);
 
 //加载所有常量定义
 let constList = require( './define/comm')
