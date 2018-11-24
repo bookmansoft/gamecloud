@@ -40,12 +40,26 @@ user.baseMgr.task.Execute(em_Condition_Type.gateMaxNo, 1, em_Condition_Checkmode
     "1001":                         //任务编号
     {
         "id":"1001",                //任务编号
-        "condition":"20,3",         //任务条件设定
-        "bonus":"1,10",             //任务奖励设定
+        "condition":"20,3",         //任务条件设定，格式为"条件类型,条件阈值[;条件类型,条件阈值]"
+        "bonus":"1,10",             //任务奖励设定，格式为"奖励类型,奖励数量[;奖励类型,奖励数量]"
         "front":"0",                //任务的前置任务设定，直接引用任务编号(逗分字符串)
         "layer":"0"                 //任务的嵌套层次
     }
 }
+```
+
+注: facade.const.em_Condition_Type 定义了所有的可引用任务类型，可使用如下语句增添新的定义：
+```js
+//用户自定义任务类型取值范围 9001~9999
+let newCondition = ['condition001', 9001];
+facade.const.AddConditionType(...newCondition);
+```
+
+注: facade.const.ResType 定义了所有的可用奖励类型，可使用如下语句增添新的定义：
+```js
+//用户自定义资源类型取值范围 9001~9999
+let newRes = ['res001', 9001];
+facade.const.AddResType(...newRes);
 ```
 
 3. 任务管理控制器

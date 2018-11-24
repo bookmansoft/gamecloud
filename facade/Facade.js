@@ -443,7 +443,17 @@ class Facade
      * 获取常用枚举集
      */
     static get const(){
-        return this.constList;
+        if(!this.$constList) {
+            this.$constList = this.constList;
+            this.$constList.AddConditionType = (name, val) => {
+                this.$constList.em_Condition_Type[name] = val;
+            };
+            this.$constList.AddResType = (name, val) => {
+                this.$constList.ResType[name] = val;
+            };
+        }
+
+        return this.$constList;
     }
 }
 
