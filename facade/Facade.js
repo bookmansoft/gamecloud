@@ -27,16 +27,6 @@ let {applyMixins, extendObj, clone} = require('./util/mixin/comm')
 let filelist = require('./util/filelist')
 let iniFile = require(`${process.cwd()}/game.config`);
 
-//加载所有常量定义
-let constList = require( './define/comm')
-for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
-    let id = fl.name.split('.')[0];
-    if(id != 'comm'){
-        let n = require(fl.path);
-        extendObj(constList, n);
-    }
-}
-
 /**
  * 门面对象
  */
@@ -50,10 +40,22 @@ class Facade
         this.serverType = {};
         this.serverTypeMapping = {};
 
+        //加载核心常量定义
+        this.constList = require( './define/comm')
+        //加载扩展常量定义
+        for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
+            let id = fl.name.split('.')[0];
+            if(id != 'comm'){
+                let n = require(fl.path);
+                extendObj(this.constList, n);
+            }
+        }
+
         if(this.$addition) {
+            //加载用户自定义常量定义
             for(let fl of filelist.mapPath('app/define')){
                 let n = require(fl.path);
-                extendObj(constList, n);
+                extendObj(this.constList, n);
             }
         }
 
@@ -441,7 +443,7 @@ class Facade
      * 获取常用枚举集
      */
     static get const(){
-        return constList;
+        return this.constList;
     }
 }
 

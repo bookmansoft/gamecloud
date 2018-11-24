@@ -8,62 +8,25 @@
 
 1. 任务管理类 
 
-assistant 类的子类，默认使用角色表中的 task 字段完成任务状态的读写：
-
+任务管理类是 assistant 类的子类：
 facade/model/assistant/task.js
+
 ```js
 const facade = require('gamecloud');
 
 class task extends facade.Assistant {
     /**
      * 构造函数
-     * @param {BaseUserEntity} parent 用户角色对象
+     * @param {BaseUserEntity} parent 代表用户的角色对象
      */
     constructor(parent) {
-        super(parent, 'task'); //指定 task 扩展角色表中的'task'字段为JSON对象
-    }
-
-    /**
-     * 获取序列化字符串，同时复位脏数据标志
-     * @note 基类已实现，可重载
-     */
-    ToString(){
-        this.dirty = false;
-        return JSON.stringify(this.v);
-    }
-
-    /**
-     * 利用来自持久化层的数据进行初始化
-     * @note 基类已实现，可重载
-     */
-    LoadData (val) {
-        try {
-            this.v = (!val||val == "" ) ? {} : JSON.parse(val);
-        }
-        catch(e){
-            this.v = {};
-        }
-    }
-
-    /**
-     * 获取JSON对象中的属性值
-     * @note 基类已实现，可重载
-     */
-    GetRecord($type){
-        return this.v[$type] || 0;
-    }
-    /**
-     * 获取JSON对象中的属性值
-     * @note 基类已实现，可重载
-     */
-    SetRecord($type, val){
-        this.v[$type] = val || 0;
-        this.dirty = true;  //该数值会被系统自动监测到从而引发自动存储
+        //指定角色表中的'task'字段为任务管理的持久化字段
+        super(parent, 'task'); 
     }
 }
 ```
 
-使用任务管理类(如果 user 是角色类的实例，那么 user.baseMgr.task 将指向任务管理类的实例)：
+如果 user 是角色类的实例，那么 user.baseMgr.task 将指向任务管理类的实例：
 
 ```js
 //在逻辑流程的合适地方，调用 user.baseMgr.task 的接口方法 Execute，为用户登记任务完成记录：'达成通关新的关卡'
@@ -74,7 +37,14 @@ user.baseMgr.task.Execute(em_Condition_Type.gateMaxNo, 1, em_Condition_Checkmode
 
 ```json
 {
-	"1001":{"id":"1001", "condition":"20,3", "bonus":"1,10", "front":"0", "layer":"0"}
+    "1001":                         //任务编号
+    {
+        "id":"1001",                //任务编号
+        "condition":"20,3",         //任务条件设定
+        "bonus":"1,10",             //任务奖励设定
+        "front":"0",                //任务的前置任务设定，直接引用任务编号(逗分字符串)
+        "layer":"0"                 //任务的嵌套层次
+    }
 }
 ```
 
