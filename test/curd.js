@@ -25,6 +25,11 @@ describe('CURD', function() {
         console.log(msg);
     });
 
+    it('条件查询', async () => {
+        let msg = await remote.fetching({func: "testCurd.Select", id: 2});
+        console.log(msg);
+    });
+
     it('更新', async () => {
         let msg = await remote.fetching({func: "testCurd.Update", id: 2});
         console.log(msg);

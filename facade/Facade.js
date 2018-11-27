@@ -40,25 +40,6 @@ class Facade
         this.serverType = {};
         this.serverTypeMapping = {};
 
-        //加载核心常量定义
-        this.constList = require( './define/comm')
-        //加载扩展常量定义
-        for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
-            let id = fl.name.split('.')[0];
-            if(id != 'comm'){
-                let n = require(fl.path);
-                extendObj(this.constList, n);
-            }
-        }
-
-        if(this.$addition) {
-            //加载用户自定义常量定义
-            for(let fl of filelist.mapPath('app/define')){
-                let n = require(fl.path);
-                extendObj(this.constList, n);
-            }
-        }
-
         //自动从指定目录载入系统定义和用户自定义的核心类
         let corelist = filelist.mapPackagePath(`${__dirname}/./core`);
         if(this.$addition) {
@@ -444,7 +425,25 @@ class Facade
      */
     static get const(){
         if(!this.$constList) {
-            this.$constList = this.constList;
+            //加载核心常量定义
+            this.$constList = require( './define/comm');
+            //加载扩展常量定义
+            for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
+                let id = fl.name.split('.')[0];
+                if(id != 'comm'){
+                    let n = require(fl.path);
+                    extendObj(this.$constList, n);
+                }
+            }
+
+            if(this.$addition) {
+                //加载用户自定义常量定义
+                for(let fl of filelist.mapPath('app/define')){
+                    let n = require(fl.path);
+                    extendObj(this.$constList, n);
+                }
+            }
+
             this.$constList.AddConditionType = (name, val) => {
                 this.$constList.em_Condition_Type[name] = val;
             };

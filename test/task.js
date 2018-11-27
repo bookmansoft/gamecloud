@@ -7,7 +7,7 @@ const remote = require('./js/util')
 
 let uinfo = {domain: 'tx.IOS', openid: `${Math.random()*1000000000 | 0}`};
 
-describe.only('任务', function() {
+describe('任务', function() {
     beforeEach(async () => {
         let msg = await remote.login(uinfo);
     });

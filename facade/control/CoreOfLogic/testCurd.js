@@ -22,7 +22,7 @@ class test extends facade.Control
      */
     async Create(user, objData) {
         let test = await facade.GetMapping(EntityType.User).Create(Math.random().toString());
-        return {code: ReturnCode.Success, data: test.getAttr('name')};
+        return {code: ReturnCode.Success, data: test.getAttr('diamond')};
     }
 
     /**
@@ -33,8 +33,8 @@ class test extends facade.Control
     Update(user, objData) {
         let test = facade.GetObject(EntityType.User, objData.id);           //根据上行id查找test表中记录
         if(!!test) {
-            test.setAttr('name', Math.random().toString());     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
-            return {code: ReturnCode.Success, data: test.getAttr('name')};
+            test.setAttr('openid', Math.random().toString());     //修改所得记录的字段，下次查询时将得到新值，同时会自动存入数据库
+            return {code: ReturnCode.Success, data: test.getAttr('diamond')};
         }
         return {code: -1};
     }
@@ -48,7 +48,32 @@ class test extends facade.Control
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
         let test = facade.GetObject(EntityType.User, parseInt(objData.id));  
         if(!!test) {
-            return {code: ReturnCode.Success, data: test.getAttr('name')};
+            return {code: ReturnCode.Success, data: test.getAttr('diamond')};
+        }
+        return {code: -1};
+    }
+
+    /**
+     * 条件查询
+     * @param {*} user 
+     * @param {*} objData 
+     */
+    Select(user, objData) {
+        //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
+        let test = facade.GetMapping(EntityType.User)
+            .groupOf()
+            .where(
+                [
+                    ['id', '<=', objData.id], //支持多个条件联合查询，格式 ['key', 'val'] 或者 ['key', 'operator', 'val'], operator 支持 > >= == != < <=
+                ]
+            ).records();  
+
+        if(!!test) {
+            let list = test.reduce((sofar, cur)=>{
+                sofar.push([cur.getAttr('id'), cur.getAttr('diamond')]);
+                return sofar;
+            }, []);
+            return {code: ReturnCode.Success, data: list};
         }
         return {code: -1};
     }
@@ -73,7 +98,7 @@ class test extends facade.Control
         let muster = facade.GetMapping(EntityType.User) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('id', 'desc') //根据id字段倒叙排列
-            .paginate(5, objData.id, ['id', 'name']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
+            .paginate(5, objData.id, ['id', 'diamond']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
         
         let $data = {items:{}};
         $data.total = muster.pageNum;
@@ -82,7 +107,7 @@ class test extends facade.Control
         let $idx = (muster.pageCur-1) * muster.pageSize;
         for(let $value of muster.records()){
             $idx++ ;
-            $data.items[$idx] = {id: $value['id'], item: $value['name'], rank: $idx};
+            $data.items[$idx] = {id: $value['id'], item: $value['diamond'], rank: $idx};
         }
 
         return {code: ReturnCode.Success, data: $data};
