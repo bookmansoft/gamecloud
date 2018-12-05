@@ -155,23 +155,27 @@ class Collection
     
             let $c = {k:cond[0], sign:cond.length==2 ? '==' : cond[1], v:cond.length==2 ? cond[1] : cond[2]};
             ret = ret.filter(([k,v]) => {
-                if(!v[$c.k]){
+                if(!GetAttr(v, $c.k)) {
                     return false;
                 }
 
-                switch($c.sign){
+                switch($c.sign) {
+                    case 'include':
+                        return $c.v.constructor == Array && $c.v.indexOf(GetAttr(v, $c.k)) != -1;
+                    case 'exclude':
+                        return $c.v.constructor != Array || $c.v.indexOf(GetAttr(v, $c.k)) == -1;
                     case '==':
-                        return v[$c.k] == $c.v;
+                        return GetAttr(v, $c.k) == $c.v;
                     case '>':
-                        return v[$c.k] > $c.v;
+                        return GetAttr(v, $c.k) > $c.v;
                     case '<':
-                        return v[$c.k] < $c.v;
+                        return GetAttr(v, $c.k) < $c.v;
                     case '!=':
-                        return v[$c.k] != $c.v;
+                        return GetAttr(v, $c.k) != $c.v;
                     case '>=':
-                        return v[$c.k] >= $c.v;
+                        return GetAttr(v, $c.k) >= $c.v;
                     case '<=':
-                        return v[$c.k] <= $c.v;
+                        return GetAttr(v, $c.k) <= $c.v;
                 }
             });
         }

@@ -64,7 +64,7 @@ class test extends facade.Control
             .groupOf()
             .where(
                 [
-                    ['id', '<=', objData.id], //支持多个条件联合查询，格式 ['key', 'val'] 或者 ['key', 'operator', 'val'], operator 支持 > >= == != < <=
+                    ['id', 'include', [objData.id]], //支持多个条件联合查询，格式 ['key', 'val'] 或者 ['key', 'operator', 'val'], operator 支持 > >= == != < <=
                 ]
             ).records();  
 
