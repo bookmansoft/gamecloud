@@ -20,6 +20,16 @@ describe('CURD', function() {
         console.log(msg);
     });
 
+    it('批量创建', async () => {
+        let msg = await remote.fetching({func: "testCurd.Creates", items:[{item:'1'},{item:'2'}]});
+        console.log(msg);
+    });
+
+    it('批量删除', async () => {
+        let msg = await remote.fetching({func: "testCurd.Deletes", ids:[1,2,3]});
+        console.log(msg);
+    });
+
     it('查询', async () => {
         let msg = await remote.fetching({func: "testCurd.Retrieve", id: 2});
         console.log(msg);

@@ -88,6 +88,16 @@ class test extends facade.Control
         return {code: ReturnCode.Success};
     }
 
+    async Creates(user, objData) {
+        await facade.GetMapping(EntityType.User).Creates(objData.items);
+        return {code: ReturnCode.Success};
+    }
+
+    Deletes(user, objData) {
+        facade.GetMapping(EntityType.User).Deletes(objData.ids, true);
+        return {code: ReturnCode.Success};
+    }
+
     /**
      * 列表
      * @param {*} user 

@@ -93,6 +93,38 @@ class Mapping
      * @param {*}  $id      主键
      * @param {Boolean} db  同步数据库
      */
+    async Deletes($ids, db=true) {
+        for(let $id of $ids) {
+            let obj = this.GetObject($id);
+            if(!!obj) {
+                if(!!this.keys.group){
+                    let g = this.group.get(obj[this.keys.group]);
+                    if(!!g) {
+                        g.del($id);
+                    }
+                }
+        
+                this.unMapping($id);
+                if(db) {
+                    await this.entity.onDelete(obj);
+                }
+            }
+        }
+
+        if(db) {
+            await (this.model)().destroy({
+                where:{
+                    id: {$in: $ids},
+                },
+            });
+        }
+    }
+
+    /**
+     * 删除指定记录
+     * @param {*}  $id      主键
+     * @param {Boolean} db  同步数据库
+     */
     async Delete($id, db=true){
         let obj = this.GetObject($id);
         if(!obj){
@@ -126,6 +158,20 @@ class Mapping
         entity = this.mapping(entity);
         this.setGroup(entity);
         return entity;
+    }
+
+    /**
+     * 批量创建
+     * @param {*} items 
+     */
+    async Creates(items) {
+        let entities = await (this.model)().bulkCreate(items);
+        for(let entity of entities) {
+            await entity.save();
+            entity = this.mapping(entity);
+            this.setGroup(entity);
+        }
+        return entities;
     }
 
     setGroup(entity){
