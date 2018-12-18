@@ -51,7 +51,7 @@ class BaseUserEntity extends BaseEntity
         this.baseMgr = {};
         let assistants = facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`);
         if(this.$addition) {
-            assistants.concat(facade.config.filelist.mapPath('app/model/assistant', false));
+            assistants = assistants.concat(facade.config.filelist.mapPath('app/model/assistant', false));
         }
         assistants.map(srv=>{
             let srvObj = require(srv.path);

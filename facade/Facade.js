@@ -43,7 +43,7 @@ class Facade
         //自动从指定目录载入系统定义和用户自定义的核心类
         let corelist = filelist.mapPackagePath(`${__dirname}/./core`);
         if(this.$addition) {
-            corelist.concat(filelist.mapPath('app/core'));
+            corelist = corelist.concat(filelist.mapPath('app/core'));
         }
         corelist.map(srv => {
             let srvObj = require(srv.path);
