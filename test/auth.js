@@ -33,8 +33,13 @@ describe('认证', function() {
         }
     );
 
-    it('注册并登录 - 自定义验证流程', async () => {
-            let msg = await remote.login({
+    /**
+     * 注册并监控下行消息
+     */
+    it.only('注册并登录 - 自定义验证流程', async () => {
+            let msg = await remote.watch(msg=>{
+                console.log('notify', msg);
+            }, remote.NotifyType.none).login({
                 openid: `${Math.random()*1000000000 | 0}`,      //用户标识
                 authControl: 'UserDefine'                       //指明自定义签名流程的RPC路由为 'UserDefine'
             });
