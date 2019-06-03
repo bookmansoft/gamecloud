@@ -18,9 +18,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "pm2 startOrRestart game.config.js & pm2 monit",
-    "log": "pm2 startOrRestart game.config.js & pm2 log",
-    "stop": "pm2 delete game.config.js",
+    "start": "pm2 startOrRestart gameconfig.js & pm2 monit",
+    "log": "pm2 startOrRestart gameconfig.js & pm2 log",
+    "stop": "pm2 delete gameconfig.js",
     "test": "mocha",
     "docs": "jsdoc -c jsdoc.json",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec",

@@ -8,7 +8,7 @@ if(env.constructor == String){
     env = JSON.parse(env);
 }
 
-let serversInfo = require(`${process.cwd()}/game.config`).servers; //服务器配置管理
+let serversInfo = require(`${process.cwd()}/gameconfig`).servers; //服务器配置管理
 let sys = serversInfo[env.serverType][env.serverId];
 
 var Sequelize = require('sequelize');

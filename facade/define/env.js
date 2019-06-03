@@ -1,5 +1,5 @@
 /**
- * 服务器运行环境参数对象，此对象数据结构和 game.config.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
+ * 服务器运行环境参数对象，此对象数据结构和 gameconfig.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
  */
 const env = {
     serverType:"IOS",         //服务器类型

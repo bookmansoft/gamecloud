@@ -9,3 +9,4 @@ coverage/
 package-lock.json
 config/migrations/20191111062616-create-test.js
 app/
+gameconfig.js

@@ -41,7 +41,7 @@ class CoreOfBase
         /**
          * 所有服务器的配置信息列表
          */
-        this.serversInfo = require(`${process.cwd()}/game.config`).servers;
+        this.serversInfo = require(`${process.cwd()}/gameconfig`).servers;
         /**
          * 当前服务器的配置信息
          */

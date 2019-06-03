@@ -8,7 +8,7 @@ npm i gamegold
 
 ## 配置节点信息
 
-在 game.config.js 中配置如下信息：
+在 gameconfig.js 中配置如下信息：
 ```js
     "apps" : [
         {//游戏金链节点配置

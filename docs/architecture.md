@@ -5,7 +5,7 @@
 根目录下存放一些重要的系统文件
 
 package.json        依赖包列表
-game.config.js      节点部署配置文件
+gameconfig.js      节点部署配置文件
 README.md           系统简介
 LICENSE             版权声明
 .gitignore          GIT仓库忽略文件列表

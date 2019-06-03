@@ -22,7 +22,7 @@ class CoreOfImage extends CoreOfBase {
      */
     static get mapping() {
         if(!this.$mapping) {
-            this.$mapping = ['Image']; //game.config.js 中类型为 Image 的节点，都将用 CoreOfImage 完成实例化
+            this.$mapping = ['Image']; //gameconfig.js 中类型为 Image 的节点，都将用 CoreOfImage 完成实例化
         }
         return this.$mapping;
     }
@@ -37,7 +37,7 @@ class CoreOfImage extends CoreOfBase {
 
 ## 节点的运行
 
-可以在 game.config.js 中进行节点的统一配置：
+可以在 gameconfig.js 中进行节点的统一配置：
 
 ```js
 let config = {

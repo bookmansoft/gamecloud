@@ -25,7 +25,7 @@ let Collection = require('./util/Collection')
 let config = require('./util/configInterface')  //配置文件管理
 let {applyMixins, extendObj, clone} = require('./util/mixin/comm')
 let filelist = require('./util/filelist')
-let iniFile = require(`${process.cwd()}/game.config`);
+let iniFile = require(`${process.cwd()}/gameconfig`);
 
 /**
  * 门面对象
