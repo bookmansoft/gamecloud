@@ -1,4 +1,4 @@
-let md5 = require('md5');
+let crypto = require('crypto');
 
 /**
  * 转换成 0 以上的整数
@@ -71,7 +71,7 @@ function genGameSign($data, secret){
             base += key + $data[key];
         }
     });
-    return md5(base + secret);
+    return crypto.createHash('md5').update(!!secret?(base+secret):base).digest("hex");
 }
 
 /**

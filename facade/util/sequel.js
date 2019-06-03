@@ -23,7 +23,7 @@ exports.seqConnector = (db, sa, pwd, host, port)=>{
     return new Sequelize(db, sa, pwd, {
         'dialectOptions': {
             //socketPath: "/var/run/mysqld/mysqld.sock",
-            useUTC: false //for reading from database
+            //useUTC: false //for reading from database
         },
         'timezone': '+08:00', //for writing to database
         'dialect': 'mysql',  // 数据库使用mysql

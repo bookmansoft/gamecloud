@@ -9,7 +9,6 @@ let Control = facade.Control
 let UserEntity = facade.entities.UserEntity;
 let connectMonitor = require('../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../util/taskManager')
-let rpc = require('../util/mixin/rpc')
 
 /**
  * 门面管理类
@@ -550,8 +549,6 @@ class CoreOfBase
         }
     }    
 }
-
-facade.tools.mixin(CoreOfBase, rpc);
 
 /**
  * 关于exports和module.exports的释义：

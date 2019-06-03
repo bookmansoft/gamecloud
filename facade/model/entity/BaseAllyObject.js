@@ -1154,7 +1154,7 @@ class BaseAllyObject extends BaseEntity
      */
     static onMapping(record){
         let ao = new this(record, facade.current);
-        if(record.$options.isNewRecord){//新创建的记录
+        if(record._options.isNewRecord){//新创建的记录
             ao.isNewbie = true;
             ao.aSetting = 0;
             ao.experience = 0;

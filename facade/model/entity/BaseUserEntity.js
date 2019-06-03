@@ -757,7 +757,7 @@ class BaseUserEntity extends BaseEntity
             facade.current.notifyEvent('user.update', {user:pUser});
         }
 
-        if(user.$options.isNewRecord){//新创建的记录
+        if(user._options.isNewRecord){//新创建的记录
             pUser.getInfoMgr().SetStatus(UserStatus.isNewbie, false);
         }
         else{//已有的记录
