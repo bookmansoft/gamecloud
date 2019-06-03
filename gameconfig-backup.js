@@ -11,8 +11,8 @@
 let mysql = {
     "logging" : false,          //记录日志
     "db": "gamecloud",          //数据库名称    
-    "sa": "dev",               //数据库用户名
-    "pwd": "helloworld",        //数据库用户密码
+    "sa": "dev",                //数据库用户名
+    "pwd": "",                  //数据库用户密码
     "host": "127.0.0.1",        //数据库服务器IP地址
     "port": 3306                //数据库服务器端口号
 };
@@ -32,7 +32,7 @@ let config = {
                 "MaxConnection": 3000,      //最大并发连接
                 "MaxRegister": 12000,       //单服最大注册用户数
                 "PoolMax": 500,             //最大数据库并发连接
-                "game_secret": "055c269fb1a866163c970d5b7f979f1c",
+                "game_secret": "",
                 "game_name": "鸡小德",
                 "redis": redis,
                 "mysql": mysql,
@@ -43,7 +43,7 @@ let config = {
                 },
                 "auth": {
                     "openid": "18681223392",
-                    "openkey": "18681223392",
+                    "openkey": "",
                     "domain": "tx.IOS",
                     "tokenExp": 600,
                     "sessionExp": 7200,
@@ -54,13 +54,13 @@ let config = {
                         "default": "chick.server",
                         "system": "chick.server"
                     },
-                    "game_secret": "055c269fb1a866163c970d5b7f979f1c"
+                    "game_secret": ""
                 },
                 "tx": {
                     "appid": "1105943531",
-                    "appkey": "jzcfa29fmMS8F4J8&",
+                    "appkey": "",
                     "pay_appid": "1450011656",
-                    "pay_appkey": "l6LZfrwgKYO2KcJ6k6xAiZ5OqhMyIMNk&",
+                    "pay_appkey": "",
                     "reportApiUrl": "http://tencentlog.com",
                     "openApiUrl": "https://api.urlshare.cn",
                     "openApiUrlWithPay":"https://api.urlshare.cn"
@@ -68,7 +68,7 @@ let config = {
                 "360":{
                     "appid":"203500811",
                     "game_key": "f075d0f4cab79b4df2ff690b4e0d96c4",
-                    "game_secret": "055c269fb1a866163c970d5b7f979f1c"
+                    "game_secret": ""
                 }
             }
         },
