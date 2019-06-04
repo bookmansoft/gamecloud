@@ -19,9 +19,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "pm2 startOrRestart gameconfig.js & pm2 monit",
-    "log": "pm2 startOrRestart gameconfig.js & pm2 log",
-    "stop": "pm2 delete gameconfig.js",
+    "start": "pm2 startOrRestart pm2.config.js & pm2 monit",
+    "log": "pm2 startOrRestart pm2.config.js & pm2 log",
+    "stop": "pm2 delete pm2.config.js",
     "commit": "cd config & db-migrate up --config migrations/gamecloud.json & cd..",
     "rollback": "cd config & db-migrate reset --config migrations/gamecloud.json & cd..",
     "dbinit": "cd config & db-migrate db:create gamecloud & db-migrate up --config migrations/gamecloud.json -e dev & cd.."
