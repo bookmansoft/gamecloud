@@ -6,6 +6,10 @@ coverage/
 .vs/
 .idea/workspace.xml
 *.zip
+*.crt
+*.key
+*.p12
+*.pem
 package-lock.json
 config/migrations/20191111062616-create-test.js
 app/

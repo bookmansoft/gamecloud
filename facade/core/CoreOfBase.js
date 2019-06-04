@@ -32,10 +32,13 @@ class CoreOfBase
         /**
          * 证书
          */
-        this.credentials = {
-            key: fs.readFileSync(process.cwd() + '/config/cert/server.key', 'utf8'), 
-            cert: fs.readFileSync(process.cwd() + '/config/cert/server.crt', 'utf8'),
-        };
+        this.credentials = {};
+
+        let keyName = process.cwd() + '/config/cert/server.key', crtName = process.cwd() + '/config/cert/server.crt';
+        if(fs.existsSync(keyName) && fs.existsSync(crtName)) {
+            this.credentials.key = fs.readFileSync(keyName, 'utf8');
+            this.credentials.cert = fs.readFileSync(crtName, 'utf8');
+        }
         
         /**
          * 所有服务器的配置信息列表
