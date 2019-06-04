@@ -86,7 +86,7 @@ gamecloud 内置了四种验证类型，每种都有明确的预定义验证流�
 
 可以根据需要自行扩展更多的验证类型，并制定与之相应的验证流程:
 
-1. 新增验证文件 /app/control/logic/UserDefine.js, 撰写 UserDefine 类
+1. 新增验证文件 /app/control/CoreOfLogic/UserDefine.js, 撰写 UserDefine 类, "UserDefine" 将和 "360"、"tx" 一样，成为有效的验证类型
 
 2. 为 UserDefine 类设置路由、撰写验证函数
 
