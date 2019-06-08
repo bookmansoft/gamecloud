@@ -59,10 +59,10 @@ class config extends facade.Control {
 
             //判断是否已注册
             let ui = await this.parent.getUserIndex(info.oemInfo.domain, info.oemInfo.openid, true);
-            if(!!ui){
+            if(!!ui) {
                 //向目标逻辑服发送预登录信息
                 let ret = await this.parent.remoteCall("userPreLogin", info.oemInfo, msg=>{return msg}, ui);
-                if(ret.code == ReturnCode.Success){
+                if(!!ret && ret.code == ReturnCode.Success) {
                     return {
                         code: ReturnCode.Success,
                         //注意：返回的是服务器的mapping地址
@@ -72,8 +72,7 @@ class config extends facade.Control {
                             port:this.parent.serversInfo[ui.stype][ui.sid].webserver.port
                         }
                     };
-                }
-                else{
+                } else {
                     return ret;
                 }
             }

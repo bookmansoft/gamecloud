@@ -36,7 +36,7 @@ class Facade
      * 系统主引导流程
      * @param {*} options 启动参数数组
      */
-    static boot(options) {
+    static boot(options, startup) {
         this.serverType = {};
         this.serverTypeMapping = {};
 
@@ -110,6 +110,10 @@ class Facade
             console.error(err.stack);
             res.status(500).send('Something broke!');
         });
+
+        if(typeof startup == 'function') {
+            startup(this.current);
+        }
 
         return core;
     }
