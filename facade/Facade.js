@@ -36,7 +36,7 @@ class Facade
      * 系统主引导流程
      * @param {*} options 启动参数数组
      */
-    static boot(options, startup) {
+    static async boot(options, startup) {
         this.serverType = {};
         this.serverTypeMapping = {};
 
@@ -58,7 +58,7 @@ class Facade
         extendObj(core.options, options);
 
         if(this.$addition) { //加载用户自定义模块
-            core.loadModel();
+            await core.loadModel();
         }
 
         //将用户自定义表添加到自动加载列表中
@@ -91,7 +91,7 @@ class Facade
         //endregion
         
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
-        core.Start(app);
+        await core.Start(app);
         core.app = app;
 
         if(options.static) {
