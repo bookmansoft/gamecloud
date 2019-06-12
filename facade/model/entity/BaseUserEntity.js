@@ -49,16 +49,19 @@ class BaseUserEntity extends BaseEntity
 
         //region 载入assistant对象
         this.baseMgr = {};
-        let assistants = facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`);
-        if(this.$addition) {
-            assistants = assistants.concat(facade.config.filelist.mapPath('app/model/assistant', false));
-        }
-        assistants.map(srv=>{
+
+        facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`).map(srv=>{
             let srvObj = require(srv.path);
             this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
         });
+        if(facade.addition) {
+            facade.config.filelist.mapPath('app/model/assistant', false).map(srv=>{
+                let srvObj = require(srv.path);
+                this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
+            });
+        }
         //endregion
-
+        
         //利用反序列化对象，填充各个成员对象
         Object.keys(this.baseMgr).map($key=>{
             let $value = this.baseMgr[$key];
