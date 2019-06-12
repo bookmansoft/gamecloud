@@ -1,6 +1,6 @@
 let facade = require('../../Facade')
 let {ResType} = facade.const
-let UserEntity = require('../../model/entity/BaseUserEntity')
+let UserEntity = facade.entities.UserEntity
 let LargeNumberCalculator = require('./LargeNumberCalculator')
 
 class BonusObject

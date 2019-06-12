@@ -4,7 +4,7 @@ let ActionOfTimer = require('../../util/potential/ActionOfTimer')
 let ConfigManager = require('../../util/potential/ConfigManager')
 let PotentialItem = require('../../util/potential/PotentialItem')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
-let UserEntity = require('../../model/entity/BaseUserEntity')
+let UserEntity = facade.entities.UserEntity
 let baseMgr = require('../baseAssistant')
 let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator') 
 

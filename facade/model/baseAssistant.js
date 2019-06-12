@@ -1,5 +1,5 @@
 let facade = require('../Facade')
-let UserEntity = require('../model/entity/BaseUserEntity')
+let UserEntity = facade.entities.UserEntity
 
 /**
  * 属性管理类的父类
