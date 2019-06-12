@@ -747,7 +747,7 @@ class BaseUserEntity extends BaseEntity
             user.domain = "official";
         }
 
-        let pUser = new this(user, facade.current);
+        let pUser = new facade.entities.UserEntity(user, facade.current);
         pUser.domainId = pUser.domain + '.' + pUser.openid;
         
         if((new Date()).toDateString() != pUser.getRefreshDate()){//数据跨天

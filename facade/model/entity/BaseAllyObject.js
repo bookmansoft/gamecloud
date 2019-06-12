@@ -1153,7 +1153,7 @@ class BaseAllyObject extends BaseEntity
      * @param {ally} record
      */
     static onMapping(record){
-        let ao = new this(record, facade.current);
+        let ao = new facade.entities.AllyObject(record, facade.current);
         if(record._options.isNewRecord){//新创建的记录
             ao.isNewbie = true;
             ao.aSetting = 0;
