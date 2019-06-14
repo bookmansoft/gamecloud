@@ -720,7 +720,7 @@ class BaseUserEntity extends BaseEntity
             || facade.current.options.debug; // 测试模式
 
             if(!passway){
-                if(!this.authPreList(`${domain}.${openkey}`, {openid:openid, domain:domain})) {
+                if(!this.authPreList(`${domain}.${openkey}`, {openkey:openkey, domain:domain})) {
                     return null;
                 }
             }
@@ -826,7 +826,7 @@ class BaseUserEntity extends BaseEntity
         let ret = true;
         if(!preList 
             || !preList[id]
-            || preList[id].openid != obj.openid
+            || preList[id].openkey != obj.openkey
             || preList[id].domain != obj.domain) {
             ret = false;
         }
@@ -850,8 +850,7 @@ class BaseUserEntity extends BaseEntity
 
         oemInfo.time = CommonFunc.now();
         
-        let domainId = `${oemInfo.domain}.${oemInfo.openid}`;
-        preList[domainId] = oemInfo;
+        preList[`${oemInfo.domain}.${oemInfo.openkey}`] = oemInfo;
         return {code: ReturnCode.Success};
     }
 
