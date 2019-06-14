@@ -19,6 +19,9 @@ let InviteManager = require('../assistant/InviteMgr')
 let BaseEntity = require('../BaseEntity')
 let LargeNumberCalculator = require('../../util/comm/LargeNumberCalculator')
 
+//如果在 BaseUserEntity 的静态方法中，用 this.preList 形式使用，会造成 BaseUserEntity 的子类无法访问，因此前置为全局变量
+let preList = {};
+
 /**
  * 用户对象，对来自Model的User进一步封装
  */
@@ -705,20 +708,19 @@ class BaseUserEntity extends BaseEntity
 
     /**
      * 创建时的回调函数
-     * @param {*} userName 
-     * @param {*} domain 
-     * @param {*} openid 
+     * @param {*} userName  用户名称
+     * @param {*} domain    用户归属域(证书发放方)
+     * @param {*} openid    用户证书
+     * @param {*} openkey   由于预注册时的 openid 有可能空置，因此此处改为用 openkey 进行检测
      */
-    static async onCreate(userName, domain, openid) {
-        let domainId = `${domain}.${openid}`;
-
+    static async onCreate(userName, domain, openid, openkey) {
         try{
             //预登录检测，设定一些例外的情形
             let passway = (facade.current.options.serverType == "Index" && domain == "admin") //对管理员登录Index服务器，不做预登录检测
             || facade.current.options.debug; // 测试模式
 
             if(!passway){
-                if(!this.authPreList(domainId, {openid:openid, domain:domain})){
+                if(!this.authPreList(`${domain}.${openkey}`, {openid:openid, domain:domain})) {
                     return null;
                 }
             }
@@ -822,15 +824,15 @@ class BaseUserEntity extends BaseEntity
      */
     static authPreList(id, obj){
         let ret = true;
-        if(!this.preList 
-            || !this.preList[id]
-            || this.preList[id].openid != obj.openid
-            || this.preList[id].domain != obj.domain) {
+        if(!preList 
+            || !preList[id]
+            || preList[id].openid != obj.openid
+            || preList[id].domain != obj.domain) {
             ret = false;
         }
 
-        if(CommonFunc.now() - this.preList[id].time > 3600*2){
-            delete this.preList[id];
+        if(CommonFunc.now() - preList[id].time > 3600*2){
+            delete preList[id];
             ret = false;
         }
 
@@ -842,14 +844,14 @@ class BaseUserEntity extends BaseEntity
      * @param {Object} oemInfo
      */
     static preLogin(oemInfo){
-        if(!this.preList){
-            this.preList = {};//用户预注册列表 - 索引服和逻辑服之间数据校验用
+        if(!preList){
+            preList = {};//用户预注册列表 - 索引服和逻辑服之间数据校验用
         }
 
         oemInfo.time = CommonFunc.now();
         
         let domainId = `${oemInfo.domain}.${oemInfo.openid}`;
-        this.preList[domainId] = oemInfo;
+        preList[domainId] = oemInfo;
         return {code: ReturnCode.Success};
     }
 
