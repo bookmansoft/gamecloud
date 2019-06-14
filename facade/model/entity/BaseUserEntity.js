@@ -711,16 +711,15 @@ class BaseUserEntity extends BaseEntity
      * @param {*} userName  用户名称
      * @param {*} domain    用户归属域(证书发放方)
      * @param {*} openid    用户证书
-     * @param {*} openkey   由于预注册时的 openid 有可能空置，因此此处改为用 openkey 进行检测
      */
-    static async onCreate(userName, domain, openid, openkey) {
+    static async onCreate(userName, domain, openid) {
         try{
             //预登录检测，设定一些例外的情形
             let passway = (facade.current.options.serverType == "Index" && domain == "admin") //对管理员登录Index服务器，不做预登录检测
             || facade.current.options.debug; // 测试模式
 
             if(!passway){
-                if(!this.authPreList(`${domain}.${openkey}`, {openkey:openkey, domain:domain})) {
+                if(!this.authPreList(`${domain}.${openid}`, {openid:openid, domain:domain})) {
                     return null;
                 }
             }
@@ -826,7 +825,7 @@ class BaseUserEntity extends BaseEntity
         let ret = true;
         if(!preList 
             || !preList[id]
-            || preList[id].openkey != obj.openkey
+            || preList[id].openid != obj.openid
             || preList[id].domain != obj.domain) {
             ret = false;
         }
@@ -850,7 +849,7 @@ class BaseUserEntity extends BaseEntity
 
         oemInfo.time = CommonFunc.now();
         
-        preList[`${oemInfo.domain}.${oemInfo.openkey}`] = oemInfo;
+        preList[`${oemInfo.domain}.${oemInfo.openid}`] = oemInfo;
         return {code: ReturnCode.Success};
     }
 
