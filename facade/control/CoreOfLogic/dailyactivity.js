@@ -7,7 +7,7 @@ let {ResType, ReturnCode} = facade.const
 class dailyactivity extends facade.Control
 {
     async getInfo(user){
-        return await this.parent.remoteCall('dailyactivity.getInfo', [user.domain, user.openid], msg=>{return msg});
+        return await this.core.remoteCall('dailyactivity.getInfo', [user.domain, user.openid], msg=>{return msg});
     }
 
     /**
@@ -16,16 +16,16 @@ class dailyactivity extends facade.Control
     async getList(user){
         return {
             code: ReturnCode.Success, 
-            data: await this.parent.remoteCall('dailyactivity.getList', [user.domain, user.openid], msg=>{return msg})
+            data: await this.core.remoteCall('dailyactivity.getList', [user.domain, user.openid], msg=>{return msg})
         };
     }
 
     async addProp(user,data){
-        return await this.parent.remoteCall('dailyactivity.addProp', [user.domain, user.openid, data.choose, data.num], msg=>{return msg})
+        return await this.core.remoteCall('dailyactivity.addProp', [user.domain, user.openid, data.choose, data.num], msg=>{return msg})
     }
 
     async setScore(user,data){
-        return await this.parent.remoteCall('dailyactivity.setScore', [user.domain, user.openid, data.id], msg=>{return msg})
+        return await this.core.remoteCall('dailyactivity.setScore', [user.domain, user.openid, data.id], msg=>{return msg})
     }
 
     // async joinActivity(user){
@@ -36,18 +36,18 @@ class dailyactivity extends facade.Control
     //     return this.parent.service.dailyactivity.choose(user.id,data.id);
     // }
     async countChoose(user,data){
-        return await this.parent.remoteCall('dailyactivity.countChoose',[], msg=>{return msg})
+        return await this.core.remoteCall('dailyactivity.countChoose',[], msg=>{return msg})
     }
     async countProp(user){
-        return await this.parent.remoteCall('dailyactivity.countProp', [], msg=>{return msg})
+        return await this.core.remoteCall('dailyactivity.countProp', [], msg=>{return msg})
     }
     async checkJoin(user){
-        return await this.parent.remoteCall('dailyactivity.checkJoin',[user.domain, user.openid], msg=>{return msg})
+        return await this.core.remoteCall('dailyactivity.checkJoin',[user.domain, user.openid], msg=>{return msg})
     }
     async toJoin(user){
         let cost = 20;
         if(user.baseMgr.item.GetRes(ResType.Diamond) >= cost){
-            let ret = await this.parent.remoteCall('dailyactivity.toJoin',[user.domain, user.openid], msg=>{return msg});
+            let ret = await this.core.remoteCall('dailyactivity.toJoin',[user.domain, user.openid], msg=>{return msg});
             if (ret.code == ReturnCode.Success){
                 user.getBonus({type:ResType.Diamond, num:-cost});
             }

@@ -37,7 +37,7 @@ class authPay extends facade.Control
             avatar: objData.id,                     //头像
             is_tourist: 1,                          //是否为游客
         };
-        ret.sign = sign(ret, this.parent.options[DomainType.D360].game_secret);
+        ret.sign = sign(ret, this.core.options[DomainType.D360].game_secret);
         return ret;
     }
 
@@ -88,12 +88,12 @@ class authPay extends facade.Control
             zoneid:                 req.zoneid,
         };
 
-        if(!this.parent.service.txApi.checkPayCallbackSign(data, "/txpay.html")){
+        if(!this.core.service.txApi.checkPayCallbackSign(data, "/txpay.html")){
             return {ret: ReturnCode.illegalData, msg:"数据非法"};
         }
         else{
             //向玩家发放商品、下行通知 tradeNo, total_fee, notify_time
-            let result = this.parent.control.shop.CommitTrade(data.openid, data.billno, data.amt);
+            let result = this.core.control.shop.CommitTrade(data.openid, data.billno, data.amt);
             if(result == ReturnCode.Success){
                 return {ret: result, msg:"OK"};
             }
@@ -109,7 +109,7 @@ class authPay extends facade.Control
      */
     async pay360(req) {
         let params = {
-            game_key: this.parent.options[DomainType.D360].game_key, //采信己方预设值
+            game_key: this.core.options[DomainType.D360].game_key, //采信己方预设值
             plat_user_id: req.plat_user_id,
             order_id: req.order_id,
             amount: req.amount,
@@ -117,13 +117,13 @@ class authPay extends facade.Control
             sign: req.sign
         };
 
-        if(!params.sign == sign(params, this.parent.options[DomainType.D360].game_secret)){ //签名校验错误
+        if(!params.sign == sign(params, this.core.options[DomainType.D360].game_secret)){ //签名校验错误
             return "error.auth";
         }
 
         if(!!params.plat_user_id){
             //向玩家发放商品、下行通知 tradeNo, total_fee, notify_time, product_name, request_count
-            let result = this.parent.control.shop.CommitTrade(params.plat_user_id, params.order_id, params.amount);
+            let result = this.core.control.shop.CommitTrade(params.plat_user_id, params.order_id, params.amount);
             if(result == ReturnCode.Success){
                 //向第三方平台返回成功应答
                 return "ok";

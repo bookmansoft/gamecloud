@@ -24,7 +24,7 @@ class remote extends facade.Control
         /**
          * @type {UserEntity}
          */
-        let ui = this.parent.GetObject(EntityType.User, `${obj.domain}.${obj.openid}`, IndexType.Domain);
+        let ui = this.core.GetObject(EntityType.User, `${obj.domain}.${obj.openid}`, IndexType.Domain);
         if(!!ui){
             ui.socialNotify(obj.msg);
         }
@@ -50,9 +50,9 @@ class remote extends facade.Control
         return {
             code:ReturnCode.Success, 
             data:{
-                totalUser:this.parent.numOfTotal, 
-                totalOnline: this.parent.numOfOnline, 
-                totalAmount: this.parent.GetMapping(EntityType.BuyLog).summary('total_fee', cur=>{return cur.result == PurchaseStatus.commit}),
+                totalUser:this.core.numOfTotal, 
+                totalOnline: this.core.numOfOnline, 
+                totalAmount: this.core.GetMapping(EntityType.BuyLog).summary('total_fee', cur=>{return cur.result == PurchaseStatus.commit}),
             }
         };
     }
@@ -63,7 +63,7 @@ class remote extends facade.Control
      * @param {*} obj 
      */
     rpc(svr, obj){
-        return this.parent.control.Console["command"](null, {data: obj.msg});
+        return this.core.control.Console["command"](null, {data: obj.msg});
     }
 }
 

@@ -6,11 +6,11 @@ class baseCtl
 {
     /**
      * 构造函数
-     * @param {CoreOfBase} parent 
+     * @param {CoreOfBase} core 
      */
-    constructor(parent)
+    constructor(core)
     {
-        this.parent = parent;
+        this.core = core;
     }
 
     echo() {

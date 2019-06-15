@@ -21,7 +21,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     async Create(user, objData) {
-        let test = await this.parent.GetMapping(EntityType.User).Create(Math.random().toString());
+        let test = await this.core.GetMapping(EntityType.User).Create(Math.random().toString());
         return {code: ReturnCode.Success, data: test.getAttr('diamond')};
     }
 
@@ -31,7 +31,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Update(user, objData) {
-        let test = this.parent.GetObject(EntityType.User, objData.id);           //根据上行id查找test表中记录
+        let test = this.core.GetObject(EntityType.User, objData.id);           //根据上行id查找test表中记录
         if(!!test) {
             test.setAttr('openid', Math.random().toString());     //修改所得记录的字段，下次查询时将得到新值，同时会自动存入数据库
             return {code: ReturnCode.Success, data: test.getAttr('diamond')};
@@ -46,7 +46,7 @@ class test extends facade.Control
      */
     Retrieve(user, objData) {
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let test = this.parent.GetObject(EntityType.User, parseInt(objData.id));  
+        let test = this.core.GetObject(EntityType.User, parseInt(objData.id));  
         if(!!test) {
             return {code: ReturnCode.Success, data: test.getAttr('diamond')};
         }
@@ -60,7 +60,7 @@ class test extends facade.Control
      */
     Select(user, objData) {
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let test = this.parent.GetMapping(EntityType.User)
+        let test = this.core.GetMapping(EntityType.User)
             .groupOf()
             .where(
                 [
@@ -84,17 +84,17 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Delete(user, objData) {
-        this.parent.GetMapping(EntityType.User).Delete(objData.id, true);
+        this.core.GetMapping(EntityType.User).Delete(objData.id, true);
         return {code: ReturnCode.Success};
     }
 
     async Creates(user, objData) {
-        await this.parent.GetMapping(EntityType.User).Creates(objData.items);
+        await this.core.GetMapping(EntityType.User).Creates(objData.items);
         return {code: ReturnCode.Success};
     }
 
     Deletes(user, objData) {
-        this.parent.GetMapping(EntityType.User).Deletes(objData.ids, true);
+        this.core.GetMapping(EntityType.User).Deletes(objData.ids, true);
         return {code: ReturnCode.Success};
     }
 
@@ -105,7 +105,7 @@ class test extends facade.Control
      */
     List(user, objData) {
         objData.id = objData.id || 1;
-        let muster = this.parent.GetMapping(EntityType.User) //得到 Mapping 对象
+        let muster = this.core.GetMapping(EntityType.User) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('id', 'desc') //根据id字段倒叙排列
             .paginate(5, objData.id, ['id', 'diamond']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段

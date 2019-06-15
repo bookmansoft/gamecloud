@@ -23,13 +23,13 @@ class admin extends facade.Control {
     async getRouteList(user, objData){
         return {
             code: facade.const.ReturnCode.Success,
-            data: this.parent.routeList()
+            data: this.core.routeList()
         }
     }
 
     async addRoute(user, objData){
         if(!!objData.openid){
-            this.parent.testRoute.add(objData.openid);
+            this.core.testRoute.add(objData.openid);
         }
         return await this.getRouteList(user, objData);
     }
@@ -43,14 +43,14 @@ class admin extends facade.Control {
     getServerList(user, objData){
         return {
             code:facade.const.ReturnCode.Success,
-            data:this.parent.service.servers.forServers(srv=>{
+            data:this.core.service.servers.forServers(srv=>{
                 return `${srv.stype}.${srv.sid}`;
             }),
         };
     }
 
     async delRoute(user, objData){
-        this.parent.testRoute.delete(objData.openid);
+        this.core.testRoute.delete(objData.openid);
         return await this.getRouteList(user, objData);
     }
 
@@ -63,8 +63,8 @@ class admin extends facade.Control {
     async summary(user, objData){
         try{
             if(!objData.server || objData.server == 'All'){
-                return (await Promise.all(this.parent.service.servers.forServers(async srv=>{
-                    return await this.parent.remoteCall("summary", {}, msg=>{return msg}, {stype:srv.stype, sid:srv.sid});
+                return (await Promise.all(this.core.service.servers.forServers(async srv=>{
+                    return await this.core.remoteCall("summary", {}, msg=>{return msg}, {stype:srv.stype, sid:srv.sid});
                 }))).reduce((sofar, cur)=>{
                     sofar.data.totalUser += cur.data.totalUser;
                     sofar.data.totalOnline += cur.data.totalOnline;
@@ -75,7 +75,7 @@ class admin extends facade.Control {
             else{
                 let ps = objData.server.split('.');
                 if(ps.length >= 2){
-                    return {code:facade.const.ReturnCode.Success, data:(await this.parent.remoteCall("summary", {}, msg=>{return msg}, {stype:ps[0], sid:parseInt(ps[1])})).data};
+                    return {code:facade.const.ReturnCode.Success, data:(await this.core.remoteCall("summary", {}, msg=>{return msg}, {stype:ps[0], sid:parseInt(ps[1])})).data};
                 }
                 else{
                     return {code:facade.const.ReturnCode.Error};
@@ -96,8 +96,8 @@ class admin extends facade.Control {
      */
     async survive(user, objData){
         let ru = {code:facade.const.ReturnCode.Success, data:[]};
-        (await Promise.all(this.parent.service.servers.forServers(srv=>{
-            let item = this.parent.serversInfo[srv.stype][`${srv.sid}`];
+        (await Promise.all(this.core.service.servers.forServers(srv=>{
+            let item = this.core.serversInfo[srv.stype][`${srv.sid}`];
             return new Promise(resolve=>{
                 query(`call survive('${objData.time}',@r1,@r3,@r7)`, (err, vals)=>{
                     if(!err){

@@ -15,9 +15,9 @@ class remote extends facade.Control {
      */
     async userNotify(svr, obj){
         try{
-            let sim = await this.parent.getExcellentUser(obj.msg.openid); 
+            let sim = await this.core.getExcellentUser(obj.msg.openid); 
             if(!!sim){
-                return await this.parent.remoteCall('remote.userNotify', obj.msg, msg=>{return msg}, sim);
+                return await this.core.remoteCall('remote.userNotify', obj.msg, msg=>{return msg}, sim);
             }
         }
         catch(e){
@@ -31,8 +31,8 @@ class remote extends facade.Control {
     * @param obj
     */
     serverLogin(svr, obj) {
-        if(!!this.parent.serversInfo[svr.stype] && !!this.parent.serversInfo[svr.stype][svr.sid]){
-            this.parent.service.servers.mapServer(svr);
+        if(!!this.core.serversInfo[svr.stype] && !!this.core.serversInfo[svr.stype][svr.sid]){
+            this.core.service.servers.mapServer(svr);
             return {code: ReturnCode.Success};
         }
         //没有查找到对应的服务器信息，拒绝注册
@@ -46,9 +46,9 @@ class remote extends facade.Control {
      */
     getFriendList(svr, input){
         let items = [], ids=[];
-        for(let obj of this.parent.cacheMgr.objects){
+        for(let obj of this.core.cacheMgr.objects){
             //console.log(obj[0]);
-            let ui = this.parent.cacheMgr.get(obj[0]);
+            let ui = this.core.cacheMgr.get(obj[0]);
             if(!!ui && !!ui.openid){
                 ids.push(ui.openid);
             }
@@ -74,7 +74,7 @@ class remote extends facade.Control {
      * @returns {{code: number}}
      */
     async newAttr(svr, envelope){
-        let ui = await this.parent.getUserIndex(envelope.msg.domain, envelope.msg.openid);
+        let ui = await this.core.getUserIndex(envelope.msg.domain, envelope.msg.openid);
         if(!!ui && !!envelope.msg.attr){
             if(envelope.msg.attr.constructor == Array){ //一次修改多个属性
                 envelope.msg.attr.map(item=>{
@@ -84,7 +84,7 @@ class remote extends facade.Control {
             else{
                 ui[envelope.msg.attr.type] = envelope.msg.attr.value;
             }
-            await this.parent.setUserIndex(ui);
+            await this.core.setUserIndex(ui);
         }
     }
 
@@ -97,7 +97,7 @@ class remote extends facade.Control {
      * @note 如果多个分组都存在相关记录，取分数最高的记录
      */
     async getFriendRankList(svr, input){
-        let uList = await this.parent.getUserIndexOfAll(input.msg.list.reduce((sofar, cur) => {
+        let uList = await this.core.getUserIndexOfAll(input.msg.list.reduce((sofar, cur) => {
             facade.CoreOfLogic.mapping.map(lt=>{
                 sofar.push(`tx.${lt}.${cur.openid}`);
             });
@@ -138,8 +138,8 @@ class remote extends facade.Control {
      */
     async service(svr, obj){
         let msg = obj.msg;
-        if(!!msg && !!this.parent.service[msg.sname] && !!this.parent.service[msg.sname][msg.sfunc]){
-            return await this.parent.service[msg.sname][msg.sfunc](...msg.params);
+        if(!!msg && !!this.core.service[msg.sname] && !!this.core.service[msg.sname][msg.sfunc]){
+            return await this.core.service[msg.sname][msg.sfunc](...msg.params);
         }
     }
 }

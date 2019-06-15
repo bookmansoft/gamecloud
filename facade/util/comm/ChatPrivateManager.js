@@ -6,7 +6,7 @@ let {NotifyType} = facade.const
  */
 class ChatPrivateManager{
     /**
-     * @param {User} parent - 归属用户
+     * @param {BaseUserEntity} parent - 归属用户
      */
     constructor(parent){
         /**

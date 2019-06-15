@@ -35,7 +35,7 @@ class config extends facade.Control {
     getServerList(user, objData){
         return {
             code:ReturnCode.Success,
-            data:this.parent.service.servers.forServers(srv=>{
+            data:this.core.service.servers.forServers(srv=>{
                 return `${srv.stype}.${srv.sid}`;
             }),
         };
@@ -50,7 +50,7 @@ class config extends facade.Control {
     async getServerInfo(pUser, info){
         try{
             //优先路由:强制切换到Test域
-            if(this.parent.testRoute.has(info.oemInfo.openid)) {
+            if(this.core.testRoute.has(info.oemInfo.openid)) {
                 facade.CoreOfLogic.mapping.map(lt => {
                     let regx = new RegExp(lt, 'g');
                     info.oemInfo.domain = info.oemInfo.domain.replace(regx, "Test");
@@ -58,18 +58,18 @@ class config extends facade.Control {
             }
 
             //判断是否已注册
-            let ui = await this.parent.getUserIndex(info.oemInfo.domain, info.oemInfo.openid, true);
+            let ui = await this.core.getUserIndex(info.oemInfo.domain, info.oemInfo.openid, true);
             if(!!ui) {
                 //向目标逻辑服发送预登录信息
-                let ret = await this.parent.remoteCall("userPreLogin", info.oemInfo, msg=>{return msg}, ui);
+                let ret = await this.core.remoteCall("userPreLogin", info.oemInfo, msg=>{return msg}, ui);
                 if(!!ret && ret.code == ReturnCode.Success) {
                     return {
                         code: ReturnCode.Success,
                         //注意：返回的是服务器的mapping地址
                         data: {
                             newbie: facade.tools.Indicator.inst(ui.status).check(UserStatus.isNewbie), 
-                            ip: this.parent.serversInfo[ui.stype][ui.sid].webserver.mapping, 
-                            port:this.parent.serversInfo[ui.stype][ui.sid].webserver.port
+                            ip: this.core.serversInfo[ui.stype][ui.sid].webserver.mapping, 
+                            port:this.core.serversInfo[ui.stype][ui.sid].webserver.port
                         }
                     };
                 } else {

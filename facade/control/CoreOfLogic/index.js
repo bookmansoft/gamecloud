@@ -16,7 +16,7 @@ class index extends facade.Control
      */
     async 1000(user, objData){
         try{
-            return await this.parent.control.login.UserLogin(user, objData)
+            return await this.core.control.login.UserLogin(user, objData)
         }
         catch(e){
             console.error(e);
@@ -24,7 +24,7 @@ class index extends facade.Control
     }
     async login(user, objData){
         try{
-            return await this.parent.control.login.UserLogin(user, objData);
+            return await this.core.control.login.UserLogin(user, objData);
         }catch(e){}
     }
 
@@ -47,13 +47,13 @@ class index extends facade.Control
             if(objData.start == 0){
                 switch(user.getInfoMgr().GetRecord(RecordType.Role)){
                     case 1002:
-                        this.parent.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.core.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
                 switch(user.getInfoMgr().GetRecord(RecordType.Scene)){
                     case 2002:
-                        this.parent.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.core.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
@@ -73,11 +73,11 @@ class index extends facade.Control
                 user.battleMoney = parseInt(objData.money);
 
                 let resultOk = (_score<50 && _money<50) || (_score <= tl * 9 && _money < tl * 4.5);
-                if(this.parent.options.debug || resultOk){
+                if(this.core.options.debug || resultOk){
                     user.score = _score;             //记录新的分数
                     
                     //region 任务检测
-                    this.parent.notifyEvent('user.task', {user:user, data:[
+                    this.core.notifyEvent('user.task', {user:user, data:[
                         {type:facade.const.em_Condition_Type.roundScore, value:user.score, mode:facade.const.em_Condition_Checkmode.absolute},
                         {type:facade.const.em_Condition_Type.roundMoney, value:_money, mode:facade.const.em_Condition_Checkmode.absolute},
                         {type:facade.const.em_Condition_Type.death, value:1, mode:facade.const.em_Condition_Checkmode.add},
@@ -85,7 +85,7 @@ class index extends facade.Control
                     ]});
                     //endregion
 
-                    if(!this.parent.options.debug){
+                    if(!this.core.options.debug){
                         // 此接口经测试暂不可用（appid非法），好友积分&排名已调整为本地管理
                         // let rt = await this.parent.service.txApi.set_achievement(user, this.parent.options.auth.pf, _score);
                         // if(rt.ret != 0){
@@ -134,7 +134,7 @@ class index extends facade.Control
             if(typeof objData.id == 'string'){
                 objData.id = parseInt(objData.id);
             }
-            return await this.parent.control.item.useItem(user, objData);
+            return await this.core.control.item.useItem(user, objData);
         }catch(e){}
     }
 
@@ -215,7 +215,7 @@ class index extends facade.Control
      * @returns {Promise.<Promise.<Promise|{code: number, data: {tradeNo: string}}>|{code: number, data: {tradeNo: string}}>}
      */
     async 1006(user, objData){
-        return this.parent.control.shop.BuyItem(user, objData);
+        return this.core.control.shop.BuyItem(user, objData);
     }
 
     /**
@@ -260,7 +260,7 @@ class index extends facade.Control
      * @returns {Promise.<{code: number}>}
      */
     async 1010(user, objData){
-        return this.parent.control.social.share(user, objData);
+        return this.core.control.social.share(user, objData);
     }
 
     /**
@@ -271,7 +271,7 @@ class index extends facade.Control
      */
     async 2001(user, objData) {
         try{
-            return await this.parent.control.item.list(user);
+            return await this.core.control.item.list(user);
         } catch(e) {
             return {code: ReturnCode.illegalData};
         }
@@ -314,7 +314,7 @@ class index extends facade.Control
      * @param {*} objData 
      */
     async sendHello(user, objData){
-        return await this.parent.control.social.action(user, objData);
+        return await this.core.control.social.action(user, objData);
     }
 
     /**
@@ -324,7 +324,7 @@ class index extends facade.Control
      */
     async bonusHello(user, objData){
         objData.actionType = NotifyType.socialBonusHello;
-        return await this.parent.control.social.action(user, objData);
+        return await this.core.control.social.action(user, objData);
     }
     /**
      * 附加新手引导接口

@@ -28,7 +28,7 @@ class authPay extends facade.Control {
             avatar: objData.id,                 //头像
             is_tourist: 1,                      //是否为游客
         };
-        ret.sign = sign(ret, this.parent.options[DomainType.D360].game_secret);
+        ret.sign = sign(ret, this.core.options[DomainType.D360].game_secret);
         return ret;
     }
 
@@ -46,7 +46,7 @@ class authPay extends facade.Control {
         if(objData.oemInfo.constructor == String){
             objData.oemInfo = JSON.parse(objData.oemInfo);
         }
-        let ret = this.parent.registerSession(objData.oemInfo.openid, objData.oemInfo.openkey, objData.oemInfo.session);
+        let ret = this.core.registerSession(objData.oemInfo.openid, objData.oemInfo.openkey, objData.oemInfo.session);
         //console.log(ret);
         if(!!ret){
             let rt = {
@@ -58,7 +58,7 @@ class authPay extends facade.Control {
                 is_tourist: 1,                      //是否为游客
                 session:ret.session,                //Session
             };
-            rt.sign = facade.util.sign(rt, this.parent.options.game_secret);
+            rt.sign = facade.util.sign(rt, this.core.options.game_secret);
             return rt;
         }
         else{
@@ -74,7 +74,7 @@ class authPay extends facade.Control {
         let time		= req.time;
         let sign 		= req.sign;
 
-        let pUser = this.parent.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
+        let pUser = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
         if(pUser){
             //	写入账号信息
             pUser.WriteUserInfo(app_id, server_id, time, sign);
