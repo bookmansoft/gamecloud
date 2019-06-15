@@ -10,19 +10,32 @@ class Mapping
     /**
      * @return {Mapping}
      */
-    static muster(cls){
+    static muster(cls, core) {
         if(!cls.mapParams){
             throw new Error('class using Mapping must have mapParams function');
         }
 
         if(!cls.$mapping){
-            cls.$mapping = new this(cls.mapParams);
+            cls.$mapping = new this(cls.mapParams, core);
         }
         return cls.$mapping;
     }
 
-    constructor(params){
-        this.init(params);
+    /**
+     * 构造函数
+     * @param {*} mapParams         映射参数
+     * @param {CoreOfBase} core     核心节点
+     * {
+            model: Test,        //对应数据库表的映射类
+            entity: this,       //ORM映射类，在表映射类上做了多种业务封装
+            etype: 101,         //实体类型
+            group: 'item',      //(可选)对记录进行分组的键名称
+        } 
+     * @param {*} core          核心节点对象
+     */
+    constructor(mapParams, core) {
+        this.core = core;
+        this.init(mapParams);
     }
     /**
      * 加载所有记录
@@ -30,7 +43,7 @@ class Mapping
      */
     async loadAll (db, sa, pwd){
         if(!!this.entity.onLoad){
-            await this.entity.onLoad(db,sa,pwd, this.mapping.bind(this));
+            await this.entity.onLoad(db,sa,pwd, this.mapping.bind(this, this.core));
         }
         return this;
     };
@@ -155,7 +168,7 @@ class Mapping
      */
     async Create(...params) {
         let entity = await this.entity.onCreate(...params);
-        entity = this.mapping(entity);
+        entity = this.mapping(this.core, entity);
         this.setGroup(entity);
         return entity;
     }
@@ -168,7 +181,7 @@ class Mapping
         let entities = await (this.model)().bulkCreate(items);
         for(let entity of entities) {
             await entity.save();
-            entity = this.mapping(entity);
+            entity = this.mapping(this.core, entity);
             this.setGroup(entity);
         }
         return entities;
@@ -207,10 +220,10 @@ class Mapping
     /**
      * 创建反向索引
      */
-    mapping(entity){
+    mapping(core, entity) {
         if(!!entity){   
             if(!!this.entity.onMapping){
-                let pEntity = this.entity.onMapping(entity);
+                let pEntity = this.entity.onMapping(entity, core);
                 this.objects.set(pEntity.IndexOf(IndexType.Primary), pEntity);  //将对象放入主键索引表
                 this.idList.push(pEntity.IndexOf(IndexType.Primary));           //将主键放入集合
                 

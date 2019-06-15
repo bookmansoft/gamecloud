@@ -478,7 +478,7 @@ class item extends baseMgr
                 break;
         }
         this.dirty = true;
-        facade.current.notifyEvent('user.resAdd', {user:this.parent, data:{type:type, id: id, value:num}});
+        this.parent.core.notifyEvent('user.resAdd', {user:this.parent, data:{type:type, id: id, value:num}});
     }
 
     /**
@@ -553,7 +553,7 @@ class item extends baseMgr
         if(this.GetRes(id) >= num){
             this.AddRes(id, -num);
             //触发了特殊道具被使用事件
-            facade.current.notifyEvent('user.itemUsed', {user:this.parent, data:{type:id, value:num}});
+            this.parent.core.notifyEvent('user.itemUsed', {user:this.parent, data:{type:id, value:num}});
             return {code: ReturnCode.Success, data:this.getList()};
         }
         else{

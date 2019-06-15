@@ -74,7 +74,7 @@ class authPay extends facade.Control {
         let time		= req.time;
         let sign 		= req.sign;
 
-        let pUser = facade.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
+        let pUser = this.parent.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
         if(pUser){
             //	写入账号信息
             pUser.WriteUserInfo(app_id, server_id, time, sign);

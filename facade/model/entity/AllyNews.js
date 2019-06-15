@@ -29,9 +29,10 @@ class AllyNews extends BaseEntity
     /**
      * 构造函数
      * @param {ally} orm 
+     * @param {CoreOfBase} core
      */
-	constructor(orm, router){
-        super(orm, router);
+	constructor(orm, core){
+        super(orm, core);
     }
 
     /*
@@ -42,7 +43,7 @@ class AllyNews extends BaseEntity
         $ret.AllySrcId = this.aid;
 	    $ret.newsType = this.newsType;
 
-    	let $ao = facade.GetObject(EntityType.Ally, $ret.AllySrcId);
+    	let $ao = this.core.GetObject(EntityType.Ally, $ret.AllySrcId);
     	if($ao){
 		    $ret.AllySrcName = $ao.Name;
 	    }
@@ -100,8 +101,8 @@ class AllyNews extends BaseEntity
      * 进行字典映射时的回调函数
      * @param {*} user 
      */
-    static onMapping(user){
-        let pUser = new this(user, facade.current);
+    static onMapping(user, core) {
+        let pUser = new this(user, core);
         return pUser;
     }
 
@@ -113,11 +114,7 @@ class AllyNews extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
-        try{
+        try {
             let ret = await ally_news(db, sa, pwd).findAll({
                 where:{
                     aid:aid,
@@ -126,7 +123,7 @@ class AllyNews extends BaseEntity
             ret.map(it=>{
                 callback(it);
             });
-        }catch(e){}
+        } catch(e) {}
     }
 
     /**

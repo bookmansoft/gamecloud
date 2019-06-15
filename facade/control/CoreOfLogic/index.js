@@ -47,13 +47,13 @@ class index extends facade.Control
             if(objData.start == 0){
                 switch(user.getInfoMgr().GetRecord(RecordType.Role)){
                     case 1002:
-                        facade.current.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.parent.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
                 switch(user.getInfoMgr().GetRecord(RecordType.Scene)){
                     case 2002:
-                        facade.current.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.parent.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
@@ -77,7 +77,7 @@ class index extends facade.Control
                     user.score = _score;             //记录新的分数
                     
                     //region 任务检测
-                    facade.current.notifyEvent('user.task', {user:user, data:[
+                    this.parent.notifyEvent('user.task', {user:user, data:[
                         {type:facade.const.em_Condition_Type.roundScore, value:user.score, mode:facade.const.em_Condition_Checkmode.absolute},
                         {type:facade.const.em_Condition_Type.roundMoney, value:_money, mode:facade.const.em_Condition_Checkmode.absolute},
                         {type:facade.const.em_Condition_Type.death, value:1, mode:facade.const.em_Condition_Checkmode.add},

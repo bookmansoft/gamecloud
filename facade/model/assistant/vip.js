@@ -80,8 +80,8 @@ class vip extends baseMgr
      * 检测排名活动信息的有效性，并作可能的修复
      */
     checkActivityStatus(){
-        if(this.v.aId != this.parent.router.service.activity.id){
-            this.v.aId = this.parent.router.service.activity.id;
+        if(this.v.aId != this.parent.core.service.activity.id){
+            this.v.aId = this.parent.core.service.activity.id;
             this.v.aScore = 0;
             this.v.aLv = 0;
             this.v.act = {};
@@ -422,19 +422,19 @@ class vip extends baseMgr
                 this.initBattle();
 
                 //判断体力是否足够
-                if(!!this.parent.router.options.debug || this.parent.baseMgr.item.GetRes(ResType.Action) >= $gate.costap) {
+                if(!!this.parent.core.options.debug || this.parent.baseMgr.item.GetRes(ResType.Action) >= $gate.costap) {
                     //每关单独配置体力消耗
                     this.parent.getBonus({type:ResType.Action, num:-$gate.costap});//扣减体力
                     
                     //特定任务检测
                     switch(this.parent.getInfoMgr().GetRecord(RecordType.Role)){
                         case 1002:
-                            facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useRole1002, value:1}});
+                            this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useRole1002, value:1}});
                             break;
                     }
                     switch(this.parent.getInfoMgr().GetRecord(RecordType.Scene)){
                         case 2002:
-                            facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useScene2002, value:1}});
+                            this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useScene2002, value:1}});
                             break;
                     }
                     
@@ -466,7 +466,7 @@ class vip extends baseMgr
                     let tm = ct - this.battle.time;
                     if($params.blood == 0){
                         //region 任务检测
-                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.death, value:1}});
+                        this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.death, value:1}});
                         //endregion
 
                         this.dirty = true;
@@ -500,12 +500,12 @@ class vip extends baseMgr
                         this.parent.getBonus(ret.data.bonus);   //发放奖励
 
                         //region 任务检测
-                        facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.totalMoney, value:_money}})
+                        this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.totalMoney, value:_money}})
                         //endregion
 
                         this.parent.baseMgr.info.UnsetStatus(UserStatus.gaming);
                     }
-                    else if(!this.parent.router.options.debug && tm < $gate.time){
+                    else if(!this.parent.core.options.debug && tm < $gate.time){
                         ret.code = ReturnCode.timeTooShort;
                     }
                     else{
@@ -553,7 +553,7 @@ class vip extends baseMgr
                                 ret.data.bonus = [];
                                 if($gate.id % 10 == 0){
                                     //关卡首次通过逢10关卡系统公告
-                                    this.parent.router.control.chat.sendChat(this.parent,{id:11,c:"1",name:this.parent.name,gateId:$gate.id,system:1});
+                                    this.parent.core.control.chat.sendChat(this.parent,{id:11,c:"1",name:this.parent.name,gateId:$gate.id,system:1});
                                 }
                             }
                             else{
@@ -589,7 +589,7 @@ class vip extends baseMgr
                             }
 
                             if(this.v.gate[$gate.id].s > oldStar){
-                                facade.current.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.gateStar, value:this.v.gate[$gate.id].s - oldStar}});
+                                this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.gateStar, value:this.v.gate[$gate.id].s - oldStar}});
                             }
 
                             ret.data.starM = this.v.gate[$gate.id].s;
@@ -607,14 +607,14 @@ class vip extends baseMgr
                             facade.notifyEvent('user.redAdd', {user:this.parent, data:{type:ResType.Action, value:$params.action, max:false}})
 
                             //region 任务检测
-                            facade.current.notifyEvent('user.task', {user:this.parent, data:[
+                            this.parent.core.notifyEvent('user.task', {user:this.parent, data:[
                                 {type:em_Condition_Type.totalRound, value:1},
                                 {type:em_Condition_Type.totalMoney, value:_money}
                             ]});
                             //endregion
 
                             //累计分段积分
-                            this.parent.router.service.activity.addScore(this.parent.id, ActivityType.Gate, 1);
+                            this.parent.core.service.activity.addScore(this.parent.id, ActivityType.Gate, 1);
 
                             this.parent.baseMgr.info.UnsetStatus(UserStatus.gaming);
                         }
@@ -767,7 +767,7 @@ class vip extends baseMgr
                     if($params.blood == 0){//抓捕失败
                         $msg.info.code = ReturnCode.socialCatchFailed;
                     }
-                    else if(!this.parent.router.options.debug && tm < $gate.time){
+                    else if(!this.parent.core.options.debug && tm < $gate.time){
                         $msg.info.code = ReturnCode.timeTooShort;
                     }
                     this.parent.baseMgr.info.UnsetStatus(UserStatus.gaming);
@@ -820,7 +820,7 @@ class vip extends baseMgr
                         //群发游戏状态
                         this.parent.baseMgr.info.UnsetStatus(UserStatus.gaming);
                     }
-                    else if(!this.parent.router.options.debug && tm < $gate.time){
+                    else if(!this.parent.core.options.debug && tm < $gate.time){
                         $msg.info.code = ReturnCode.timeTooShort;
                     }
                     else{
@@ -856,7 +856,7 @@ class vip extends baseMgr
             let nextGateId = parseInt(this.parent.hisGateNo) + 1;
             if(!!facade.config.fileMap.chapterdata[nextGateId]){//进入下一关
                 this.parent.hisGateNo = nextGateId;
-                facade.current.notifyEvent('user.task', {user:this.parent, data:{
+                this.parent.core.notifyEvent('user.task', {user:this.parent, data:{
                     type:em_Condition_Type.gateMaxNo, 
                     value:$gate.id, 
                     mode:em_Condition_Checkmode.absolute}

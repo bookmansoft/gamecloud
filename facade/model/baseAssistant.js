@@ -102,7 +102,7 @@ class baseAssistant
     }
 
     onUpdate(){
-        facade.current.notifyEvent('user.update', {user:this.parent});
+        this.parent.core.notifyEvent('user.update', {user:this.parent});
     }
 }
 

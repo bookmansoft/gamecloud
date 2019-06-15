@@ -250,11 +250,11 @@ class task extends baseMgr {
             let ret = this.taskList[$key].Execute($ctype, $num, $mode);
             if(ret == true){
                 this.dirty = true;//设置脏数据标志
-                this.parent.router.notifyEvent('user.taskFinished', {user:this.parent, objData:{id:$key}});//发送"任务完成"事件
+                this.parent.core.notifyEvent('user.taskFinished', {user:this.parent, objData:{id:$key}});//发送"任务完成"事件
             }
             else if(ret != false){
                 this.dirty = true;//设置脏数据标志
-                this.parent.router.notifyEvent('user.taskChanged', {user:this.parent, objData:{id:$key, data:ret}});//发送"任务完成"事件
+                this.parent.core.notifyEvent('user.taskChanged', {user:this.parent, objData:{id:$key, data:ret}});//发送"任务完成"事件
             }
         });
     }

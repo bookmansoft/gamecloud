@@ -125,7 +125,7 @@ class CoreOfLogic extends CoreOfBase
         console.time('Load Db');
         await this.service.activity.loadDb(); //首先载入活动信息，后续的用户积分信息才能顺利注册
 
-        Promise.all(this.loadingList.map(it=>facade.GetMapping(it).loadAll())).then(()=>{
+        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll(this.options.mysql.db, this.options.mysql.sa, this.options.mysql.pwd))).then(()=>{
             console.timeEnd('Load Db');
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 
@@ -146,12 +146,12 @@ class CoreOfLogic extends CoreOfBase
         
         //用户活动信息载入        
         try{
-            let ret = await User(facade.current.options.mysql.db, facade.current.options.mysql.sa, facade.current.options.mysql.pwd).findAll();
+            let ret = await User(this.options.mysql.db, this.options.mysql.sa, this.options.mysql.pwd).findAll();
             for(let i = 0; i++; i < ret.length){
-                let pUser = await facade.GetObject(EntityType.User, ret[i].id);
+                let pUser = await this.GetObject(EntityType.User, ret[i].id);
                 //载入玩家的活动参与信息
                 if(pUser.getVipMgr().v.aId > 0){
-                    facade.current.service.activity.setScore(pUser, pUser.getVipMgr().v.aId, pUser.getVipMgr().v.aScore, pUser.getVipMgr().v.aLv);
+                    this.service.activity.setScore(pUser, pUser.getVipMgr().v.aId, pUser.getVipMgr().v.aScore, pUser.getVipMgr().v.aLv);
                 }
             }
         }
@@ -175,7 +175,7 @@ class CoreOfLogic extends CoreOfBase
      * @returns {Number}
      */
     get numOfTotal(){
-        return facade.GetMapping(EntityType.User).total;
+        return this.GetMapping(EntityType.User).total;
     }
 
     /**

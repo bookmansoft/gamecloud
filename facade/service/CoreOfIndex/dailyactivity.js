@@ -60,10 +60,10 @@ class dailyactivity extends facade.Service
             this.$state = $info.state;
         }
         //从缓存管理器中载入缓存的用户信息 act是一个集合，里面存储了所有拥有分数记录的用户的复合ID
-        let uset = this.parent.cacheMgr.groupKeys('act');
+        let uset = this.core.cacheMgr.groupKeys('act');
         if (!!uset) {
             for (let $id of uset) {
-                let us = this.parent.cacheMgr.get($id);
+                let us = this.core.cacheMgr.get($id);
                 if (!!us) {
                     this.users.set(`${us.domain}.${us.openid}`, us);
                 }
@@ -86,13 +86,13 @@ class dailyactivity extends facade.Service
 
         //从Redis中载入缓存的用户信息 act是一个集合，里面存储了所有拥有分数记录的用户的复合ID
         try {
-            let uset = this.parent.cacheMgr.groupKeys('act');
+            let uset = this.core.cacheMgr.groupKeys('act');
             if (!!uset) {
                 //删除用户活动记录
                 for (let $id of uset) {
-                    this.parent.cacheMgr.del($id);
+                    this.core.cacheMgr.del($id);
                 }
-                this.parent.cacheMgr.groupDel('act', uset); //删除集合中全部元素
+                this.core.cacheMgr.groupDel('act', uset); //删除集合中全部元素
             }
         }
         catch (e) {
@@ -211,7 +211,7 @@ class dailyactivity extends facade.Service
             return { code: ReturnCode.Error };
         }
         else {
-            let si = await this.parent.getUserIndex(domain, openid);
+            let si = await this.core.getUserIndex(domain, openid);
             if (!si) {
                 return { code: ReturnCode.Error };
             }
@@ -230,7 +230,7 @@ class dailyactivity extends facade.Service
             let bonus = [{ type: ResType.Gold, num: Math.floor(Math.random()*500) }];
             // bonus.push(this.parent.getTxFriendMgr().getRandomBonus(false));
             //向用户发送一封邮件
-            this.parent.remoteCall('remote.userNotify', {
+            this.core.remoteCall('remote.userNotify', {
                 domain: si.domain,
                 openid: si.openid,
                 msg: {
@@ -292,8 +292,8 @@ class dailyactivity extends facade.Service
      */
     async saveUserInfo(uinfo) {
         let $id = `act.${uinfo.domain}.${uinfo.openid}`;
-        this.parent.cacheMgr.groupAdd('act', $id);          //将用户ID加入‘已参与本次活动’的集合中
-        this.parent.cacheMgr.set($id, uinfo);               //将用户的活动记录，以用户ID为索引，写入redis中
+        this.core.cacheMgr.groupAdd('act', $id);          //将用户ID加入‘已参与本次活动’的集合中
+        this.core.cacheMgr.set($id, uinfo);               //将用户的活动记录，以用户ID为索引，写入redis中
     }
 
     /**
@@ -310,7 +310,7 @@ class dailyactivity extends facade.Service
     async checkUser(domain, openid) {
         let $uid = `${domain}.${openid}`;
         if (!this.users.has($uid)) {
-            let uo = await this.parent.getUserIndex(domain, openid);
+            let uo = await this.core.getUserIndex(domain, openid);
             if (!uo) {
                 return null;
             }
@@ -458,7 +458,7 @@ class dailyactivity extends facade.Service
                 continue;
             }
 
-            let si = await this.parent.getUserIndex(uo.domain, uo.openid);
+            let si = await this.core.getUserIndex(uo.domain, uo.openid);
             if (!si) {
                 continue;
             }
@@ -466,7 +466,7 @@ class dailyactivity extends facade.Service
                 let bonus = [{ type: ResType.Diamond, num: uo.bonus }];
                 let msg = { type: NotifyType.DailyActivityBonus, info: { bonus: bonus, rank: uo.rank } };
                 //向用户发送一封邮件
-                this.parent.remoteCall('remote.userNotify', {
+                this.core.remoteCall('remote.userNotify', {
                     domain: uo.domain,
                     openid: uo.openid,
                     msg: msg
@@ -527,11 +527,11 @@ class dailyactivity extends facade.Service
      * 检测活动按钮开启状态
      */
     async CheckButtonStatus(domain, openid) {
-        let ui = await this.parent.getUserIndex(domain, openid);
+        let ui = await this.core.getUserIndex(domain, openid);
         if (!!ui) {
             let cur = new Date();
             if (this.$state == DailyActivityStatus.Idle) {
-                this.parent.remoteCall('remote.userNotify', {
+                this.core.remoteCall('remote.userNotify', {
                     domain: domain,
                     openid: openid,
                     msg: { type: NotifyType.DailyActivityState, info: { status: "close" } }
@@ -542,7 +542,7 @@ class dailyactivity extends facade.Service
                 if (this.$state != DailyActivityStatus.Ready) {
                     cd = 0;
                 }
-                this.parent.remoteCall('remote.userNotify', {
+                this.core.remoteCall('remote.userNotify', {
                     domain: domain,
                     openid: openid,
                     msg: { type: NotifyType.DailyActivityState, info: { status: "open", cd: cd } }

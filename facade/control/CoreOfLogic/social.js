@@ -144,7 +144,7 @@ class social extends baseCtl {
                     user.socialNotify($msg, objData.openid);
                     let fri = user.baseMgr.txFriend.getFriend($msg.info.dst);
                     // if(!!fri) {
-                    //     user.router.service.txApi.send_gamebar_msg(user,$msg.info.dst,3,"对你说最近表现的不错继续加油再有365个月我会考虑让你转正","V1_AND_QZ_4.9.3_148_RDM_T");
+                    //     user.core.service.txApi.send_gamebar_msg(user,$msg.info.dst,3,"对你说最近表现的不错继续加油再有365个月我会考虑让你转正","V1_AND_QZ_4.9.3_148_RDM_T");
                     // }
                     //成功后给奴隶主发放奖励
                     let bonus = [{type:ResType.Gold, num:500}];

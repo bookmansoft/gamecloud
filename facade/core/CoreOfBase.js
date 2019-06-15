@@ -9,6 +9,7 @@ let Control = facade.Control
 let UserEntity = facade.entities.UserEntity;
 let connectMonitor = require('../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../util/taskManager')
+let Mapping = require('../util/mixin/Mapping')
 
 /**
  * 门面管理类
@@ -110,8 +111,6 @@ class CoreOfBase
         this.loadingList = {};
     }
 
-    
-
     /**
      * 设置静态资源映射
      * @param {*} route 
@@ -137,6 +136,33 @@ class CoreOfBase
      */
     static get mapping() {
         return [];
+    }
+
+    /**
+     * 查询并返回实体对象
+     * @param {*} etype 实体对象的类型
+     * @param {*} index 索引值
+     * @param {*} itype 索引类型
+     */
+    GetObject(etype, index, itype = facade.const.IndexType.Primary){
+        return this.GetMapping(etype).GetObject(index, itype);
+    }
+
+    /**
+     * 获取实体对象的集合映射体
+     * @param {*} etype 实体对象的类型
+     * @return {Mapping}
+     */
+    GetMapping(etype) {
+        if(!facade.muster){
+            facade.muster = {};
+
+            Object.keys(facade.entities).map(key=>{
+                let entity = facade.entities[key];           
+                facade.muster[entity.mapParams.etype] = Mapping.muster(entity, this);
+            });
+        }
+        return facade.muster[etype];
     }
 
     /**
@@ -189,7 +215,7 @@ class CoreOfBase
 
             let _socket = {};
             try{
-                _socket.user = await facade.GetObject(EntityType.User, req.query.oemInfo.token, IndexType.Token);
+                _socket.user = await this.GetObject(EntityType.User, req.query.oemInfo.token, IndexType.Token);
                 
                 //提取客户端IP信息
                 req.query.userip = req.ip.match(/\d+.\d+.\d+.\d+/)[0];
@@ -214,7 +240,7 @@ class CoreOfBase
 
             let _socket = {};
             try{
-                _socket.user = await facade.GetObject(EntityType.User, req.body.oemInfo.token, IndexType.Token);
+                _socket.user = await this.GetObject(EntityType.User, req.body.oemInfo.token, IndexType.Token);
                 
                 //提取客户端IP信息
                 req.body.userip = req.ip.match(/\d+.\d+.\d+.\d+/)[0];
@@ -468,7 +494,7 @@ class CoreOfBase
 
         if(!socket.user && !!msg.oemInfo && !!msg.oemInfo.token){
             //根据用户上行的token进行预登录
-            socket.user = facade.GetObject(EntityType.User, msg.oemInfo.token, IndexType.Token)
+            socket.user = this.GetObject(EntityType.User, msg.oemInfo.token, IndexType.Token)
         }
 
         let ini = {socket:socket, msg:msg, fn:fn, recy:true, facade: this};

@@ -13,7 +13,7 @@ class baseService extends StatusMachine
         /**
          * 节点对象
          */
-        this.parent = args[0];
+        this.core = args[0];
     }
 }
 

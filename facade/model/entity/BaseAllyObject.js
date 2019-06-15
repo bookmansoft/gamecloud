@@ -104,9 +104,10 @@ class BaseAllyObject extends BaseEntity
     /**
      * 构造函数
      * @param {ally} orm 
+     * @param {CoreOfBase} core
      */
-	constructor(orm, router){
-        super(orm, router);
+	constructor(orm, core) {
+        super(orm, core);
 
         //region 成员属性
         this.MemberList = {};//盟友列表 array of AllyMember
@@ -214,7 +215,7 @@ class BaseAllyObject extends BaseEntity
         //设置脏数据标志
         this.dirty = true;
 
-        facade.current.notifyEvent('ally.reqAllow', {aid:this.aid, src:$oper['id'], dst:$uid});
+        this.core.notifyEvent('ally.reqAllow', {aid:this.aid, src:$oper['id'], dst:$uid});
         
         //返回成功码
         return ReturnCode.Success;
@@ -486,7 +487,7 @@ class BaseAllyObject extends BaseEntity
     }
 
     GetLeader() {
-        return facade.GetObject(EntityType.User, this.orm['uid']); //获取缓存对象
+        return this.core.GetObject(EntityType.User, this.orm['uid']); //获取缓存对象
     }
 
 	CheckBattle($_battle){
@@ -511,7 +512,7 @@ class BaseAllyObject extends BaseEntity
     Terminate(){
         //向所有人群发联盟解散消息
         for(let $value of this.GetAllMember()){
-            facade.current.notifyEvent('ally.terminated', {aid:this.aid, dst:$value.uid});
+            this.core.notifyEvent('ally.terminated', {aid:this.aid, dst:$value.uid});
         }
     }
 
@@ -532,7 +533,7 @@ class BaseAllyObject extends BaseEntity
     }
 
     onUpdate(){
-        facade.current.notifyEvent('ally.update', {id:this.aid});
+        this.core.notifyEvent('ally.update', {id:this.aid});
     }
 
 	refreshBonusTime($_kid, $obtain){
@@ -578,7 +579,7 @@ class BaseAllyObject extends BaseEntity
      * @param {*}  $_temp 内容
      */
 	AddNewsWithType($_type, $_temp) {
-        facade.current.notifyEvent('ally.addNews', {aid:this.aid, type:$_type, value:$_temp});
+        this.core.notifyEvent('ally.addNews', {aid:this.aid, type:$_type, value:$_temp});
 	}
 
     /**
@@ -649,7 +650,7 @@ class BaseAllyObject extends BaseEntity
 	RefreshHeadShip(){
         //重新排定盟友职务
         let $reqNewLeader = false;
-        let $user = facade.GetObject(EntityType.User, this.uid);
+        let $user = this.core.GetObject(EntityType.User, this.uid);
         if (!$user) {
             this.DelMember(null, this.uid);
             $reqNewLeader = true;//盟主数据非法，换掉
@@ -877,7 +878,7 @@ class BaseAllyObject extends BaseEntity
                     $oper.aid =  0;
                 }
                 else{
-                    facade.current.notifyEvent('ally.kicked', {aid:this.aid, src:$oper['id'], dst:$uid});
+                    this.core.notifyEvent('ally.kicked', {aid:this.aid, src:$oper['id'], dst:$uid});
                 }
 
                 if($oper['id'] == $uid){//添加盟员退盟新闻
@@ -950,7 +951,7 @@ class BaseAllyObject extends BaseEntity
         if($src['aid'] <= 0){
             return ReturnCode.AllyNotExist;
         }
-        let $ao = facade.GetObject(EntityType.Ally, $src['aid']);
+        let $ao = $src.core.GetObject(EntityType.Ally, $src['aid']);
         if(!$ao){
             return ReturnCode.AllyNotExist;
         }
@@ -961,7 +962,7 @@ class BaseAllyObject extends BaseEntity
         }
 
         //发出交互类异步事件
-        facade.current.notifyEvent('ally.invite', {aid:$ao['aid'], src:$src.id, dst:$dstId});
+        $src.core.notifyEvent('ally.invite', {aid:$ao['aid'], src:$src.id, dst:$dstId});
         return ReturnCode.Success;
     }
 
@@ -981,7 +982,7 @@ class BaseAllyObject extends BaseEntity
             $ret = ReturnCode.DataNotExist;
         }
         else{
-            let $ao = facade.GetObject(EntityType.Ally, $_aid);
+            let $ao = $uo.core.GetObject(EntityType.Ally, $_aid);
             //入盟邀请处理流程：先模拟入盟申请、再自动批准，在后续流程中读取批准消息并处理
             $ret = $ao.ReqSubmit($uo);
             if($ret == ReturnCode.Success){
@@ -1014,7 +1015,7 @@ class BaseAllyObject extends BaseEntity
             return ReturnCode.HasNoAlly;
         }
 
-        let $ao = facade.GetObject(EntityType.Ally, $user['aid']);
+        let $ao = $user.core.GetObject(EntityType.Ally, $user['aid']);
         if(!$ao){
             return ReturnCode.AllyNotExist;
         };
@@ -1030,7 +1031,7 @@ class BaseAllyObject extends BaseEntity
             $ao.Terminate();
             
             //删除联盟新闻
-            facade.current.notifyEvent('ally.clearNews', {aid:$ao['aid']});
+            $user.core.notifyEvent('ally.clearNews', {aid:$ao['aid']});
     
             //从缓存和数据库中删除联盟数据
             $ao.Remove();
@@ -1048,7 +1049,7 @@ class BaseAllyObject extends BaseEntity
         if($uo['aid'] > 0){
             return ReturnCode.HasAlly;
         }
-        let $ao = await facade.GetMapping(EntityType.Ally).Create($uo.id, $uo.openid);
+        let $ao = await $uo.core.GetMapping(EntityType.Ally).Create($uo.id, $uo.openid);
         $ao.ReqSubmit($uo);
         $ao.ReqAllow($uo, $uo['id']);
 
@@ -1152,8 +1153,8 @@ class BaseAllyObject extends BaseEntity
      * 进行字典映射时的回调函数
      * @param {ally} record
      */
-    static onMapping(record){
-        let ao = new facade.entities.AllyObject(record, facade.current);
+    static onMapping(record, core) {
+        let ao = new facade.entities.AllyObject(record, core);
         if(record._options.isNewRecord){//新创建的记录
             ao.isNewbie = true;
             ao.aSetting = 0;
@@ -1187,16 +1188,12 @@ class BaseAllyObject extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
-        try{
+        try {
             let ret = await ally(db, sa, pwd).findAll();
             ret.map(it=>{
                 callback(it);
             });
-        }catch(e){}
+        } catch(e) {}
     }
 
     /**

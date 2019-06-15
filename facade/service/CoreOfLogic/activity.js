@@ -1,6 +1,7 @@
 let facade = require('../../Facade')
 let {EntityType, ReturnCode, ActivityScoreRate, ActivityType, ActivityStatus, ActivityRankMax} = facade.const
 let UserEntity = facade.entities.UserEntity
+let CoreOfBase = facade.CoreOfBase
 
 /**
  * 活动管理类
@@ -9,9 +10,10 @@ class activity extends facade.Service
 {
     /**
      * 构造函数
+     * @param {CoreOfBase} core
      */
-    constructor(parent){
-        super(parent, {
+    constructor(core){
+        super(core, {
             init: ActivityStatus.Idle,
             transitions: [
                 { name: 'setToActive', from: ActivityStatus.Idle,  to: ActivityStatus.Active },                 //系统启动，初始化对象
@@ -50,9 +52,9 @@ class activity extends facade.Service
                         for(let rank in facade.config.fileMap.activity.ActivityRankBonus[this.type]){
                             if(uo.rank <= rank){
                                 //发放奖励，并下行奖励通知 - 改为事件模式
-                                let user = facade.GetObject(EntityType.User, uo.uid);
+                                let user = this.core.GetObject(EntityType.User, uo.uid);
                                 if(!!user){
-                                    this.parent.notifyEvent("user.Activity.RankBonus", {user:user, rank: rank});
+                                    this.core.notifyEvent("user.Activity.RankBonus", {user:user, rank: rank});
                                 }
                                 break;
                             }
@@ -63,7 +65,7 @@ class activity extends facade.Service
                 },
             }
         });
-        this.parent = parent;
+        this.core = core;
     }
 
     /**
@@ -209,7 +211,7 @@ class activity extends facade.Service
      */
     getUserOrDefault($uid){
         if(!this.users.has($uid)){//如果不存在指定记录，就创建一条新记录
-            let uo = facade.GetObject(EntityType.User, $uid);
+            let uo = this.core.GetObject(EntityType.User, $uid);
             if(!!uo){
                 this.users.set($uid, {
                     uid:$uid,       //玩家ID
@@ -359,7 +361,7 @@ class activity extends facade.Service
         }
 
         let ui = this.getUserOrDefault($uid);
-        let user = facade.GetObject(EntityType.User, $uid);
+        let user = this.core.GetObject(EntityType.User, $uid);
         if(!!user){
             ui.score += $added * ActivityScoreRate[this.type]; //不同活动具有不同的分数转化率
             for(let i = 0;i < 5;i++){
@@ -367,7 +369,7 @@ class activity extends facade.Service
                     ui.lv = i;
                 }
             }
-            this.parent.notifyEvent("user.Activity.ScoreBonus", {user:user, score: ui.score, lv: ui.lv});
+            this.core.notifyEvent("user.Activity.ScoreBonus", {user:user, score: ui.score, lv: ui.lv});
             // if(!!facade.config.fileMap.activity.ActivityScoreBonus[this.type][ui.lv+1] && ui.score >= facade.config.fileMap.activity.ActivityScoreBonus[this.type][ui.lv+1].score){
             //     //提升积分等级
             //     ui.lv++;
@@ -375,7 +377,7 @@ class activity extends facade.Service
             //     this.parent.notifyEvent("user.Activity.ScoreBonus", {user:user, score: ui.score, lv: ui.lv});
             // }
             //活动积分发生变化
-            this.parent.notifyEvent("user.Activity.ScoreChanged", {user:user, score: ui.score, lv: ui.lv});
+            this.core.notifyEvent("user.Activity.ScoreChanged", {user:user, score: ui.score, lv: ui.lv});
         }
     }
 

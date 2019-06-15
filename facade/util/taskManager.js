@@ -1,3 +1,5 @@
+let facade = require('../Facade')
+let CoreOfBase = facade.CoreOfBase
 let um = require('./updateMgr');
 
 /**
@@ -47,10 +49,10 @@ class AutoTaskManager
 {
     /**
      * 构造函数
-     * @param {CoreOfBase} parent    核心对象
+     * @param {CoreOfBase} core    核心对象
      */
-    constructor(parent){
-        this.parent = parent; //注入核心对象
+    constructor(core){
+        this.core = core; //注入核心对象
 
         //延期自动执行任务的缓存列表
         this.updateRecord = {};
@@ -103,26 +105,24 @@ class AutoTaskManager
      * tick事件句柄
      */
     checkTask() {
-        try{
+        try {
             let curTime = (new Date()).valueOf();
-            let facade = this.parent;
-            
             //检测监视器状态，当状态失效时，就从监控列表中删除
             for(let id of Object.keys(this.monitorRecord)){
                 if(this.monitorRecord[id].$taskTime.check()){ //监控周期时间检测
-                    if(this.monitorRecord[id].execute(facade)){
+                    if(this.monitorRecord[id].execute(this.core)){
                         delete this.monitorRecord[id];
                     }
                 }
             }
 
             //执行自动任务，其主要目的是在延迟期内合并一系列同类任务，以降低IO压力
-            let recy = facade.options.PoolMax / 2; //控制并发数量的循环变量
+            let recy = this.core.options.PoolMax / 2; //控制并发数量的循环变量
             for(let id of Object.keys(this.updateRecord)){
                 if(recy > 0){//并发控制检测
                     if(this.updateRecord[id].$taskTime.check()) {//延迟时间检测
                         recy--;                                 //并发数量减1
-                        this.updateRecord[id].execute(facade);  //执行自动任务
+                        this.updateRecord[id].execute(this.core);  //执行自动任务
                         delete this.updateRecord[id];           //删除自动任务
                     }
                 }

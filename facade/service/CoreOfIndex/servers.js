@@ -1,13 +1,17 @@
 let facade = require('../../Facade')
 let {UserStatus, ReturnCode} = facade.const
-
+let CoreOfBase = facade.CoreOfBase
 /**
  * 用户集合管理类, 对IndexServer而言，用户就是已登录的逻辑服务器
  */
 class servers extends facade.Service
 {
-    constructor(parent) {
-        super(parent);
+    /**
+     * 构造函数
+     * @param {CoreOfBase} core 
+     */
+    constructor(core) {
+        super(core);
 
         this.serverList = {};		    //用户对象map
         this.userNum = {};          //各逻辑服当前注册用户数
@@ -25,10 +29,6 @@ class servers extends facade.Service
      * @returns {Promise.<void>}
      */
     async loadIndex(db, sa, pwd, serverType, serverId){
-        db = db || this.parent.options.mysql.db;
-        sa = sa || this.parent.options.mysql.sa;
-        pwd = pwd || this.parent.options.mysql.pwd;
-
         try{
             let sn = `${serverType}.${serverId}`; //服务器唯一编号
             //累计当前服的总人数
@@ -58,7 +58,7 @@ class servers extends facade.Service
                     sid: serverId
                 };
 
-                this.parent.cacheMgr.set(un, uo);
+                this.core.cacheMgr.set(un, uo);
             }
         }
         catch(e){}

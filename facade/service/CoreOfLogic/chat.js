@@ -32,7 +32,7 @@ class chat extends facade.Service
             if(!!$lastItem){
                 record.mid = ($lastItem['mid'] < Number.MAX_VALUE) ? $lastItem['mid'] + 1 : 1;
             }
-            this.parent.forAll(user=>{
+            this.core.forAll(user=>{
                 user.notify({type: NotifyType.chat, info: record});
                 user.privateChatMgr.setCurPoint(record.mid); //推进消息指针
             })

@@ -89,7 +89,7 @@ class info extends baseMgr
                 case UserStatus.slave:
                 case UserStatus.master:
                     //将新的状态登记到索引服上
-                    this.parent.router.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
+                    this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
 
                     //通知所有好友，状态发生了变化
                     this.parent.socialBroadcast({type: NotifyType.userStatus, info: {id:this.parent.openid, value:this.v.status}});
@@ -120,7 +120,7 @@ class info extends baseMgr
                     //通知所有好友，状态发生了变化
                     this.parent.socialBroadcast({type: NotifyType.userStatus, info: {id:this.parent.openid, value:this.v.status}});
                     //将新的状态登记到索引服上
-                    this.parent.router.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
+                    this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
                     break;
 
                 default:
@@ -142,7 +142,7 @@ class info extends baseMgr
         this.SetRecord(RecordType.Role, parseInt(val));
 
         //角色形象发生变化
-        this.parent.router.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
+        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
     }
     get scene(){
         return this.GetRecord(RecordType.Scene);

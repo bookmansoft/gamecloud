@@ -42,7 +42,7 @@ class UserDefine extends facade.Control
      * @param {*} oemInfo 
      */
     async check(oemInfo) {
-        let _sign = (oemInfo.auth.sign == facade.util.sign(oemInfo.auth, facade.current.options[DomainType.D360].game_secret));
+        let _sign = (oemInfo.auth.sign == facade.util.sign(oemInfo.auth, this.parent.options[DomainType.D360].game_secret));
         let _exp = (Math.abs(oemInfo.auth.t - now()) <= 300);
         if (!_sign || !_exp) {
             throw new Error('authThirdPartFailed');

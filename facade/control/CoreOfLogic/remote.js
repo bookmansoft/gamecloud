@@ -24,7 +24,7 @@ class remote extends facade.Control
         /**
          * @type {UserEntity}
          */
-        let ui = global.facade.GetObject(EntityType.User, `${obj.domain}.${obj.openid}`, IndexType.Domain);
+        let ui = this.parent.GetObject(EntityType.User, `${obj.domain}.${obj.openid}`, IndexType.Domain);
         if(!!ui){
             ui.socialNotify(obj.msg);
         }
@@ -52,7 +52,7 @@ class remote extends facade.Control
             data:{
                 totalUser:this.parent.numOfTotal, 
                 totalOnline: this.parent.numOfOnline, 
-                totalAmount: facade.GetMapping(EntityType.BuyLog).summary('total_fee', cur=>{return cur.result == PurchaseStatus.commit}),
+                totalAmount: this.parent.GetMapping(EntityType.BuyLog).summary('total_fee', cur=>{return cur.result == PurchaseStatus.commit}),
             }
         };
     }

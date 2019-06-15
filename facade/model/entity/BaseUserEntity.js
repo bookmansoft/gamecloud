@@ -31,8 +31,8 @@ class BaseUserEntity extends BaseEntity
      * 构造函数
      * @param {User} user 
      */
-	constructor(user, router){
-        super(user, router);
+	constructor(user, core){
+        super(user, core);
 
         if(user.domain == ""){
             user.domain = "official";
@@ -100,7 +100,7 @@ class BaseUserEntity extends BaseEntity
         }
         else{
             this.domainList.map(domain=>{
-                let friend = facade.GetObject(EntityType.User, `${domain}.${openid}`,IndexType.Domain);
+                let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`,IndexType.Domain);
                 if(!!friend){
                     cb(friend);
                 }
@@ -119,12 +119,12 @@ class BaseUserEntity extends BaseEntity
         }
         else{
             this.domainList.map(domain=>{
-                let friend = facade.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
+                let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
                 if(!!friend){//发送给同服的好友
                     friend.$handleSocialMsg(msg);
                 }
                 else{//通过路由模式，发送给不同服的好友
-                    this.router.remoteCall('remote.userNotify', {domain: domain, openid: openid, msg: msg});
+                    this.core.remoteCall('remote.userNotify', {domain: domain, openid: openid, msg: msg});
                 }
             });
         }
@@ -154,7 +154,7 @@ class BaseUserEntity extends BaseEntity
      * @param msg
      */
 	$handleSocialMsg(msg){
-        this.router.notifyEvent('user.socialMsg', {user:this, data:msg});
+        this.core.notifyEvent('user.socialMsg', {user:this, data:msg});
 	}
 
     /**
@@ -165,7 +165,7 @@ class BaseUserEntity extends BaseEntity
      *      原始消息为msg，抛出时包裹了socket信息，实际下发时会自动剥离，最终下发的消息仍旧为原始msg
      */
     notify(msg){
-        this.router.notifyEvent('socket.userNotify', {sid: this.socket, msg: msg});
+        this.core.notifyEvent('socket.userNotify', {sid: this.socket, msg: msg});
     }
 
     /**
@@ -258,7 +258,7 @@ class BaseUserEntity extends BaseEntity
         this.orm.hisGateNo = parseInt(val || 1);
 
         this.dirty = true;
-        facade.current.notifyEvent('user.newAttr', {user:this, attr:{type:'hisGateNo', value:val}});
+        this.core.notifyEvent('user.newAttr', {user:this, attr:{type:'hisGateNo', value:val}});
     }
 
     /**
@@ -272,7 +272,7 @@ class BaseUserEntity extends BaseEntity
 
         this.dirty = true;
         //广播属性变化事件
-        facade.current.notifyEvent('user.newAttr', {user:this, attr:{type:'score', value:val}});
+        this.core.notifyEvent('user.newAttr', {user:this, attr:{type:'score', value:val}});
     }
 
     //腾讯大厅
@@ -323,7 +323,7 @@ class BaseUserEntity extends BaseEntity
 					this.baseMgr.txInfo.SetGender(txuserdata.gender);
 				}
 				if (txuserdata.figureurl != undefined && txuserdata.figureurl != "") {
-                    this.orm.pet = this.router.urlToCdn(txuserdata.figureurl); //保存到数据库pet字段
+                    this.orm.pet = this.core.urlToCdn(txuserdata.figureurl); //保存到数据库pet字段
 
                     nw.push({type:'icon', value:this.orm.pet});//更新头像
 
@@ -344,7 +344,7 @@ class BaseUserEntity extends BaseEntity
                 }
 
                 if(nw.length > 0){
-                    this.router.notifyEvent('user.newAttr', {user:this, attr:nw});//发送"更新名称"事件
+                    this.core.notifyEvent('user.newAttr', {user:this, attr:nw});//发送"更新名称"事件
                 }
 			}
 		}
@@ -365,7 +365,7 @@ class BaseUserEntity extends BaseEntity
      * 检测邮箱状态
      */
     CheckMailboxState(){
-        let mb = facade.GetMapping(EntityType.Mail).groupOf(this.openid).where([['state', 0]]).records();
+        let mb = this.core.GetMapping(EntityType.Mail).groupOf(this.openid).where([['state', 0]]).records();
         if(mb.length == 0){
             this.getInfoMgr().UnsetStatus(UserStatus.newMsg, false); 
         }
@@ -427,7 +427,7 @@ class BaseUserEntity extends BaseEntity
             let t1 = Date.parse(this.orm.createdAt.toDateString())/1000;
             let t2 = Date.parse(day)/1000;
             let tp = ((t2-t1)/(3600*24)) | 0;
-            facade.current.notifyEvent('user.relogin', {user:this, data:{type:tp, time:day}})
+            this.core.notifyEvent('user.relogin', {user:this, data:{type:tp, time:day}})
         }
     }
 
@@ -577,9 +577,9 @@ class BaseUserEntity extends BaseEntity
         //添加内丹（英魂）对战力的加持
         $ret = $ret._mul_(1 + this.effect().CalcFinallyValue(em_Effect_Comm.StoneEffect, this.getPocket().GetRes(ResType.StoneHero)*(0.1 + 0.005*this.getTollgateMgr().revivalNum)));
         // //检测战力等级：战力等级为战力指数/10
-        // facade.current.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:($ret.power/10)|0, mode:em_Condition_Checkmode.absolute}});
+        // this.core.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:($ret.power/10)|0, mode:em_Condition_Checkmode.absolute}});
         //检测战力等级：战力等级为战力指数
-        facade.current.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:$ret.power|0, mode:em_Condition_Checkmode.absolute}});
+        this.core.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:$ret.power|0, mode:em_Condition_Checkmode.absolute}});
         return $ret;
     }
     /**
@@ -637,7 +637,7 @@ class BaseUserEntity extends BaseEntity
      * 数据发生变化时的事件句柄
      */
     onUpdate(){
-        facade.current.notifyEvent('user.update', {user:this})
+        this.core.notifyEvent('user.update', {user:this})
     }
 
     //region 集成Ranking接口时，必须具备的辅助函数，包括：ScoreOf rankParams IndexOf
@@ -711,14 +711,11 @@ class BaseUserEntity extends BaseEntity
      * @param {*} userName  用户名称
      * @param {*} domain    用户归属域(证书发放方)
      * @param {*} openid    用户证书
+     * @param {*} passway   是否预登录检测，例如，管理员登录Index服务器时不做预登录检测
      */
-    static async onCreate(userName, domain, openid) {
-        try{
-            //预登录检测，设定一些例外的情形
-            let passway = (facade.current.options.serverType == "Index" && domain == "admin") //对管理员登录Index服务器，不做预登录检测
-            || facade.current.options.debug; // 测试模式
-
-            if(!passway){
+    static async onCreate(userName, domain, openid, passway) {
+        try {
+            if(!passway) {
                 if(!this.authPreList(`${domain}.${openid}`, {openid:openid, domain:domain})) {
                     return null;
                 }
@@ -732,8 +729,7 @@ class BaseUserEntity extends BaseEntity
                 defaults: this.getDefaultValue(userName, domain, openid),
             });
             return it[0];
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
             return null;
         }
@@ -743,28 +739,26 @@ class BaseUserEntity extends BaseEntity
      * 进行字典映射时的回调函数
      * @param {*} user 
      */
-    static onMapping(user){
+    static onMapping(user, core) {
         if(user.domain == ""){
             user.domain = "official";
         }
 
-        let pUser = new facade.entities.UserEntity(user, facade.current);
+        let pUser = new facade.entities.UserEntity(user, core);
         pUser.domainId = pUser.domain + '.' + pUser.openid;
         
-        if((new Date()).toDateString() != pUser.getRefreshDate()){//数据跨天
+        if((new Date()).toDateString() != pUser.getRefreshDate()) {//数据跨天
             pUser.getInfoMgr().v.scored = 0; //清空用户过期的每日榜分数，之所以修改info.v.scored而不是info.scored，是为了不在载入阶段触发排序事件
         }
 
-
         //添加VIP标志监控器，以便定时检测该标记是否失效
-        if(pUser.getInfoMgr().CheckStatus(UserStatus.isVip) || pUser.getVipMgr().valid){
-            facade.current.notifyEvent('user.update', {user:pUser});
+        if(pUser.getInfoMgr().CheckStatus(UserStatus.isVip) || pUser.getVipMgr().valid) {
+            core.notifyEvent('user.update', {user:pUser});
         }
 
-        if(user._options.isNewRecord){//新创建的记录
+        if(user._options.isNewRecord) {//新创建的记录
             pUser.getInfoMgr().SetStatus(UserStatus.isNewbie, false);
-        }
-        else{//已有的记录
+        } else {//已有的记录
             pUser.getInfoMgr().UnsetStatus(UserStatus.isNewbie, false);
             //向排序管理器注册用户信息，标注为数据载入阶段，因此不会触发排序操作
             facade.GetRanking(this).Update(pUser, true);
@@ -781,18 +775,13 @@ class BaseUserEntity extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
-        try{
+        try {
             let ret = await User(db, sa, pwd).findAll();
             ret.map(it=>{
                 callback(it);
             });
             facade.GetRanking(this).Init();
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
         }
     }

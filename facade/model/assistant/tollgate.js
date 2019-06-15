@@ -126,7 +126,7 @@ class tollgate extends baseMgr
                         bonus: [{type:ResType.Diamond, num:1}],
                     }
                 };
-                facade.GetMapping(EntityType.Mail).Create(this.parent, msg, "system", this.parent.openid);
+                this.parent.core.GetMapping(EntityType.Mail).Create(this.parent, msg, "system", this.parent.openid);
             }
         }
     }

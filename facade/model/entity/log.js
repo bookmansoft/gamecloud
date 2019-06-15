@@ -8,8 +8,8 @@ let {BuyLog} = require('../table/BuyLog')
  */
 class log extends BaseEntity
 {
-    constructor(orm, router){
-        super(orm, router);
+    constructor(orm, core){
+        super(orm, core);
     }
 
     //region 集合功能
@@ -43,7 +43,7 @@ class log extends BaseEntity
      * 创建时的回调函数
      */
     static async onCreate(domain, uuid, product_id, total_fee, notify_time, product_name, request_count) {
-        try{
+        try {
             let it = await BuyLog().create({
                 'domain':domain,
                 'uuid':uuid,
@@ -58,8 +58,7 @@ class log extends BaseEntity
             await it.save();
     
             return it;
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
         }
         return null;
@@ -69,8 +68,8 @@ class log extends BaseEntity
      * 进行字典映射时的回调函数
      * @param {*} record 
      */
-    static onMapping(record){
-        let obj = new log(record, facade.current);
+    static onMapping(record, core) {
+        let obj = new log(record, core);
         return obj;
     }
 
@@ -82,16 +81,12 @@ class log extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
-        try{
+        try {
             let ret = await BuyLog(db, sa, pwd).findAll();
             ret.map(it=>{
                 callback(it);
             });
-        }catch(e){}
+        } catch(e) {}
     }
     //endregion
 }

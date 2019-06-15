@@ -96,7 +96,7 @@ class txFriend extends baseMgr
     sendHello(msg){
         if(msg.info.src == this.parent.openid && msg.info.dst != this.parent.openid){
             if(this.AddFriend(msg.info.dst)){
-                if(this.parent.router.options.debug || this.v.friendList[msg.info.dst].s <= 0){
+                if(this.parent.core.options.debug || this.v.friendList[msg.info.dst].s <= 0){
                     this.dirty = true;
                     this.v.friendList[msg.info.dst].s = 1;      //记录点过的赞
                     this.v.friendList[msg.info.dst].h += 1;     //亲密度加1
@@ -169,7 +169,7 @@ class txFriend extends baseMgr
                 }, [{openid:this.parent.openid}]);
         
                 if(!!fns && fns.length > 0){
-                    let result = await this.parent.router.remoteCall('getFriendRankList', {list:fns, filter:filter}, msg=>{return msg});
+                    let result = await this.parent.core.remoteCall('getFriendRankList', {list:fns, filter:filter}, msg=>{return msg});
                     for(let item of result.data.list){
                         //为符合 UpdateRecord 的要求，对 item 做了修正：
                         item.id = item.openid;
@@ -198,10 +198,10 @@ class txFriend extends baseMgr
      */
     async getSocialNetwork(){
         if(this.timer.check()) {
-            if(this.parent.router.options.debug){
+            if(this.parent.core.options.debug){
                 try{
                     //从索引服务器获取模拟的好友列表
-                    let apiRet = await this.parent.router.remoteCall('getFriendList', {openid: this.parent.openid}, msg=>{return msg});
+                    let apiRet = await this.parent.core.remoteCall('getFriendList', {openid: this.parent.openid}, msg=>{return msg});
                     if (!!apiRet && apiRet.ret == 0) {
                         this.dirty = true;
                         apiRet.items.map(item=>{
@@ -218,11 +218,11 @@ class txFriend extends baseMgr
             }
             else{
                 try{
-                    let apiRet = await this.parent.router.service.txApi.Get_App_Friends(
+                    let apiRet = await this.parent.core.service.txApi.Get_App_Friends(
                         this.parent.openid,
                         this.parent.baseMgr.txInfo.GetOpenKey(),
                         this.parent.baseMgr.txInfo.GetPf(),
-                        this.parent.router.options.tx.appid, 1
+                        this.parent.core.options.tx.appid, 1
                     );
                     if (apiRet.ret == 0) {
                         this.dirty = true;

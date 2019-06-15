@@ -4,6 +4,7 @@ let BonusObject = require('../../../facade/util/comm/BonusObject')
 let {Mail} = require("../table/Mail")
 let UserEntity = facade.entities.UserEntity
 let BaseEntity = facade.BaseEntity
+let CoreOfBase = facade.CoreOfBase
 
 /**
  * 消息管理器
@@ -11,8 +12,8 @@ let BaseEntity = facade.BaseEntity
  */
 class mails extends BaseEntity
 {
-    constructor(orm, router){
-        super(orm, router);
+    constructor(orm, core){
+        super(orm, core);
     }
 
     /**
@@ -33,7 +34,15 @@ class mails extends BaseEntity
      * 处理附件
      * @param {*} msg 
      */
-    handleAdditional(user){
+    handleAdditional(user) {
+        if(typeof user != 'object') {
+            user = this.core.GetObject(EntityType.User, user, IndexType.Foreign);
+        }
+
+        if(!user) {
+            return [];
+        }
+
         let $content = JSON.parse(this.orm.content);
         if(!!$content.info.bonus){ //有未领取奖励
             if(typeof $content.info.bonus == "string"){
@@ -97,7 +106,7 @@ class mails extends BaseEntity
      * 创建时的回调函数
      */
     static async onCreate(uo, content, src, dst) {
-        try{
+        try {
             if(content.constructor == Object) { //数据库字段格式为string，此处适配下
                 content = JSON.stringify(content);
             }
@@ -110,7 +119,7 @@ class mails extends BaseEntity
                 state: 0            //未读取状态
             });
 
-            uo.DelegateByOpenid(user=>{
+            uo.DelegateByOpenid(user => {
                 user.baseMgr.info.SetStatus(UserStatus.newMsg); //为目标用户设置新邮件标志
             }, dst);
 
@@ -126,21 +135,19 @@ class mails extends BaseEntity
      * 删除指定邮件
      * @param {*} entity 
      */
-    static async onDelete(entity){
+    static async onDelete(entity) {
         if(entity.state == 0){ //只有删除未读邮件，才会引发状态变化
-            let uo = facade.GetObject(EntityType.User, entity.dst, IndexType.Foreign);
-            if(!!uo){
-                entity.handleAdditional(uo);
-            }
+            entity.handleAdditional(entity.dst);
         }
     }
 
     /**
      * 进行字典映射时的回调函数
      * @param {*} record 
+     * @param {CoreOfBase} core
      */
-    static onMapping(record){
-        let mail = new mails(record, facade.current);
+    static onMapping(record, core) {
+        let mail = new mails(record, core);
         return mail;
     }
 
@@ -152,11 +159,7 @@ class mails extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
-        try{
+        try {
             let $expired = facade.util.now() - 3600*24*30; //只读取一个月内的邮件
             let ret = await Mail(db, sa, pwd).findAll({
                 where: {
@@ -166,7 +169,7 @@ class mails extends BaseEntity
             ret.map(it=>{
                 callback(it);
             });
-        }catch(e){}
+        } catch(e){}
     }
     //endregion
 }

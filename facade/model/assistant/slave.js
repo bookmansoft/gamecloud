@@ -97,7 +97,7 @@ class slave extends baseMgr {
                     // 奴隶收到鞭挞推送消息
                     if(!!fri) {
                         let desc = facade.config.slaveMsg["lash"].desc;
-                        this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                        this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
 					}
                 }
                 return [ret.code, slv.time];
@@ -129,7 +129,7 @@ class slave extends baseMgr {
                     // 奴隶主收到赎身推送消息
                     if(!!fri) {
                         let desc = facade.config.slaveMsg["ransom"].desc;
-                        this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                        this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                     }
                     return ReturnCode.Success;
                 }
@@ -162,7 +162,7 @@ class slave extends baseMgr {
                 if(!!fri) {
                     let desc = facade.config.slaveMsg["food"].desc;
                     desc = desc.replace("&slave",decodeURIComponent(fri.name));
-                    this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                    this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
             }
             return ret.code;
@@ -189,7 +189,7 @@ class slave extends baseMgr {
             // 奴隶主收到报复推送消息
             if(!!fri) {
                 let desc = facade.config.slaveMsg["avange"].desc;
-                this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
             }
             return ReturnCode.Success;
         }
@@ -221,7 +221,7 @@ class slave extends baseMgr {
                 // 奴隶主收到谄媚推送消息
                 if(!!fri) {
                     let desc = facade.config.slaveMsg["flattery"].desc;
-                    this.parent.router.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                    this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
             }
             return [ret.code, mst.time - facade.util.now()];
@@ -252,7 +252,7 @@ class slave extends baseMgr {
         if(this.v.master.length>0){ //自己被他人奴役
             return ReturnCode.socialIsSlave;
         }
-        else if(!this.parent.router.options.debug && this.v.slave.length >= this.MaxSlave){ //奴隶数量达到上限
+        else if(!this.parent.core.options.debug && this.v.slave.length >= this.MaxSlave){ //奴隶数量达到上限
             return ReturnCode.socialMaxSlave;
         }
         else if(this.findSlave(openid)){ //当前对象已被抓捕
@@ -379,7 +379,7 @@ class slave extends baseMgr {
                 msg.info.bonus.push({type:ResType.Item, id:22, num:20});
             }
         }
-        facade.GetMapping(EntityType.Mail).Create(this.parent, msg, "system", this.parent.openid);
+        this.parent.core.GetMapping(EntityType.Mail).Create(this.parent, msg, "system", this.parent.openid);
         //删除奴隶
         this.v.slave.splice(idx, 1);
         this.dirty = true;
@@ -428,7 +428,7 @@ class slave extends baseMgr {
                 break;
             }
         }
-        if(!this.parent.router.options.debug && this.v.slave.length >= this.MaxSlave){
+        if(this.v.slave.length >= this.MaxSlave) {
             return ReturnCode.socialMaxSlave;
         }
         else if(this.findSlave(openid)){

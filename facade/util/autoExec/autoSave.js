@@ -1,6 +1,7 @@
 let facade = require('../../Facade')
 let {EntityType, UserStatus} = facade.const
 let UserEntity = facade.entities.UserEntity
+let CoreOfBase = facade.CoreOfBase
 
 /**
  * UserEntity综合监控
@@ -18,18 +19,19 @@ class autoSave
     }
 
     /**
-     * 执行逻辑。
+     * 执行逻辑
+     * @param {CoreOfBase} core
      * @return
      *      true    ：状态失效，监控任务将被移出队列，不再接受检测
      *      false   ：状态有效，监控任务继续停留在队列中，接受后续检测
      */
-    execute(fo){
+    execute(core){
         let ret = true;
 
         /**
          * @type {UserEntity}
          */
-        let user = facade.GetObject(EntityType.User, this.uid);
+        let user = core.GetObject(EntityType.User, this.uid);
         if (!!user) {
             user.Save(); //脏数据检测&数据存储
         }

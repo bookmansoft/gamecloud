@@ -13,7 +13,6 @@ process.on('uncaughtException', function(err) {
     console.error(' Caught exceptio n: ' + err.stack);
 });
 
-let Mapping = require('./util/mixin/Mapping')
 let Ranking = require('./util/mixin/Ranking')
 let commonFunc = require('./util/commonFunc');
 let getAsnyc = require('./util/async')
@@ -247,23 +246,6 @@ class Facade
     //endregion
 
     /**
-     * 获取实体对象的集合映射体
-     * @param {*} etype 实体对象的类型
-     * @return {Mapping}
-     */
-    static GetMapping(etype){
-        if(!this.muster){
-            this.muster = {};
-
-            let self = this;
-            Object.keys(this.entities).map(key=>{
-                let entity = self.entities[key];           
-                self.muster[entity.mapParams.etype] = Mapping.muster(entity);
-            });
-        }
-        return this.muster[etype];
-    }
-    /**
      * 返回全部助手类
      */
     static get assistants() {
@@ -344,16 +326,6 @@ class Facade
         }
 
         return this.rankMuster[obj];
-    }
-
-    /**
-     * 查询并返回实体对象
-     * @param {*} etype 实体对象的类型
-     * @param {*} index 索引值
-     * @param {*} itype 索引类型
-     */
-    static GetObject(etype, index, itype = Facade.const.IndexType.Primary){
-        return this.GetMapping(etype).GetObject(index, itype);
     }
 
     /**

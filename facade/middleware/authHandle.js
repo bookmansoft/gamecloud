@@ -12,7 +12,7 @@ async function handle(sofar) {
     try {
         //根据令牌进行鉴权
         if(!sofar.socket.user){
-            sofar.socket.user = await facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
+            sofar.socket.user = await sofar.facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
 
         if (!sofar.socket.user || sofar.msg.func == "login"/*如果是login则强制重新验证*/) {
@@ -37,7 +37,7 @@ async function handle(sofar) {
                         if(!!sofar.msg.oemInfo.auth) {
                             if(!!sofar.msg.oemInfo.authControl) { //自定义验签流程
                                 try {
-                                    sofar.msg.oemInfo.openid = await facade.current.control[sofar.msg.oemInfo.authControl].check(sofar.msg.oemInfo);
+                                    sofar.msg.oemInfo.openid = await sofar.facade.control[sofar.msg.oemInfo.authControl].check(sofar.msg.oemInfo);
                                 } catch(e) {
                                     sofar.fn({ code: ReturnCode.authThirdPartFailed });
                                     sofar.recy = false;
@@ -61,7 +61,7 @@ async function handle(sofar) {
 
             sofar.msg.oemInfo.token = facade.util.sign({ did: sofar.msg.domainId }, sofar.facade.options.game_secret); //为用户生成令牌
             
-            let usr = facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
+            let usr = sofar.facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
             if (!!usr) {//老用户登录
                 usr.socket = sofar.socket; //更新通讯句柄
                 usr.userip = sofar.msg.userip;
@@ -95,7 +95,7 @@ async function handle(sofar) {
                     serverId = oemInfo.serverId;
                 }
 
-                usr = await facade.GetMapping(EntityType.User).Create(name, oemInfo.domain, oemInfo.openid);
+                usr = await sofar.facade.GetMapping(EntityType.User).Create(name, oemInfo.domain, oemInfo.openid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
@@ -118,7 +118,7 @@ async function handle(sofar) {
                 }
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
-                facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token); //添加一定有效期的令牌类型的反向索引
+                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token); //添加一定有效期的令牌类型的反向索引
             }
         }
 

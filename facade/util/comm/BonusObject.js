@@ -114,7 +114,7 @@ class BonusObject
                 user.getPocket().AddRes(bonus.type, bonus.num, false, bonus.id); //可以超过上限
             }
             //发出事件，进行后续处理，例如任务检测等
-            facade.current.notifyEvent('user.resAdd', {user:user, data:{type:bonus.type, id: !!bonus.id ? bonus.id : 0, value:bonus.num}});
+            user.core.notifyEvent('user.resAdd', {user:user, data:{type:bonus.type, id: !!bonus.id ? bonus.id : 0, value:bonus.num}});
         }
     }
 

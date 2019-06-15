@@ -8,11 +8,11 @@ class BaseEntity
     /**
      * 构造函数
      * @param {*}           orm     底层ORM对象 
-     * @param {CoreOfBase}  router  节点对象
+     * @param {CoreOfBase}  core  节点对象
      */
-    constructor(orm, router){
+    constructor(orm, core){
         this.orm = orm;
-        this.router = router;
+        this.core = core;
     }
 
     /**
@@ -93,7 +93,7 @@ class BaseEntity
      * 删除记录
      * @param {*} entity 
      */
-    static async onDelete(entity){
+    static async onDelete(entity) {
     }
 }
 
