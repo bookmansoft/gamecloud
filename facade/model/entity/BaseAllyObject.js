@@ -1132,10 +1132,10 @@ class BaseAllyObject extends BaseEntity
     /**
      * 创建时的回调函数
      */
-    static async onCreate(uid, name) {
+    static async onCreate(mysql, uid, name) {
         let self = this;
         try{
-            let it = await ally().findCreateFind({
+            let it = await ally(mysql).findCreateFind({
                 where:{
                     uid:uid,
                 },
@@ -1182,14 +1182,12 @@ class BaseAllyObject extends BaseEntity
 
     /**
      * 载入用户信息时的回调函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} mysql
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(mysql, callback){
         try {
-            let ret = await ally(db, sa, pwd).findAll();
+            let ret = await ally(mysql).findAll();
             ret.map(it=>{
                 callback(it);
             });

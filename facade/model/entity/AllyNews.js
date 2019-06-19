@@ -82,13 +82,11 @@ class AllyNews extends BaseEntity
 
     /**
      * 创建时的回调函数
-     * @param {*} userName 
-     * @param {*} domain 
-     * @param {*} openid 
+     * @param {*} mysql
      */
-    static async onCreate(aid, newsType, content, buildTime) {
+    static async onCreate(mysql, aid, newsType, content, buildTime) {
         try{
-            let it = await ally_news().create(this.getDefaultValue(aid, newsType, content, buildTime));
+            let it = await ally_news(mysql).create(this.getDefaultValue(aid, newsType, content, buildTime));
             return it[0];
         }
         catch(e){
@@ -108,14 +106,12 @@ class AllyNews extends BaseEntity
 
     /**
      * 载入条目时的回调函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} mysql
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(mysql, callback){
         try {
-            let ret = await ally_news(db, sa, pwd).findAll({
+            let ret = await ally_news(mysql).findAll({
                 where:{
                     aid:aid,
                 }

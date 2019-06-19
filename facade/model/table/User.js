@@ -2,7 +2,7 @@ let Sequelize = require('sequelize');
 var conn = require('../../util/sequel');
 
 //建立数据库ORM模型
-let User = (db, sa, pwd, host, port) => conn.seqConnector(db, sa, pwd, host, port).define(
+let User = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define(
 	'user', //默认表名。一般这里写单数，生成时会自动转换成复数形式
 	{//主键（id）、created_at、updated_at默认包含，不用特殊定义
 		name: Sequelize.STRING,             //用户昵称，最大长度200字节

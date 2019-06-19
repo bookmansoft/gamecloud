@@ -5,7 +5,7 @@ var Sequelize = require('sequelize');
 var conn = require('../../util/sequel');
 
 //建立数据库ORM模型
-let BuyLog = (db, sa, pwd) => conn.seqConnector(db, sa, pwd).define('buylog', {
+let BuyLog = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define('buylog', {
     trade_no: Sequelize.STRING,
     domain:Sequelize.STRING,
     uuid: Sequelize.STRING,

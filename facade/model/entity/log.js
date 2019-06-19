@@ -42,9 +42,9 @@ class log extends BaseEntity
     /**
      * 创建时的回调函数
      */
-    static async onCreate(domain, uuid, product_id, total_fee, notify_time, product_name, request_count) {
+    static async onCreate(mysql, domain, uuid, product_id, total_fee, notify_time, product_name, request_count) {
         try {
-            let it = await BuyLog().create({
+            let it = await BuyLog(mysql).create({
                 'domain':domain,
                 'uuid':uuid,
                 'product_id': (product_id.constructor == String ? product_id : JSON.stringify(product_id)),
@@ -75,14 +75,12 @@ class log extends BaseEntity
 
     /**
      * 载入数据库记录时的回调函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} mysql 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(mysql, callback){
         try {
-            let ret = await BuyLog(db, sa, pwd).findAll();
+            let ret = await BuyLog(mysql).findAll();
             ret.map(it=>{
                 callback(it);
             });

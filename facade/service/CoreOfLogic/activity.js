@@ -171,7 +171,7 @@ class activity extends facade.Service
      * 从数据库载入活动信息
      */
     async loadDb(){
-        let it = await facade.models.system().findCreateFind({
+        let it = await facade.models.system(this.core.options.mysql).findCreateFind({
             where:{
                 id:1
             },

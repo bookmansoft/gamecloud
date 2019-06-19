@@ -14,12 +14,6 @@ let sys = serversInfo[env.serverType][env.serverId];
 var Sequelize = require('sequelize');
 
 exports.seqConnector = (db, sa, pwd, host, port)=>{
-    db = db || sys.mysql.db;
-    sa = sa || sys.mysql.sa;
-    pwd = pwd || sys.mysql.pwd;
-    host = host || sys.mysql.host;
-    port = port || sys.mysql.port;
-
     return new Sequelize(db, sa, pwd, {
         'dialectOptions': {
             //socketPath: "/var/run/mysqld/mysqld.sock",
@@ -28,12 +22,12 @@ exports.seqConnector = (db, sa, pwd, host, port)=>{
         'timezone': '+08:00', //for writing to database
         'dialect': 'mysql',  // 数据库使用mysql
         'pool': {
-            max: sys.PoolMax,
+            max: sys.PoolMax || 500,
             min: 0,
             idle: 1000
         },
-        'host': host, // 数据库服务器ip
-        'port': port,        //数据库服务器端口
-        'logging': false,  //是否关闭日志屏显
+        'host': host,       // 数据库服务器ip
+        'port': port,       //数据库服务器端口
+        'logging': false,   //是否关闭日志屏显
     });
 }

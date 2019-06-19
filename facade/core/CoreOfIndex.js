@@ -250,7 +250,7 @@ class CoreOfIndex extends facade.CoreOfBase
                 if(facade.CoreOfLogic.mapping.indexOf(stype) != -1) {
                     for(let id in this.serversInfo[stype]){
                         let item = this.serversInfo[stype][id];
-                        await this.service.servers.loadIndex(item.mysql.db, item.mysql.sa, item.mysql.pwd, stype, id); //载入分服的用户
+                        await this.service.servers.loadIndex(item.mysql, stype, id); //载入分服的用户
                     }
                 }
             }

@@ -5,7 +5,7 @@ var Sequelize = require('sequelize');
 var conn = require('../../util/sequel');
 
 //建立数据库ORM模型
-let Mail = (db, sa, pwd) => conn.seqConnector(db, sa, pwd).define(
+let Mail = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define(
     'Mail', 
     {
         src: Sequelize.STRING,

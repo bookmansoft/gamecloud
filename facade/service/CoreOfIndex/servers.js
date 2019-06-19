@@ -28,7 +28,7 @@ class servers extends facade.Service
      * 加载所有用户的索引
      * @returns {Promise.<void>}
      */
-    async loadIndex(db, sa, pwd, serverType, serverId){
+    async loadIndex(mysql, serverType, serverId){
         try{
             let sn = `${serverType}.${serverId}`; //服务器唯一编号
             //累计当前服的总人数
@@ -36,7 +36,7 @@ class servers extends facade.Service
                 this.userNum[sn] = 0;
             }
 
-            let ret = await facade.models.User(db, sa, pwd).findAll({attrbutes:["id", "score", "domain", "uuid", "pet", "name", "status", "hisGateNo", "role"]});
+            let ret = await facade.models.User(mysql).findAll({attrbutes:["id", "score", "domain", "uuid", "pet", "name", "status", "hisGateNo", "role"]});
             for(let it of ret){
                 this.userNum[sn] += 1;
 

@@ -105,13 +105,13 @@ class mails extends BaseEntity
     /**
      * 创建时的回调函数
      */
-    static async onCreate(uo, content, src, dst) {
+    static async onCreate(mysql, uo, content, src, dst) {
         try {
             if(content.constructor == Object) { //数据库字段格式为string，此处适配下
                 content = JSON.stringify(content);
             }
 
-            let it = await Mail().create({
+            let it = await Mail(mysql).create({
                 src: src,
                 dst: dst,
                 time: facade.util.now(),
@@ -153,15 +153,13 @@ class mails extends BaseEntity
 
     /**
      * 载入数据库记录时的回调函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} mysql
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(mysql, callback){
         try {
             let $expired = facade.util.now() - 3600*24*30; //只读取一个月内的邮件
-            let ret = await Mail(db, sa, pwd).findAll({
+            let ret = await Mail(mysql).findAll({
                 where: {
                     time: {$gt: $expired}
                 }

@@ -5,7 +5,7 @@ var Sequelize = require('sequelize');
 var conn = require('../../util/sequel');
 
 //建立数据库ORM模型
-let ally = (db, sa, pwd) => conn.seqConnector(db, sa, pwd).define(
+let ally = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define(
     'ally', 
     {
         experience: Sequelize.INTEGER,

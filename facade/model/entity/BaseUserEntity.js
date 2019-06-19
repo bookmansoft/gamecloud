@@ -713,7 +713,7 @@ class BaseUserEntity extends BaseEntity
      * @param {*} openid    用户证书
      * @param {*} passway   是否预登录检测，例如，管理员登录Index服务器时不做预登录检测
      */
-    static async onCreate(userName, domain, openid, passway) {
+    static async onCreate(mysql, userName, domain, openid, passway) {
         try {
             if(!passway) {
                 if(!this.authPreList(`${domain}.${openid}`, {openid:openid, domain:domain})) {
@@ -721,7 +721,7 @@ class BaseUserEntity extends BaseEntity
                 }
             }
 
-            let it = await User().findCreateFind({
+            let it = await User(mysql).findCreateFind({
                 where:{
                     domain:domain,
                     uuid:openid
@@ -769,14 +769,12 @@ class BaseUserEntity extends BaseEntity
 
     /**
      * 载入用户信息时的回调函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} mysql
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(mysql, callback){
         try {
-            let ret = await User(db, sa, pwd).findAll();
+            let ret = await User(mysql).findAll();
             ret.map(it=>{
                 callback(it);
             });

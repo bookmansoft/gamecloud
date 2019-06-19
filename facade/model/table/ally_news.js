@@ -4,7 +4,7 @@
 var Sequelize = require('sequelize');
 var conn = require('../../util/sequel');
 
-exports.ally_news = (db, sa, pwd) => conn.seqConnector(db, sa, pwd).define(
+exports.ally_news = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define(
 	'ally_news', //默认表名。一般这里写单数，生成时会自动转换成复数形式
     {//主键、created_at、updated_at默认包含，不用特殊定义
         aid: Sequelize.INTEGER,

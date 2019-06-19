@@ -6,7 +6,7 @@ let {EventData} = require('../../../facade/util/comm/EventData')
  */
 function handle(event) {
     if(event.data.type == 1 || event.data.type == 3 || event.data.type == 7){
-        facade.models.login().findCreateFind({
+        facade.models.login(this.options.mysql).findCreateFind({
             where:{
                 uid: event.user.id,
                 type: event.data.type,

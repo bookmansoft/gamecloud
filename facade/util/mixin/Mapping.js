@@ -41,9 +41,9 @@ class Mapping
      * 加载所有记录
      * @returns {Mapping}
      */
-    async loadAll (db, sa, pwd){
+    async loadAll (mysql){
         if(!!this.entity.onLoad){
-            await this.entity.onLoad(db,sa,pwd, this.mapping.bind(this, this.core));
+            await this.entity.onLoad(mysql, this.mapping.bind(this, this.core));
         }
         return this;
     };
@@ -167,7 +167,7 @@ class Mapping
      * @returns {Object}
      */
     async Create(...params) {
-        let entity = await this.entity.onCreate(...params);
+        let entity = await this.entity.onCreate(this.core.options.mysql, ...params);
         entity = this.mapping(this.core, entity);
         this.setGroup(entity);
         return entity;
