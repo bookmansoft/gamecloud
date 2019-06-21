@@ -53,7 +53,7 @@ class GateEvent
                 $gate = TollgateObject.instance(Math.ceil($user.getTollgateMgr().curGateNo/10)*10, $user);//获取指定关卡的配置信息
                 $bonus = $gate.totalBlood._clone_().CalcFinallyValue($user.effect(), [em_Effect_Comm.BoxMoney]);
                 $params = {'result': 0, 'money': $bonus};
-                $user.getPocket().AddRes(ResType.Gold, $bonus);
+                $user.getPocket().AddRes($bonus, true, ResType.Gold);
                 break;
             case EventEnum.BossStoneAttack://攻击宝箱怪
                 //获取一定的魂石，击败宝箱怪时必须判断战斗时间是否合理

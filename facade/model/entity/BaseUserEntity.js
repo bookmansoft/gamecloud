@@ -610,7 +610,7 @@ class BaseUserEntity extends BaseEntity
             let $sum = (facade.config.fileMap.PurchaseConfig[$type]['price'] * $num) | 0;
             if(this.getPocket().GetRes(ResType.Diamond) >= $sum){
                 if($sum > 0 && $isExec){
-                    this.getPocket().AddRes(ResType.Diamond, -$sum);
+                    this.getPocket().AddRes(-$sum, true, ResType.Diamond);
                     this.dirty = true;
                     //todo 写日志 日志中的用户标志为sessionid
                     //(new Log({'content': "purchase:$type/$num/$sum", 'time': date("Y-m-d H:i:s",facade.util.now()), 'user': this.openid})).SaveAsync('memory'); //过时的写法

@@ -96,7 +96,7 @@ class BonusObject
             }
             else if(bonus.type == ResType.Gold){//大数型虚拟币，将num作为指数
                 //添加资源
-                user.getPocket().AddRes(ResType.Gold, LargeNumberCalculator.instance(1, bonus.num), false); //可以超过上限
+                user.getPocket().AddRes(LargeNumberCalculator.instance(1, bonus.num), false, ResType.Gold); //可以超过上限
             }
             else {//普通物品
                 if(bonus.type == ResType.PetChipHead && bonus.id == 0){//特殊逻辑：生成随机碎片 2017.7.13
@@ -111,7 +111,7 @@ class BonusObject
                 } 
     
                 //添加资源
-                user.getPocket().AddRes(bonus.type, bonus.num, false, bonus.id); //可以超过上限
+                user.getPocket().AddRes(bonus.num, false, bonus.type, bonus.id); //可以超过上限
             }
             //发出事件，进行后续处理，例如任务检测等
             user.core.notifyEvent('user.resAdd', {user:user, data:{type:bonus.type, id: !!bonus.id ? bonus.id : 0, value:bonus.num}});

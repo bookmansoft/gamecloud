@@ -234,7 +234,7 @@ class tollgate extends baseMgr
                         this.env.setTimeStamp(3600*3);//todo 走配置表
             
                         //金币归于初始值
-                        this.env.parent.getPocket().SetRes(ResType.Gold, this.env.parent.effect().CalcFinallyValue(em_Effect_Comm.RevivalStartMoney, 100000));
+                        this.env.parent.getPocket().SetRes(this.env.parent.effect().CalcFinallyValue(em_Effect_Comm.RevivalStartMoney, 100000), ResType.Gold);
             
                         //宠物等级归一
                         this.env.parent.getPotentialMgr().RevivalCPet();
@@ -289,7 +289,7 @@ class tollgate extends baseMgr
                             //宠物特技增加的金币：
                             let newMoney = this.env.totalBlood._clone_().CalcFinallyValue(this.env.parent.effect(), [em_Effect_Comm.MoneyOutput20])._sub_(this.env.totalBlood);
                             $params.money._add_(newMoney); 
-                            this.env.parent.getPocket().AddRes(ResType.Gold, newMoney);
+                            this.env.parent.getPocket().AddRes(newMoney, true, ResType.Gold);
                             break;
                     }
                     //以上都是针对刚刚通过的历史关卡，进行判定
@@ -410,7 +410,7 @@ class tollgate extends baseMgr
                 this.dirty = true;
 
                 $params.money._add_(this.moneyOffline); //返回本次领取的离线收益
-                this.parent.getPocket().AddRes(ResType.Gold, this.moneyOffline); //为用户添加离线收益
+                this.parent.getPocket().AddRes(this.moneyOffline, true, ResType.Gold); //为用户添加离线收益
                 this.moneyOffline.zero(); //清空之前缓存的离线收益
 
                 break;
@@ -452,7 +452,7 @@ class tollgate extends baseMgr
                 if(facade.util.rand(0, 99) < this.parent.effect().CalcFinallyValue(em_Effect_Comm.TenMultiMoney, 0.1)*100){ //十倍金币
                     $params.money._mul_(10);
                 }
-                this.parent.getPocket().AddRes(ResType.Gold, $params.money); //为用户添加在线收益
+                this.parent.getPocket().AddRes($params.money, true, ResType.Gold); //为用户添加在线收益
                 
                 if(this.tollgateStatus.state == 'goBack' && $params.monsterNum == this.totalMonster){
                     this.curMonsterNum = 0;//无限挂机状态下，进度完成时重置进度

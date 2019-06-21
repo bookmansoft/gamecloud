@@ -604,7 +604,7 @@ class vip extends baseMgr
                             }
                             this.parent.getBonus(ret.data.bonus);   //发放通关奖励
                             //过关时技能带来的体力奖励，目前由客户端计算并上传
-                            facade.notifyEvent('user.redAdd', {user:this.parent, data:{type:ResType.Action, value:$params.action, max:false}})
+                            this.parent.core.notifyEvent('user.redAdd', {user:this.parent, data:{type:ResType.Action, value:$params.action, max:false}})
 
                             //region 任务检测
                             this.parent.core.notifyEvent('user.task', {user:this.parent, data:[

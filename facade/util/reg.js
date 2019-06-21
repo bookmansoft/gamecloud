@@ -17,21 +17,13 @@ function checkMobile(s){
  * @param {*} s 
  */
 function isNumber( s ){
-    var regu = "^[0-9]+$";
-    var re = new RegExp(regu);
-    if (re.test(s) != -1) {
-        return true;
-    } else {
-        return false;
-    }
+    var re = new RegExp('^[0-9]+$');
+    return re.test(s);
 }
 
 function isEmail( str ){
     var myReg = /^[-_A-Za-z0-9]+@([_A-Za-z0-9]+.)+[A-Za-z0-9]{2,3}$/;
-    if(myReg.test(str)) 
-        return true;
-
-    return false;
+    return myReg.test(str);
 }
 
 exports.isEmail = isEmail;

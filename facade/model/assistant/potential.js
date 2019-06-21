@@ -307,7 +307,7 @@ class potential extends baseMgr
                 this.dirty = true;
 
                 //修改背包中天赋点数量，$_point>0表示添加，<0表示移除
-                $user.getPocket().AddRes(ResType.Potential, $_point);
+                $user.getPocket().AddRes($_point, true, ResType.Potential);
             }
         }
         else {
@@ -398,7 +398,7 @@ class potential extends baseMgr
             let $requireMoney = this.getUpgradeRequiredMoney($id, $oriValue, $added)
                 .CalcFinallyValue($user.effect(), [em_Effect_Comm.MoneyConsumeDiscount]);
 
-            if(!$user.getPocket().ResEnough(ResType.Gold, $requireMoney)){//检测金币是否足够
+            if(!$user.getPocket().ResEnough($requireMoney, ResType.Gold)) {//检测金币是否足够
                 return ReturnCode.NotEnough_Money;
             }
 
@@ -414,7 +414,7 @@ class potential extends baseMgr
             }
     
             //变为负值以进行扣费
-            $user.getPocket().AddRes(ResType.Gold, $requireMoney._mul_(-1));
+            $user.getPocket().AddRes($requireMoney._mul_(-1), true, ResType.Gold);
             return ReturnCode.Success;
         }
         else{
@@ -666,7 +666,7 @@ class potential extends baseMgr
         let $reqChip = ConfigManager.getPetList()[$id].upgrade;
         let $num = $reqChip.calc(this.heroList[$id].getLevel() + $added);
         if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){//万能碎片
-            $user.getPocket().AddRes(ResType.chip, -$num);
+            $user.getPocket().AddRes(-$num, true, ResType.chip);
         }
         else{
             return ReturnCode.Hero_NotEnough_UpgradeChip;
@@ -706,7 +706,7 @@ class potential extends baseMgr
             let $reqChip = ConfigManager.getPetList()[$id].enhance;
             let $num = $reqChip.calc(this.heroList[$id].getEnLevel() + $added);
             if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){
-                $user.getPocket().AddRes($reqChip.type, -$num, false, $id);
+                $user.getPocket().AddRes(-$num, false, $reqChip.type, $id);
             }
             else{
                 return ReturnCode.Hero_NotEnough_EnhanceChip;
@@ -752,7 +752,7 @@ class potential extends baseMgr
         let $reqChip = ConfigManager.getPetList()[$id].advance;
         let $num = $reqChip.calc(this.heroList[$id].getAdLevel() + $added);
         if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){
-            $user.getPocket().AddRes(ResType.advancedChip, -$num);
+            $user.getPocket().AddRes(-$num, true, ResType.advancedChip);
         }
         else{
             return ReturnCode.Hero_NotEnough_AdvChip;
@@ -1023,10 +1023,10 @@ class potential extends baseMgr
     UpgradeCPet($user, $added =1) {
         $added = Math.max(1, $added);
         let $requireMoney = LargeNumberCalculator.Load(ConfigManager.getCostCPet(this.cpetLevel, $added));
-        if(!$user.getPocket().ResEnough(ResType.Gold, $requireMoney)){
+        if(!$user.getPocket().ResEnough($requireMoney, ResType.Gold)){
             return ReturnCode.NotEnough_Money;
         }
-        $user.getPocket().AddRes(ResType.Gold, $requireMoney._mul_(-1));//变为负值扣费
+        $user.getPocket().AddRes($requireMoney._mul_(-1), true, ResType.Gold);//变为负值扣费
 
         this.cpetLevel += $added;
         //登记任务条件发生变化
@@ -1121,7 +1121,7 @@ class potential extends baseMgr
                     if(this.parent.getPocket().GetRes($req.type, $req.id) < $req.num) {
                         return ReturnCode.NotEnough_Chip;
                     }
-                    this.parent.getPocket().AddRes($req.type, - $req.num, false, $req.id);
+                    this.parent.getPocket().AddRes(-$req.num, false, $req.type, $req.id);
                 }
 
                 this.dirty = true;
@@ -1154,7 +1154,7 @@ class potential extends baseMgr
             return ReturnCode.NotEnough_Chip;
         }
         else{
-            this.parent.getPocket().AddRes($req.type, -$req.num, false, $req.id);
+            this.parent.getPocket().AddRes(-$req.num, false, $req.type, $req.id);
         }
 
         $pet.setAdLevel($pet.getAdLevel() +  $added);

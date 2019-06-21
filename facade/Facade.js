@@ -209,10 +209,19 @@ class Facade
         return require('./util/baseService');
     }
     /**
-     * 基础服务类
+     * 基础助手类
      */
     static get Assistant(){
         return require('./model/baseAssistant');
+    }
+
+    /**
+     * 背包管理基础类
+     */
+    static get Assistants() {
+        return {
+            Pocket: require('./model/assistant/item'),
+        }
     }
 
     /**
@@ -436,6 +445,14 @@ class Util
 {
     static get BonusObject() {
         return require('./util/comm/BonusObject');
+    }
+
+    static get EffectManager() {
+        return require('./util/comm/EffectManager');
+    }
+
+    static get EffectObject() {
+        return require('./util/comm/EffectObject');
     }
 
     static get TollgateObject() {
