@@ -54,7 +54,7 @@ class log extends BaseEntity
                 'request_count':request_count,
                 'result': PurchaseStatus.create,
             });
-            it.trade_no = `BX${domain}${uuid}`;
+            it.trade_no = `BX${domain}${uuid}${(Math.random()*10000000)|0}`;
             await it.save();
     
             return it;

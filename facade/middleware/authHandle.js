@@ -76,10 +76,10 @@ async function handle(sofar) {
             else if (!!sofar.msg.oemInfo.openid) {//	新玩家注册
                 //sofar.msg.func = 'login'; //强制登录
                 let name;
-                if(!!sofar.msg.userinfo){
+                if(!!sofar.msg.userinfo && !!sofar.msg.userinfo.nick){
                     name = sofar.msg.userinfo.nick;
                 }else{
-                    name = '猴子' + facade.util.rand(10000, 99999);	  //随机名称
+                    name = 'Vallnet' + facade.util.rand(10000, 99999);	  //随机名称
                 }
                 let appId = '';												    //应用ID    
                 let serverId = '';												//服务器ID

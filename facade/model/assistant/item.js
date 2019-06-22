@@ -1,6 +1,7 @@
 let facade = require('../../../facade/Facade')
 let {ReturnCode, ResTypeStr, em_Effect_Comm, ResType} = facade.const
 let baseMgr = facade.Assistant
+let LargeNumberCalculator = facade.Util.LargeNumberCalculator
 let {isNumber} = require('../../util/reg')
 
 /**
@@ -47,9 +48,10 @@ class item extends baseMgr
      * @param  {...any} xid 
      */
     GetRes(...xid) {
-        let $t = this.combineId(...xid);
+        let [type, id] = [...xid];
+        let $t = this.combineId(type, id);
         if($t != -1) {
-            switch($type){
+            switch(type){
                 case ResType.Gold:
                     return !!this.v[$t] ? LargeNumberCalculator.FromString(this.v[$t].num) : LargeNumberCalculator.FromString('0,0');
                 default:
@@ -86,7 +88,9 @@ class item extends baseMgr
      * @param  {...any} xid 
      */
     SetRes(num, ...xid) {
-        let tid = this.combineId(...xid);
+        let [type, id] = [...xid]
+
+        let tid = this.combineId(type, id);
         if(tid < 0 || tid >= 100) {
             return;
         }
@@ -178,12 +182,13 @@ class item extends baseMgr
      * @return {Boolean}
      */
     ResEnough($val, ...xid) {
-        switch($type){
+        let [type, id] = [...xid];
+        switch(type){
             case ResType.Gold:
-                let $rt = this.GetRes(...xid);
+                let $rt = this.GetRes(type, id);
                 return LargeNumberCalculator.Compare($rt, $val) >= 0;
             default:
-                return this.GetRes(...xid) >= $val;
+                return this.GetRes(type, id) >= $val;
         }
     }
 
@@ -226,7 +231,7 @@ class item extends baseMgr
     getActionData(){
         this.actionData.cur = this.GetRes(ResType.Action);
         this.actionData.max = this.GetResMaxValue(ResType.Action);
-        this.actionData.money = this.GetRes(ResType.Gold);
+        this.actionData.money = this.GetRes(ResType.Coin);
         this.actionData.diamond = this.GetRes(ResType.Diamond);
         return this.actionData;
     }
