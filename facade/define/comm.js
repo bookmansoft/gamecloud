@@ -1532,7 +1532,7 @@ const em_Ally_Oper = {
 }
 
 /**
- * 系统实体对象类型，例如用户、联盟、邮件等
+ * 系统实体类，例如用户、联盟、邮件等
  */
 const EntityType = {
     Ally:0,         //联盟

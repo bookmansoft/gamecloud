@@ -761,7 +761,7 @@ class BaseUserEntity extends BaseEntity
         } else {//已有的记录
             pUser.getInfoMgr().UnsetStatus(UserStatus.isNewbie, false);
             //向排序管理器注册用户信息，标注为数据载入阶段，因此不会触发排序操作
-            facade.GetRanking(this).Update(pUser, true);
+            core.GetRanking(this).Update(pUser, true);
         }
 
         return pUser;
@@ -778,7 +778,6 @@ class BaseUserEntity extends BaseEntity
             ret.map(it=>{
                 callback(it);
             });
-            facade.GetRanking(this).Init();
         } catch(e) {
             console.error(e);
         }

@@ -125,7 +125,7 @@ class CoreOfLogic extends CoreOfBase
         console.time('Load Db');
         await this.service.activity.loadDb(); //首先载入活动信息，后续的用户积分信息才能顺利注册
 
-        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll(this.options.mysql))).then(()=>{
+        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll())).then(()=>{
             console.timeEnd('Load Db');
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 

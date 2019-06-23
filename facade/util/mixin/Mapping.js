@@ -41,9 +41,12 @@ class Mapping
      * 加载所有记录
      * @returns {Mapping}
      */
-    async loadAll (mysql){
+    async loadAll () {
         if(!!this.entity.onLoad){
-            await this.entity.onLoad(mysql, this.mapping.bind(this, this.core));
+            await this.entity.onLoad(this.core.options.mysql, this.mapping.bind(this, this.core));
+            if(this.entity.rankParams) {
+                this.core.GetRanking(this.entity).Init();
+            }
         }
         return this;
     };
@@ -200,7 +203,7 @@ class Mapping
     }
 
     init(params){
-        this.entity = params.entity;            //实体对象，在model之上做了多种业务封装
+        this.entity = params.entity;            //实体类，在model之上做了多种业务封装
         this.model = params.model;              //对应数据库单表的ORM封装
         this.keys = {};
         this.keys.group = params.group;         //分组键

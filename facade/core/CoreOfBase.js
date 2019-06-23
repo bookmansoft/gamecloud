@@ -10,6 +10,7 @@ let UserEntity = facade.entities.UserEntity;
 let connectMonitor = require('../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../util/taskManager')
 let Mapping = require('../util/mixin/Mapping')
+let Ranking = require('../util/mixin/Ranking')
 
 /**
  * 门面管理类
@@ -154,15 +155,42 @@ class CoreOfBase
      * @return {Mapping}
      */
     GetMapping(etype) {
-        if(!facade.muster){
-            facade.muster = {};
+        if(!this.muster) {
+            this.muster = {};
 
-            Object.keys(facade.entities).map(key=>{
+            Object.keys(facade.entities).map(key => {
                 let entity = facade.entities[key];           
-                facade.muster[entity.mapParams.etype] = Mapping.muster(entity, this);
+                this.muster[entity.mapParams.etype] = Mapping.muster(entity, this);
             });
         }
-        return facade.muster[etype];
+        return this.muster[etype];
+    }
+
+    /**
+     * 获取类/对象的排序管理器
+     * @param {*} obj 代表排序集合的类/对象
+     * @return {Ranking}
+     */
+    GetRanking(obj){
+        if(!this.rankMuster){
+            this.rankMuster = {};
+        }
+
+        if(!this.rankMuster[obj]) {
+            this.rankMuster[obj] = Ranking.muster(obj);
+        }
+
+        return this.rankMuster[obj];
+    }
+
+    /**
+     * 获取类/对象的排序结果
+     * @param {*} obj   代表排序集合的类/对象
+     * @param {*} id    标识集合中对象的索引值
+     * @param {*} type  排序类别
+     */
+    GetRankInfo(obj, id, type){
+        return this.GetRanking(obj).result(id, type);
     }
 
     /**
@@ -405,7 +433,7 @@ class CoreOfBase
         //网络连接监控
         this.autoTaskMgr.addMonitor(new connectMonitor());
         //排行榜监控
-        this.autoTaskMgr.addCommonMonitor(facade.GetRanking(UserEntity));
+        this.autoTaskMgr.addCommonMonitor(this.GetRanking(UserEntity));
     }
 
     /**

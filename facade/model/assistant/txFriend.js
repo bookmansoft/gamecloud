@@ -177,7 +177,7 @@ class txFriend extends baseMgr
                         //合并本地状态
                         this.refresh(item);
                         //更新排名
-                        facade.GetRanking(UserEntity).UpdateRecord(item, RankType.friend);
+                        this.parent.core.GetRanking(UserEntity).UpdateRecord(item, RankType.friend);
                     }
         
                     return result.data.list;

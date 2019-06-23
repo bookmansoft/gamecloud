@@ -13,7 +13,6 @@ process.on('uncaughtException', function(err) {
     console.error(' Caught exceptio n: ' + err.stack);
 });
 
-let Ranking = require('./util/mixin/Ranking')
 let commonFunc = require('./util/commonFunc');
 let getAsnyc = require('./util/async')
 let cache = require('./util/cache')
@@ -318,33 +317,6 @@ class Facade
             }
         }
         return this.$entities;
-    }
-
-    /**
-     * 获取类/对象的排序管理器
-     * @param {*} obj 代表排序集合的类/对象
-     * @return {Ranking}
-     */
-    static GetRanking(obj){
-        if(!this.rankMuster){
-            this.rankMuster = {};
-        }
-
-        if(!this.rankMuster[obj]){
-            this.rankMuster[obj] = Ranking.muster(obj);
-        }
-
-        return this.rankMuster[obj];
-    }
-
-    /**
-     * 获取类/对象的排序结果
-     * @param {*} obj   代表排序集合的类/对象
-     * @param {*} id    标识集合中对象的索引值
-     * @param {*} type  排序类别
-     */
-    static GetRankInfo(obj, id, type){
-        return this.GetRanking(etype).result(id, type);
     }
 
     /**

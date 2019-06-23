@@ -147,7 +147,7 @@ class Ranking
 
     /**
      * 更新排行榜数据
-     * @param {*} entity        //实体对象
+     * @param {*} entity        //实体类
      */
     Update(entity, init=false) {
         if(!entity){ return; }
