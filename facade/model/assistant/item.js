@@ -200,6 +200,11 @@ class item extends baseMgr
      * 自动恢复体力, 同时计算离线收益
      */
     AutoAddAP() {
+        //使用 this.v[0] 存储刷新时间
+        if(!this.v[0]) {
+            this.v[0] = {num:0};
+        }
+
         let recover = Math.max(1, this.parent.effect().CalcFinallyValue(em_Effect_Comm.ActionRecover, facade.config.fileMap.DataConst.action.add) | 0);
         let $iHourSecond = this.parent.effect().CalcFinallyValue(em_Effect_Comm.DiscountActionTime, facade.config.fileMap.DataConst.action.iHourSecond) | 0;
         this.actionData.refreshTime = 0;
@@ -208,19 +213,19 @@ class item extends baseMgr
         if(!this.isMaxRes(ResType.Action)){
             let ct = facade.util.now();
 
-            let passSecond 	= ct - this.v.refresh;
-            if(passSecond < 0){
-                this.v.refresh = ct;
+            let passSecond 	= ct - this.v[0].num;
+            if(passSecond < 0) {
+                this.v[0].num = ct;
             }
             else{
                 let rec = (passSecond / $iHourSecond) | 0;
                 if(rec > 0){
                     this.parent.getBonus({type:ResType.Action, num:rec * recover});
-                    this.v.refresh += rec * $iHourSecond;
+                    this.v[0].num += rec * $iHourSecond;
                 }
             }
 
-            this.actionData.refreshTime = (this.actionData.cur == this.actionData.max) ? 0 : this.v.refresh + $iHourSecond - ct;
+            this.actionData.refreshTime = (this.actionData.cur == this.actionData.max) ? 0 : this.v[0].num + $iHourSecond - ct;
         }
         this.actionData.peroid = $iHourSecond / recover;
     };
