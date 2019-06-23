@@ -150,83 +150,6 @@ const IndexType = {
 }
 
 /**
- * 领域类型
- */
-const DomainType = {
-    MF: "mf",               //MoreFun
-    TX: "tx",               //空间
-    TXX: "txx",             //QQ
-    D360: "360",            //360
-    OFFICIAL: "offcial",    //官网
-    SYSTEM: "system",       //RPC
-    ADMIN: "admin",         //系统管理员
-};
-
-const DomainTable = {
-    "mf":               ["mf", "mf.IOS", "mf.Android", "mf.Test"],
-    "tx":               ["tx", "tx.IOS", "tx.Android", "tx.Test"],
-    "txx":              ["txx", "txx.IOS", "txx.Android", "txx.Test"],
-    "360":              ["360", "360.IOS", "360.Android", "360.Test"],
-    "offcial":          ["offcial", "offcial.IOS", "offcial.Android", "offcial.Test"],
-    "admin":            ["admin"],
-};
-
-const DomainList = {
-    //moreFun
-    "mf":               DomainTable[DomainType.MF],
-    "mf.IOS":           DomainTable[DomainType.MF],
-    "mf.Android":       DomainTable[DomainType.MF],
-    "mf.Test":          DomainTable[DomainType.MF],
-    
-    //腾讯玩吧
-    "tx":               DomainTable[DomainType.TX],
-    "tx.IOS":           DomainTable[DomainType.TX],
-    "tx.Android":       DomainTable[DomainType.TX],
-    "tx.Test":          DomainTable[DomainType.TX],
-
-    //腾讯
-    "txx":              DomainTable[DomainType.TXX],
-    "txx.IOS":          DomainTable[DomainType.TXX],
-    "txx.Android":      DomainTable[DomainType.TXX],
-    "txx.Test":         DomainTable[DomainType.TXX],
-
-    //360
-    "360":              DomainTable[DomainType.D360],
-    "360.IOS":          DomainTable[DomainType.D360],
-    "360.Android":      DomainTable[DomainType.D360],
-    "360.Test":         DomainTable[DomainType.D360],
-
-    //offcial
-    "offfcial":         DomainTable[DomainType.OFFICIAL],
-    "offcial.IOS":      DomainTable[DomainType.OFFICIAL],
-    "offcial.Android":  DomainTable[DomainType.OFFICIAL],
-    "offcial.Test":     DomainTable[DomainType.OFFICIAL],
-
-    "admin":            DomainTable[DomainType.ADMIN],
-};
-
-function GetDomainType(domain){
-    for(let $type of Object.keys(DomainTable)){
-        if(DomainTable[$type].indexOf(domain) != -1){
-            return $type;
-        }
-    }
-    return DomainType.OFFICIAL;
-}
-
-/**
- * 获取社交链逻辑中，当前用户关联的领域列表
- */
-function GetDomainList(domain){
-    if(!DomainList[domain]){
-        return DomainTable[DomainType.OFFICIAL];
-    }
-    else{
-        return DomainList[domain];
-    }
-}
-
-/**
  * 玩家状态
  */
 const UserStatus = {
@@ -1662,10 +1585,6 @@ exports = module.exports = {
     OperEnum: OperEnum,
     CommMode: CommMode,
     GuideList: GuideList,
-    DomainType: DomainType,
-    GetDomainType:GetDomainType,
-    DomainList: DomainList,
-    GetDomainList: GetDomainList,
     IndexType: IndexType,
     StayStatus: StayStatus,
     EventConfig: EventConfig,

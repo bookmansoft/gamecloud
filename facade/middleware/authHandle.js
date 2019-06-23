@@ -1,5 +1,5 @@
 let facade = require('../../facade/Facade')
-let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, GetDomainType,RecordType} = facade.const
+let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, RecordType} = facade.const
 let CommonFunc = facade.util
 
 /**
@@ -17,7 +17,8 @@ async function handle(sofar) {
 
         if (!sofar.socket.user || sofar.msg.func == "login"/*如果是login则强制重新验证*/) {
             //针对各类第三方平台，执行一些必要的验证流程：
-            switch(GetDomainType(sofar.msg.oemInfo.domain)) {
+            let domainType = sofar.msg.oemInfo.domain.split('.')[0];
+            switch(domainType) {
                 case DomainType.TX: { //QQ游戏开发平台, 前向校验下用户的合法性
                         if (!sofar.facade.options.debug) {
                             ret = await sofar.facade.service.txApi.Get_Info(sofar.msg.oemInfo.openid, sofar.msg.oemInfo.openkey, sofar.msg.oemInfo.pf, sofar.msg.userip);
@@ -35,25 +36,14 @@ async function handle(sofar) {
 
                 default: {
                         if(!!sofar.msg.oemInfo.auth) {
-                            if(!!sofar.msg.oemInfo.authControl) { //自定义验签流程
-                                try {
-                                    sofar.msg.oemInfo.openid = await sofar.facade.control[sofar.msg.oemInfo.authControl].check(sofar.msg.oemInfo);
-                                } catch(e) {
-                                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
-                                    sofar.recy = false;
-                                    return;
-                                }
-                            } else { // 通用验签流程
-                                let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options[DomainType.D360].game_secret));
-                                let _exp = (Math.abs(sofar.msg.oemInfo.auth.t - CommonFunc.now()) <= 300);
-                                if (!_sign || !_exp) {
-                                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
-                                    sofar.recy = false;
-                                    return;
-                                }
-                                sofar.msg.oemInfo.openid = sofar.msg.oemInfo.auth.plat_user_id;
+                            try {
+                                sofar.msg.oemInfo.openid = await sofar.facade.control[domainType].check(sofar.msg.oemInfo);
+                            } catch(e) {
+                                sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                                sofar.recy = false;
+                                return;
                             }
-                        }
+                    }
                         sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${sofar.msg.oemInfo.openid}`;
                         break;
                     }

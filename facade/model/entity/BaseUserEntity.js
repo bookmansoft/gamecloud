@@ -1,7 +1,6 @@
 let facade = require('../../../facade/Facade')
 let CommonFunc = facade.util
-let {UserVipLevelSetting, em_UserVipLevel, EntityType,IndexType, ResType, RankType,  DomainTable, em_Effect_Comm, 
-    DomainType, DomainList,GetDomainType, em_Condition_Type,em_Condition_Checkmode, UserStatus, ReturnCode} = facade.const
+let {DomainClass, UserVipLevelSetting, em_UserVipLevel, EntityType,IndexType, ResType, RankType, em_Effect_Comm, em_Condition_Type,em_Condition_Checkmode, UserStatus, ReturnCode} = facade.const
 let BonusObject = require('../../../facade/util/comm/BonusObject')
 let ChatPrivateManager = require('../../../facade/util/comm/ChatPrivateManager')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
@@ -95,13 +94,13 @@ class BaseUserEntity extends BaseEntity
     }
 
     DelegateByOpenid(cb, openid){
-        if(!openid || openid == this.openid){
+        if(!openid || openid == this.openid) {
             cb(this);
-        }
-        else{
-            this.domainList.map(domain=>{
-                let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`,IndexType.Domain);
-                if(!!friend){
+        } else {
+            DomainClass.map(cls => {
+                let fid = !!cls ? `${this.domainType}.${cls}.${openid}` : `${this.domainType}.${openid}`;
+                let friend = this.core.GetObject(EntityType.User, fid,IndexType.Domain);
+                if(!!friend) {
                     cb(friend);
                 }
             });
@@ -118,12 +117,12 @@ class BaseUserEntity extends BaseEntity
             this.$handleSocialMsg(msg);
         }
         else{
-            this.domainList.map(domain=>{
+            DomainClass.map(cls => {
+                let domain = !!cls ? `${this.domainType}.${cls}` : this.domainType;
                 let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
                 if(!!friend){//发送给同服的好友
                     friend.$handleSocialMsg(msg);
-                }
-                else{//通过路由模式，发送给不同服的好友
+                } else {//通过路由模式，发送给不同服的好友
                     this.core.remoteCall('remote.userNotify', {domain: domain, openid: openid, msg: msg});
                 }
             });
@@ -131,22 +130,10 @@ class BaseUserEntity extends BaseEntity
     }
 
     /**
-     * 获取社交链逻辑中，当前用户关联的领域列表
-     */
-    get domainList(){
-        if(!DomainList[this.domain]){
-            return DomainTable[DomainType.OFFICIAL];
-        }
-        else{
-            return DomainList[this.domain];
-        }
-    }
-
-    /**
      * 获取当前用户的领域类型
      */
-    get domainType(){
-        return GetDomainType(this.domain);
+    get domainType() {
+        return this.domain.split('.')[0];
     }
 
     /**
