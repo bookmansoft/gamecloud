@@ -11,14 +11,19 @@ class Mapping
      * @return {Mapping}
      */
     static muster(cls, core) {
-        if(!cls.mapParams){
+        if(!cls.mapParams || !core || !core.constructor.name) {
             throw new Error('class using Mapping must have mapParams function');
         }
 
-        if(!cls.$mapping){
-            cls.$mapping = new this(cls.mapParams, core);
+        if(!cls.$mapping) {
+            cls.$mapping = {};
         }
-        return cls.$mapping;
+
+        if(!cls.$mapping[core.constructor.name]) {
+            cls.$mapping[core.constructor.name] = new this(cls.mapParams, core);
+        }
+
+        return cls.$mapping[core.constructor.name];
     }
 
     /**
