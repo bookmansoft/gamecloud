@@ -220,7 +220,7 @@ class item extends baseMgr
             else{
                 let rec = (passSecond / $iHourSecond) | 0;
                 if(rec > 0){
-                    this.parent.getBonus({type:ResType.Action, num:rec * recover});
+                    this.parent.AddRes(rec * recover, true, ResType.Action);
                     this.v[0].num += rec * $iHourSecond;
                 }
             }
