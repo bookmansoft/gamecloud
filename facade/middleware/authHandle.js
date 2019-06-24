@@ -63,7 +63,7 @@ async function handle(sofar) {
                     sofar.socket.user = usr;
 
                     Object.keys(profile).map(key=>{
-                        usr.baseMgr.info.setAttr(key, profile[key]);
+                        usr.baseMgr.info.SetRecord(key, profile[key]);
                     });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
@@ -80,8 +80,8 @@ async function handle(sofar) {
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
-                if(!!usr.baseMgr.info.getAttr('phone')) {
-                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.getAttr('phone'), usr.id], IndexType.Phone);
+                if(!!usr.baseMgr.info.GetRecord('phone')) {
+                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
             }
         }
