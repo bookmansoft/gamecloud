@@ -1,52 +1,43 @@
 let facade = require('../../facade/Facade')
-let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, RecordType} = facade.const
+let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus} = facade.const
 let CommonFunc = facade.util
+let extendObj = facade.tools.extend
 
 /**
- * 游戏玩家认证鉴权
+ * 用户认证鉴权中间件
  * @param {MiddlewareParam} sofar
  */
 async function handle(sofar) {
-    let ret = { ret: 0 };
-
     try {
-        //根据令牌进行鉴权
+        //根据访问令牌(oemInfo.token)进行鉴权, 直接获得用于业务操作的用户对象
+        //令牌在签发后两个小时内有效，如果失效，将重新进行身份认证
         if(!sofar.socket.user){
             sofar.socket.user = await sofar.facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
-
-        if (!sofar.socket.user || sofar.msg.func == "login"/*如果是login则强制重新验证*/) {
+        
+        if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
             //针对各类第三方平台，执行一些必要的验证流程：
+            let unionid = '';
             let domainType = sofar.msg.oemInfo.domain.split('.')[0];
             switch(domainType) {
-                case DomainType.TX: { //QQ游戏开发平台, 前向校验下用户的合法性
-                        if (!sofar.facade.options.debug) {
-                            ret = await sofar.facade.service.txApi.Get_Info(sofar.msg.oemInfo.openid, sofar.msg.oemInfo.openkey, sofar.msg.oemInfo.pf, sofar.msg.userip);
-                        }
-                        if (ret.ret != 0) { //验证未通过
-                            sofar.fn({ code: ReturnCode.authThirdPartFailed, data: ret });
-                            sofar.recy = false;
-                            return;
-                        }
-                        ret.openid = sofar.msg.oemInfo.openid;
-                        ret.openkey = sofar.msg.oemInfo.openkey;
-                        ret.pf = sofar.msg.oemInfo.pf;
-                        break;
-                    }
-
                 default: {
-                        if(!!sofar.msg.oemInfo.auth) {
-                            try {
-                                sofar.msg.oemInfo.openid = await sofar.facade.control[domainType].check(sofar.msg.oemInfo);
-                            } catch(e) {
-                                sofar.fn({ code: ReturnCode.authThirdPartFailed });
-                                sofar.recy = false;
-                                return;
-                            }
+                    try {
+                        //调用登录域相关的认证过程，生成用户证书
+                        let data = await sofar.facade.control[domainType].check(sofar.msg.oemInfo);
+                        //将证书内容复制到用户原始信息中，如果条目有重复则直接覆盖
+                        extendObj(sofar.msg.oemInfo, data);
+                        
+                        //对于共享公众号，要判断是否存在 unionid
+                        unionid = !!sofar.msg.oemInfo.unionid ? sofar.msg.oemInfo.unionid : sofar.msg.oemInfo.openid;
+
+                        sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${unionid}`;
+                    } catch(e) {
+                        sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                        sofar.recy = false;
+                        return;
                     }
-                        sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${sofar.msg.oemInfo.openid}`;
-                        break;
-                    }
+                    break;
+                }
             }
 
             sofar.msg.oemInfo.token = facade.util.sign({ did: sofar.msg.domainId }, sofar.facade.options.game_secret); //为用户生成令牌
@@ -63,52 +54,35 @@ async function handle(sofar) {
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
             }
-            else if (!!sofar.msg.oemInfo.openid) {//	新玩家注册
-                //sofar.msg.func = 'login'; //强制登录
-                let name;
-                if(!!sofar.msg.userinfo && !!sofar.msg.userinfo.nick){
-                    name = sofar.msg.userinfo.nick;
-                }else{
-                    name = 'Vallnet' + facade.util.rand(10000, 99999);	  //随机名称
-                }
-                let appId = '';												    //应用ID    
-                let serverId = '';												//服务器ID
-
-                let oemInfo = sofar.msg.oemInfo;
-                // if (oemInfo.userName) {
-                //     name = oemInfo.userName;
-                // }
-                if (oemInfo.appId) {
-                    appId = oemInfo.appId;
-                }
-                if (oemInfo.serverId) {
-                    serverId = oemInfo.serverId;
-                }
-
-                usr = await sofar.facade.GetMapping(EntityType.User).Create(name, oemInfo.domain, oemInfo.openid);
+            else if(!!unionid) {//新玩家注册
+                let profile = await sofar.facade.control[domainType].getProfile(sofar.msg.oemInfo);
+                usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
                     sofar.socket.user = usr;
 
-                    //写入账号信息
-                    usr.WriteUserInfo(appId, serverId, CommonFunc.now(), sofar.msg.oemInfo.token);
+                    Object.keys(profile).map(key=>{
+                        usr.baseMgr.info.setAttr(key, profile[key]);
+                    });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
+
+                    //在用户创建成功后，再绑定手机号码
+                    if(!!sofar.msg.oemInfo.address && !!sofar.msg.oemInfo.addrType) {
+                        sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
+                    }
                 }
             }
 
             if (!!usr) {
-                if(sofar.facade.options.debug){//模拟填充测试数据/用户头像信息
-                    ret.figureurl = facade.config.fileMap.DataConst.user.icon;
-                }
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
-                if(usr.domainType == DomainType.TX) { //设置腾讯会员属性
-                    await usr.SetTxInfo(ret); //异步执行，因为涉及到了QQ头像的CDN地址转换
-                }
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
-                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token); //添加一定有效期的令牌类型的反向索引
+                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
+                if(!!usr.baseMgr.info.getAttr('phone')) {
+                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.getAttr('phone'), usr.id], IndexType.Phone);
+                }
             }
         }
 
@@ -117,14 +91,14 @@ async function handle(sofar) {
             sofar.recy = false;
         }
         else {
-            //console.log(`鉴权成功, OpenId/Token: ${sofar.msg.oemInfo.openid}/${sofar.msg.oemInfo.token}`);
+            console.log(`鉴权成功: ${sofar.socket.user.domainId}`);
             //分发用户上行报文的消息，可以借此执行一些刷新操作
             sofar.facade.notifyEvent('user.packetIn', {user: sofar.socket.user});
         }
     }
     catch (e) {
         console.log(e);
-        sofar.fn({ code: ReturnCode.illegalData, data: ret });
+        sofar.fn({ code: ReturnCode.illegalData });
         sofar.recy = false;
     }
 }
