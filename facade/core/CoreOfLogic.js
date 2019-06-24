@@ -116,6 +116,17 @@ class CoreOfLogic extends CoreOfBase
         //战斗配置管理
         this.ConfigMgr = new ConfigMgr(this);
 
+        /**
+         * 角色升级配置表
+         */
+        this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
+        for(let j = 2; j <= 30; j++) {
+            this.upgradeChip[j] = this.upgradeChip[1];
+            for(let i = 2; i <= j; i++){
+                this.upgradeChip[j] = Math.ceil(this.upgradeChip[j] + this.fileMap.constdata.debrisConumRate.num * (i-1));
+            }
+        }
+
         //载入用户自定义的逻辑事件
         facade.config.filelist.mapPath('app/events').map(srv=>{
             let handle = require(srv.path).handle;
