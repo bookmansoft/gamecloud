@@ -4,11 +4,6 @@
  */
 let ini = require('./configMgr');
 let filelist = require('../util/filelist');
-let fileMap = {};
-for(let fl of filelist.mapPath('/config/data')) {
-    let id = fl.name.split('.')[0];
-    fileMap[id] = ini.get(fl.path).GetInfo();
-}
 
-exports.fileMap = fileMap;      //文件索引表
+exports.ini = ini;
 exports.filelist = filelist;    //遍历目录工具

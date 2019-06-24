@@ -77,7 +77,7 @@ class item extends baseMgr
         //todo 对 ResType.Gold 大数型资源要特殊判断
         switch(type) {
             case ResType.Action:
-                return facade.config.fileMap.DataConst.action.max;
+                return this.parent.core.fileMap.DataConst.action.max;
         }
         return facade.const.MAX_INT;
     }
@@ -205,8 +205,8 @@ class item extends baseMgr
             this.v[0] = {num:0};
         }
 
-        let recover = Math.max(1, this.parent.effect().CalcFinallyValue(em_Effect_Comm.ActionRecover, facade.config.fileMap.DataConst.action.add) | 0);
-        let $iHourSecond = this.parent.effect().CalcFinallyValue(em_Effect_Comm.DiscountActionTime, facade.config.fileMap.DataConst.action.iHourSecond) | 0;
+        let recover = Math.max(1, this.parent.effect().CalcFinallyValue(em_Effect_Comm.ActionRecover, this.parent.core.fileMap.DataConst.action.add) | 0);
+        let $iHourSecond = this.parent.effect().CalcFinallyValue(em_Effect_Comm.DiscountActionTime, this.parent.core.fileMap.DataConst.action.iHourSecond) | 0;
         this.actionData.refreshTime = 0;
         
         //首先判断体力值是否已满，如果已满甚至已经超过最大值，就不要更新了，这样避免了体力被强制平仓

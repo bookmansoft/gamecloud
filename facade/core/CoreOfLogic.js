@@ -6,6 +6,10 @@ let CoreOfBase = facade.CoreOfBase
 let {serverType, EntityType, ReturnCode, CommMode} = facade.const
 let socketClient = require('socket.io-client')
 let {User} = require('../model/table/User');
+let TaskObject = require('../util/comm/TaskObject');
+let ConfigManager = require('../util/potential/ConfigManager')
+let {ConfigMgr} = require('../util/battle/Action')
+
 /**
  * 逻辑服对应的门面类
  */
@@ -86,6 +90,31 @@ class CoreOfLogic extends CoreOfBase
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
         });
+
+        //载入各自独立的配置文件
+        for(let fl of facade.config.filelist.mapPath(`config/${this.constructor.name}`)) {
+            let id = fl.name.split('.')[0];
+            this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+        }
+
+        this.potentialConfig = new ConfigManager(this);
+
+        //遍历静态配置表，载入全部任务
+        this.TaskStaticList = {};
+        Object.keys(this.fileMap.task).map($k=>{
+            //创建新对象
+            let $taskObj = new TaskObject();
+            $taskObj.id = $k;
+        
+            //从静态配置表中取条件阈值和奖励信息
+            $taskObj.loadFromStatic(this);
+        
+            //将对象放入任务列表
+            this.TaskStaticList[$taskObj.id]= $taskObj;
+        });
+
+        //战斗配置管理
+        this.ConfigMgr = new ConfigMgr(this);
 
         //载入用户自定义的逻辑事件
         facade.config.filelist.mapPath('app/events').map(srv=>{

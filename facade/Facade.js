@@ -443,15 +443,6 @@ class Util
         return require('./util/battle/BattleManager');
     }
 
-    static get ConfigManager() {
-        return require('./util/potential/ConfigManager');
-    }
-    
-    static get ConfigMgr() {
-        let {ConfigMgr} = require('./util/battle/Action');
-        return ConfigMgr;
-    }
-
     static get BaseBattleParam() {
         let {BaseBattleParam} = require('./util/battle/util');
         return BaseBattleParam;

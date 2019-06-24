@@ -1,7 +1,6 @@
 let facade = require('../../../facade/Facade')
 let {RarityType, PurchaseType, em_Condition_Checkmode, em_Condition_Type, PotentialType, ResType, ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = facade.const
 let ActionOfTimer = require('../../util/potential/ActionOfTimer')
-let ConfigManager = require('../../util/potential/ConfigManager')
 let PotentialItem = require('../../util/potential/PotentialItem')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let UserEntity = facade.entities.UserEntity
@@ -95,8 +94,8 @@ class potential extends baseMgr
      */ 
     LoadData($potential) {
         //时效性技能
-        for(let $key in ConfigManager.getActionConfig()){
-            let $p = new ActionOfTimer($key);
+        for(let $key in this.parent.core.potentialConfig.getActionConfig()){
+            let $p = new ActionOfTimer($key, this.parent.core);
             this.actions[$p.id] = $p;
         }
 
@@ -111,7 +110,7 @@ class potential extends baseMgr
                     let $params = $value.split(',');
 
                     if($params.length >= 3){
-                        let $pi = new PotentialItem(PotentialType.Equ);
+                        let $pi = new PotentialItem(PotentialType.Equ, this);
                         $pi.id = $params[0];
                         $pi.setLevel($params[1]);
                         $pi.setPoint($params[2]);
@@ -125,7 +124,7 @@ class potential extends baseMgr
                     let $params = $value.split(',');
 
                     if($params.length >= 3){
-                        let $pi = new PotentialItem(PotentialType.Totem);
+                        let $pi = new PotentialItem(PotentialType.Totem, this);
                         $pi.id = $params[0];
                         $pi.setLevel($params[1]);
                         $pi.setPoint($params[2]);
@@ -139,7 +138,7 @@ class potential extends baseMgr
                     let $params = $value.split(',');
 
                     if($params.length >= 5){
-                        let $pi = new PotentialItem(PotentialType.Pet);
+                        let $pi = new PotentialItem(PotentialType.Pet, this);
                         $pi.id = $params[0];
                         $pi.setLevel($params[1]);
                         $pi.setPoint($params[2]);
@@ -177,7 +176,7 @@ class potential extends baseMgr
                     let $params = $value.split(',');
 
                     if($params.length >= 4){//单个PVE伙伴的参数
-                        let $pi = new PotentialItem(PotentialType.CPet);
+                        let $pi = new PotentialItem(PotentialType.CPet, this);
                         $pi.id = $params[0];
                         $pi.setLevel($params[1]);//PVE伙伴的等级
                         if($pi.id == 1 && $pi.getLevel() == 0){
@@ -444,7 +443,7 @@ class potential extends baseMgr
     CheckTech() {
         let $isChange = false;
         //检测现有科技是否有不满足激活条件的，从列表中去除
-        let $l = ConfigManager.getList();
+        let $l = this.parent.core.potentialConfig.getList();
         for(let $key in this.equList){
             let $value = this.equList[$key];
             if(!$l[$value.id]/*科技不存在*/
@@ -469,7 +468,7 @@ class potential extends baseMgr
                 if($value['pre_tech_id'] <= 0 || ( !!this.equList[$value['pre_tech_id']] && this.equList[$value['pre_tech_id']].getLevel() >= $value['pre_tech_lv']))
                 {//满足前置天赋条件
                     //添加新的天赋技能
-                    let $pi = new PotentialItem(PotentialType.Equ);
+                    let $pi = new PotentialItem(PotentialType.Equ, this);
                     $pi.id = $value['id'];
                     $pi.setLevel(0);
 
@@ -500,7 +499,7 @@ class potential extends baseMgr
      * @return {LargeNumberCalculator}
      */
     getUpgradeRequiredMoney($id, $lv1, $added) {
-        return ConfigManager.getCost($id, $lv1, $added);
+        return this.parent.core.potentialConfig.getCost($id, $lv1, $added);
     }
 
     //#endregion
@@ -512,12 +511,12 @@ class potential extends baseMgr
      * @var int
      */
     CanActiveTotem($id) {
-        if(!ConfigManager.getTotemList()[$id]){
+        if(!this.parent.core.potentialConfig.getTotemList()[$id]) {
             return false;
         }
 
         //检测图腾激活条件
-        for(let $condition of ConfigManager.getTotemList()[$id]['active']){
+        for(let $condition of this.parent.core.potentialConfig.getTotemList()[$id]['active']) {
             if(!this.heroList[$condition.id] || this.heroList[$condition.id].getEnLevel() < $condition.value) {
                 return false;
             }
@@ -536,7 +535,7 @@ class potential extends baseMgr
     UpgradeTotem($user, $id, $added = 1) {
         let $oriLevel = 0;
         if(!this.totemList[$id]) {
-            if(!!ConfigManager.getTotemList()[$id]){//激活操作
+            if(!!this.parent.core.potentialConfig.getTotemList()[$id]){//激活操作
                 $added = 1; //本次为激活操作
             }
             else{
@@ -548,13 +547,13 @@ class potential extends baseMgr
         }
 
         //新增：最大等级判断
-        let $ml = ConfigManager.getTotemList()[$id]['max'];
+        let $ml = this.parent.core.potentialConfig.getTotemList()[$id]['max'];
         if($ml > 0 && $oriLevel + $added > $ml){
             return ReturnCode.Level_Limited;
         }
         //End
 
-        let $requireStone = ConfigManager.getCostStone($id, $oriLevel, $added, Object.keys(this.totemList).length); //计算费用
+        let $requireStone = this.parent.core.potentialConfig.getCostStone([$id, $oriLevel, $added, Object.keys(this.totemList).length]); //计算费用
         if($user.getPocket().GetRes(ResType.StoneHero) < $requireStone){
             return ReturnCode.NotEnough_Num;
         }
@@ -562,7 +561,7 @@ class potential extends baseMgr
         if($oriLevel == 0){
             //2016.12.11 新增：添加关联魔宠激活判定
             if(this.CanActiveTotem($id)){
-                let $newItem = new PotentialItem(PotentialType.Totem);
+                let $newItem = new PotentialItem(PotentialType.Totem, this);
                 $newItem.id = $id;
 
                 this.totemList[$id] = $newItem;
@@ -592,7 +591,7 @@ class potential extends baseMgr
     CalcTotemCost() {
         for(let $key in this.totemList){
             let $value = this.totemList[$key];
-            $value.setMoney(new LargeNumberCalculator(ConfigManager.getCostStone($value.id, $value.getLevel(), 25, Object.keys(this.totemList).length), 0));
+            $value.setMoney(new LargeNumberCalculator(this.parent.core.potentialConfig.getCostStone([$value.id, $value.getLevel(), 25, Object.keys(this.totemList).length]), 0));
         }
     }
 
@@ -601,7 +600,7 @@ class potential extends baseMgr
      * @return array
      */
     GetRandomTotemList($n) {
-        let $list = ConfigManager.getTotemList();
+        let $list = this.parent.core.potentialConfig.getTotemList();
         let $l = Object.keys($list).reduce((sofar,cur)=>{
             if(!this.totemList[$list[cur]['id']]){
                 sofar.push($list[cur]);
@@ -609,9 +608,9 @@ class potential extends baseMgr
             return sofar;
         }, []);
         return $l.randomElement($n).map($item => {
-            let $ret = new PotentialItem(PotentialType.Totem);
+            let $ret = new PotentialItem(PotentialType.Totem, this);
             $ret.id = $item['id'];
-            let cos = ConfigManager.getCostStone($item['id'], 0, 1, Object.keys(this.totemList).length);
+            let cos = this.parent.core.potentialConfig.getCostStone([$item['id'], 0, 1, Object.keys(this.totemList).length]);
             $ret.setMoney(new LargeNumberCalculator(cos, 0));
             return $ret;
         });
@@ -663,7 +662,7 @@ class potential extends baseMgr
             return ReturnCode.roleMaxLevel; //已达当前可升最大等级
         }
 
-        let $reqChip = ConfigManager.getPetList()[$id].upgrade;
+        let $reqChip = this.parent.core.potentialConfig.getPetList()[$id].upgrade;
         let $num = $reqChip.calc(this.heroList[$id].getLevel() + $added);
         if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){//万能碎片
             $user.getPocket().AddRes(-$num, true, ResType.chip);
@@ -694,7 +693,7 @@ class potential extends baseMgr
                 $added = 1; //如果强化等级为0，则视为激活操作
             }
 
-            if(ConfigManager.getPetList()[$id]['max'] < this.heroList[$id].getEnLevel() + $added){
+            if(this.parent.core.potentialConfig.getPetList()[$id]['max'] < this.heroList[$id].getEnLevel() + $added){
                 return ReturnCode.Level_Limited;//超过最大等级限制
             }
 
@@ -703,7 +702,7 @@ class potential extends baseMgr
                 return ReturnCode.roleMaxLevel;
             }
 
-            let $reqChip = ConfigManager.getPetList()[$id].enhance;
+            let $reqChip = this.parent.core.potentialConfig.getPetList()[$id].enhance;
             let $num = $reqChip.calc(this.heroList[$id].getEnLevel() + $added);
             if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){
                 $user.getPocket().AddRes(-$num, false, $reqChip.type, $id);
@@ -749,7 +748,7 @@ class potential extends baseMgr
             return ReturnCode.roleMaxLevel;
         }
 
-        let $reqChip = ConfigManager.getPetList()[$id].advance;
+        let $reqChip = this.parent.core.potentialConfig.getPetList()[$id].advance;
         let $num = $reqChip.calc(this.heroList[$id].getAdLevel() + $added);
         if($user.getPocket().GetRes($reqChip.type, $reqChip.id) >= $num){
             $user.getPocket().AddRes(-$num, true, ResType.advancedChip);
@@ -772,7 +771,7 @@ class potential extends baseMgr
      * 将各种神魔原型加入PVP宠物列表
      */
     CheckPet() {
-        let $pl = ConfigManager.getPetList();
+        let $pl = this.parent.core.potentialConfig.getPetList();
         Object.keys($pl).reduce((sofar,cur)=>{
             let $item = $pl[cur];
             if(!this.heroList[$item['id']]){ //将未激活的神魔原型加入列表
@@ -780,7 +779,7 @@ class potential extends baseMgr
             }
             return sofar;
         }, []).map($it=>{
-            let $pi = new PotentialItem(PotentialType.Pet);
+            let $pi = new PotentialItem(PotentialType.Pet, this);
             $pi.id = parseInt($it['id']);
             $pi.setPoint(0);
             if($pi.id == 1){//默认激活孙悟空
@@ -823,7 +822,7 @@ class potential extends baseMgr
                     }
                 }
                 if($hl.length == $hl.array_diff(...$diff).length){ //该卡组中的英雄，都不在其他卡组中，也就是不存在重复编制
-                    if($hl.filter(id=>ConfigManager.getPetList()[id].profession != 0).length <= 3){ //英雄卡的数量不超过3张
+                    if($hl.filter(id=>this.parent.core.potentialConfig.getPetList()[id].profession != 0).length <= 3){ //英雄卡的数量不超过3张
                         this.heroLoc[$gid] = $hl;
                         this.dirty = true; //设置数据保存标志
                         return true;
@@ -923,12 +922,12 @@ class potential extends baseMgr
      * @return int 结果码
      */
     ActionAdd($id, $num) {
-        if(!ConfigManager.getActionConfig()[$id]){
+        if(!this.parent.core.potentialConfig.getActionConfig()[$id]){
             return ReturnCode.paramError;
         }
 
         if(!this.actions[$id]){
-            this.actions[$id] = new ActionOfTimer($id);
+            this.actions[$id] = new ActionOfTimer($id, this.parent.core);
         }
         let $ret = this.actions[$id].Add($num);
         if(ReturnCode.Success == $ret){
@@ -1022,7 +1021,7 @@ class potential extends baseMgr
      */
     UpgradeCPet($user, $added =1) {
         $added = Math.max(1, $added);
-        let $requireMoney = LargeNumberCalculator.Load(ConfigManager.getCostCPet(this.cpetLevel, $added));
+        let $requireMoney = LargeNumberCalculator.Load(this.parent.core.potentialConfig.getCostCPet(this.cpetLevel, $added));
         if(!$user.getPocket().ResEnough($requireMoney, ResType.Gold)){
             return ReturnCode.NotEnough_Money;
         }
@@ -1116,7 +1115,7 @@ class potential extends baseMgr
             let $pet = this.cpetList[$id];
             if($pet.getLevel() == 0){
                 if(checkChip){
-                    let $req = ConfigManager.getFellowList()[$id].activeInfo;
+                    let $req = this.parent.core.potentialConfig.getFellowList()[$id].activeInfo;
                 
                     if(this.parent.getPocket().GetRes($req.type, $req.id) < $req.num) {
                         return ReturnCode.NotEnough_Chip;
@@ -1149,7 +1148,7 @@ class potential extends baseMgr
         
         let $pet = this.cpetList[$id];
 
-        let $req = ConfigManager.getAdvanceCChip($id, $pet.getAdLevel(), $added);
+        let $req = this.parent.core.potentialConfig.getAdvanceCChip($id, $pet.getAdLevel(), $added);
         if(this.parent.getPocket().GetRes($req.type, $req.id) < $req.num){
             return ReturnCode.NotEnough_Chip;
         }
@@ -1171,7 +1170,7 @@ class potential extends baseMgr
      * 将各种宠物原型加入宠物列表
      */
     CheckCPet() {
-        let $list = ConfigManager.getFellowList();
+        let $list = this.parent.core.potentialConfig.getFellowList();
         Object.keys($list).reduce((sofar, cur)=>{
             let $item = $list[cur];
             if(!this.cpetList[$item['id']]){
@@ -1179,7 +1178,7 @@ class potential extends baseMgr
             }
             return sofar;
         }, []).map($it=>{
-            let $pi = new PotentialItem(PotentialType.CPet);
+            let $pi = new PotentialItem(PotentialType.CPet, this);
             $pi.id = $it['id'];
             $pi.setPoint(0);
             if($it['active']=="1"){

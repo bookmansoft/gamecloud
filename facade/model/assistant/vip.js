@@ -112,7 +112,7 @@ class vip extends baseMgr
         if(this.effectMgr.GetEffectChanged()){
             this.effectMgr.Clear();
             if(this.valid){
-                facade.config.fileMap.vip.skill.map(item=>{
+                this.parent.core.fileMap.vip.skill.map(item=>{
                     this.effectMgr.Add(item.effect);
                 });
             }
@@ -173,7 +173,7 @@ class vip extends baseMgr
 
             ret.code = ReturnCode.Success;
             //从配置表取奖励字段，送出首充奖励
-            ret.data.bonus = facade.config.fileMap.vip.firstPurchase;
+            ret.data.bonus = this.parent.core.fileMap.vip.firstPurchase;
             this.parent.getBonus(ret.data.bonus);
         }
         return ret;
@@ -189,7 +189,7 @@ class vip extends baseMgr
 
         if(this.valid){ //处于VIP有效期内
             if(this.parent.getActionMgr().Execute(ActionExecuteType.vipDaily, 1, true)) {
-                ret.data.bonus = facade.config.fileMap.vip.daily; //VIP每日奖励
+                ret.data.bonus = this.parent.core.fileMap.vip.daily; //VIP每日奖励
                 this.parent.getBonus(ret.data.bonus);
             }
             else{
@@ -212,11 +212,11 @@ class vip extends baseMgr
         let cur = new Date();
         if(this.valid){ //处于VIP有效期内
             //一周七天，每天的奖励都不一样
-            ret.data.bonus = facade.config.fileMap.vip.bonus[cur.getDay()].bonus;        //VIP每日奖励
+            ret.data.bonus = this.parent.core.fileMap.vip.bonus[cur.getDay()].bonus;        //VIP每日奖励
         }
         else{
             //一周七天，每天的奖励都不一样
-            ret.data.bonus = facade.config.fileMap.vip.bonus[cur.getDay()].normalBonus;  //普通玩家每日奖励
+            ret.data.bonus = this.parent.core.fileMap.vip.bonus[cur.getDay()].normalBonus;  //普通玩家每日奖励
         }
 
         let day = cur.toLocaleDateString();
@@ -338,7 +338,7 @@ class vip extends baseMgr
                 case TollgateState.sweep:
                     {
                         let tm = facade.util.now() - this.battle.time;
-                        let $gate = facade.config.fileMap.chapterdata[this.battle.id];//获取指定关卡的配置信息
+                        let $gate = this.parent.core.fileMap.chapterdata[this.battle.id];//获取指定关卡的配置信息
                         //if(tm >= $gate.time)
                         //改为固定时长30秒
                         if(tm >= 30)
@@ -347,7 +347,7 @@ class vip extends baseMgr
                             this.battle.state = TollgateState.bonus;
                             this.battle.time = 0;
                             //概率计算
-                            if(Math.random() < facade.config.fileMap.constdata.dropRate){ //掉率计算
+                            if(Math.random() < this.parent.core.fileMap.constdata.dropRate){ //掉率计算
                                 this.battle.bonus = BonusObject.convert($gate.award);
                             }
                             else{
@@ -361,7 +361,7 @@ class vip extends baseMgr
                 case TollgateState.start:
                     {
                         let tm = facade.util.now() - this.battle.time;
-                        let $gate = facade.config.fileMap.chapterdata[this.battle.id];//获取指定关卡的配置信息
+                        let $gate = this.parent.core.fileMap.chapterdata[this.battle.id];//获取指定关卡的配置信息
                         if(!$gate || tm >= 3*$gate.time){
                             //异常战斗，结束
                             console.log(`战斗异常结束, 耗时${tm}, ${this.parent.openid}, ${this.battle.id}` );
@@ -410,7 +410,7 @@ class vip extends baseMgr
 
         let ret = {code: ReturnCode.Success, data:{}}; //返回值
         let $gateId = !!$params.id ? $params.id : this.parent.hisGateNo; //如果客户端有上行关卡号则取该关卡号，否则取历史最高关卡号
-        let $gate = facade.config.fileMap.chapterdata[$gateId];//获取指定关卡的配置信息
+        let $gate = this.parent.core.fileMap.chapterdata[$gateId];//获取指定关卡的配置信息
         if(!$gate){
             return {code: ReturnCode.illegalGateId};
         }
@@ -522,7 +522,7 @@ class vip extends baseMgr
 
                             //计算用户总血量：最终生命 = 基础生命值 x 【（当前等级-1） + 生命成长系数 x 当前等级】^0.6
                             let fullBlood = 1000;
-                            let ro = facade.config.fileMap.roledata[this.parent.getInfoMgr().GetRecord(RecordType.Role)];
+                            let ro = this.parent.core.fileMap.roledata[this.parent.getInfoMgr().GetRecord(RecordType.Role)];
                             if(!!ro){
                                 let it = this.parent.getPocket().GetRes(ResType.Role, ro.id);
                                 if(!!it){
@@ -557,7 +557,7 @@ class vip extends baseMgr
                                 }
                             }
                             else{
-                                if(Math.random() < ($params.bonusRate + facade.config.fileMap.constdata.dropRate)){ //掉率计算
+                                if(Math.random() < ($params.bonusRate + this.parent.core.fileMap.constdata.dropRate)){ //掉率计算
                                     ret.data.bonus = BonusObject.convert($gate.award);
                                 }
                                 else{
@@ -854,7 +854,7 @@ class vip extends baseMgr
     goAhead($gate) {
         if($gate.id == this.parent.hisGateNo){
             let nextGateId = parseInt(this.parent.hisGateNo) + 1;
-            if(!!facade.config.fileMap.chapterdata[nextGateId]){//进入下一关
+            if(!!this.parent.core.fileMap.chapterdata[nextGateId]){//进入下一关
                 this.parent.hisGateNo = nextGateId;
                 this.parent.core.notifyEvent('user.task', {user:this.parent, data:{
                     type:em_Condition_Type.gateMaxNo, 

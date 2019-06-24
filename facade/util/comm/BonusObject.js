@@ -77,7 +77,7 @@ class BonusObject
         }
 
         if(bonus.type == ResType.Box) {//包含多项奖励的礼盒，首先取得礼盒内容，然后调用 getBonus 进行领取
-            let bi = facade.config.fileMap.shopdata[bonus.id];
+            let bi = user.core.fileMap.shopdata[bonus.id];
             if(!!bi){
                 BonusObject.getBonus(user, bi.bonus);
             }
@@ -101,8 +101,8 @@ class BonusObject
             else {//普通物品
                 if(bonus.type == ResType.PetChipHead && bonus.id == 0){//特殊逻辑：生成随机碎片 2017.7.13
                     let rate = Math.random() /*随机数*/, cur = 0/*记录累计概率*/;
-                    for(let rid of Object.keys(facade.config.fileMap.HeroList)) {
-                        cur += parseFloat(facade.config.fileMap.HeroList[rid].rate); //从角色表中获取掉率并进行累计
+                    for(let rid of Object.keys(user.core.fileMap.HeroList)) {
+                        cur += parseFloat(user.core.fileMap.HeroList[rid].rate); //从角色表中获取掉率并进行累计
                         if(rate < cur) { //本次随机数小于累计概率，找到符合条件的碎片
                             bonus.id = (parseInt(rid) + 1).toString(); 
                             break;

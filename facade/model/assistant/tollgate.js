@@ -596,7 +596,7 @@ class tollgate extends baseMgr
             }
 
             //计算属性相克
-            let bs = facade.config.fileMap.MonsterList[this.bossId];
+            let bs = this.parent.core.fileMap.MonsterList[this.bossId];
             if(!!bs){
                 switch(parseInt(bs.trait)){
                     case 1: el = [em_Effect_Comm.AttackToGold, em_Effect_Comm.AttackToAll]; break;

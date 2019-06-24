@@ -14,8 +14,8 @@ class config extends facade.Control {
      */
     async get(user, objData) {
         try{
-            if(!!facade.config.fileMap[objData.file]){
-                return {code:ReturnCode.Success, data:facade.config.fileMap[objData.file]};
+            if(!!this.core.fileMap[objData.file]){
+                return {code:ReturnCode.Success, data: this.core.fileMap[objData.file]};
             }
             else{
                 return {code:ReturnCode.Error};

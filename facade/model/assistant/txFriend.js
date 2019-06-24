@@ -73,7 +73,7 @@ class txFriend extends baseMgr
 
     getRandomBonus(exec=false){
         let bonus = null;
-        let rate = Math.random(), oriRate = 0, cfg = facade.config.fileMap.sayhelloreward;
+        let rate = Math.random(), oriRate = 0, cfg = this.parent.core.fileMap.sayhelloreward;
         let arr = Object.keys(cfg);
         for(let i = 0; i < arr.length; i++){
             if(oriRate + cfg[arr[i]].rate > rate){

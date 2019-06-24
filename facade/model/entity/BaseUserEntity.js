@@ -593,8 +593,8 @@ class BaseUserEntity extends BaseEntity
      */
     purchase($type, $num, $isExec) {
         $num = Math.max(0, Math.min(5000, $num));//简单的范围控制
-        if(!!facade.config.fileMap.PurchaseConfig[$type]){
-            let $sum = (facade.config.fileMap.PurchaseConfig[$type]['price'] * $num) | 0;
+        if(!!this.core.fileMap.PurchaseConfig[$type]){
+            let $sum = (this.core.fileMap.PurchaseConfig[$type]['price'] * $num) | 0;
             if(this.getPocket().GetRes(ResType.Diamond) >= $sum){
                 if($sum > 0 && $isExec){
                     this.getPocket().AddRes(-$sum, true, ResType.Diamond);
@@ -779,7 +779,7 @@ class BaseUserEntity extends BaseEntity
     static getDefaultValue(userName, domain, openid){
         return {
             name:userName,
-            info:`{"name": "", "id": 0, "domain":"${domain}", "uuid": "${openid}","invCode": "","headIcon": "","level": 0,"ap": ${facade.config.fileMap.DataConst.action.init},"money": ${facade.config.fileMap.DataConst.threshold.moneyOfInit}, "diamond":0, "rank": 0,"status": 0}`,
+            info:`{"name": "", "id": 0, "domain":"${domain}", "uuid": "${openid}","invCode": "","headIcon": "","level": 0,"ap": ${this.core.fileMap.DataConst.action.init},"money": ${this.core.fileMap.DataConst.threshold.moneyOfInit}, "diamond":0, "rank": 0,"status": 0}`,
             task:'',
             login: '{}',
             item: '{}',

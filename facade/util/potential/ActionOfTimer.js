@@ -2,7 +2,6 @@ let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../def
 let commonFunc = require('../commonFunc')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let EffectObject = require('../../../facade/util/comm/EffectObject')
-let ConfigManager = require('../../util/potential/ConfigManager')
 
 /**
  * 时效性技能类，包括：
@@ -11,7 +10,9 @@ let ConfigManager = require('../../util/potential/ConfigManager')
  */
 class ActionOfTimer
 {
-    constructor($_id) {
+    constructor($_id, core) {
+        this.core = core;
+
         /**
          * 技能编号
          * @var int
@@ -44,7 +45,7 @@ class ActionOfTimer
      * @return int
      */
     getType() {
-        return parseInt(ConfigManager.getActionConfig()[this.id]['type']);
+        return parseInt(this.core.potentialConfig.getActionConfig()[this.id]['type']);
     }
 
     /**
@@ -53,7 +54,7 @@ class ActionOfTimer
      */
     getCollDown($user)
     {
-        let $ret = parseInt(ConfigManager.getActionConfig()[this.id]['coolDown']);
+        let $ret = parseInt(this.core.potentialConfig.getActionConfig()[this.id]['coolDown']);
         switch(this.id){
             case 1:
                 $ret = $user.effect().CalcFinallyValue(em_Effect_Comm.Skill1_Rcd, $ret);
@@ -84,7 +85,7 @@ class ActionOfTimer
      * @return int
      */
     getExpired($user) {
-        let $ret = parseInt(ConfigManager.getActionConfig()[this.id]['expired']);
+        let $ret = parseInt(this.core.potentialConfig.getActionConfig()[this.id]['expired']);
         switch(this.id) {
             case 1:
                 $ret = $user.effect().CalcFinallyValue(em_Effect_Comm.Skill1_Timer, $ret);
@@ -110,9 +111,8 @@ class ActionOfTimer
         return $user.effect().CalcFinallyValue(em_Effect_Comm.SkillContinueTime, $ret);
     }
 
-    getEffectStr() 
-    {
-        return ConfigManager.getActionConfig()[this.id]['effects'];
+    getEffectStr() {
+        return this.core.potentialConfig.getActionConfig()[this.id]['effects'];
     }
 
     /**

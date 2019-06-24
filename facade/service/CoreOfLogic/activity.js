@@ -49,7 +49,7 @@ class activity extends facade.Service
                             continue;
                         }
 
-                        for(let rank in facade.config.fileMap.activity.ActivityRankBonus[this.type]){
+                        for(let rank in this.core.fileMap.activity.ActivityRankBonus[this.type]){
                             if(uo.rank <= rank){
                                 //发放奖励，并下行奖励通知 - 改为事件模式
                                 let user = this.core.GetObject(EntityType.User, uo.uid);
@@ -92,12 +92,12 @@ class activity extends facade.Service
                 return {code: ReturnCode.activityNoRankBonus};
             }
 
-            for(let rank in facade.config.fileMap.activity.ActivityRankBonus[this.type]){
+            for(let rank in this.core.fileMap.activity.ActivityRankBonus[this.type]){
                 if($ui.rank <= rank){
                     if(!$user.baseMgr.vip.readActivityBonus(0)){
                         $user.baseMgr.vip.writeActivityBonus(0);
-                        $user.getBonus(facade.config.fileMap.activity.ActivityRankBonus[this.type][rank].bonus);
-                        return {code: ReturnCode.Success, data:{rank: $ui.rank, bonus:facade.config.fileMap.activity.ActivityRankBonus[this.type][rank].bonus}};
+                        $user.getBonus(this.core.fileMap.activity.ActivityRankBonus[this.type][rank].bonus);
+                        return {code: ReturnCode.Success, data:{rank: $ui.rank, bonus:this.core.fileMap.activity.ActivityRankBonus[this.type][rank].bonus}};
                     }
                     else{
                         return {code: ReturnCode.activityBonusGot};
@@ -109,8 +109,8 @@ class activity extends facade.Service
             if($id - 1 <= $ui.lv){
                 if(!$user.baseMgr.vip.readActivityBonus($id)){
                     $user.baseMgr.vip.writeActivityBonus($id);
-                    $user.getBonus(facade.config.fileMap.activity.ActivityScoreBonus[this.type][$id - 1].bonus);
-                    return {code: ReturnCode.Success, data:{id: $id, bonus:facade.config.fileMap.activity.ActivityScoreBonus[this.type][$id - 1].bonus}};
+                    $user.getBonus(this.core.fileMap.activity.ActivityScoreBonus[this.type][$id - 1].bonus);
+                    return {code: ReturnCode.Success, data:{id: $id, bonus:this.core.fileMap.activity.ActivityScoreBonus[this.type][$id - 1].bonus}};
                 }
                 else{
                     return {code: ReturnCode.activityBonusGot};
@@ -365,17 +365,11 @@ class activity extends facade.Service
         if(!!user){
             ui.score += $added * ActivityScoreRate[this.type]; //不同活动具有不同的分数转化率
             for(let i = 0;i < 5;i++){
-                if(!!facade.config.fileMap.activity.ActivityScoreBonus[this.type][i] && ui.score >= facade.config.fileMap.activity.ActivityScoreBonus[this.type][i].score){
+                if(!!this.core.fileMap.activity.ActivityScoreBonus[this.type][i] && ui.score >= this.core.fileMap.activity.ActivityScoreBonus[this.type][i].score){
                     ui.lv = i;
                 }
             }
             this.core.notifyEvent("user.Activity.ScoreBonus", {user:user, score: ui.score, lv: ui.lv});
-            // if(!!facade.config.fileMap.activity.ActivityScoreBonus[this.type][ui.lv+1] && ui.score >= facade.config.fileMap.activity.ActivityScoreBonus[this.type][ui.lv+1].score){
-            //     //提升积分等级
-            //     ui.lv++;
-            //     //发放积分奖励 - 改为事件模式
-            //     this.parent.notifyEvent("user.Activity.ScoreBonus", {user:user, score: ui.score, lv: ui.lv});
-            // }
             //活动积分发生变化
             this.core.notifyEvent("user.Activity.ScoreChanged", {user:user, score: ui.score, lv: ui.lv});
         }

@@ -22,7 +22,7 @@ class info extends baseMgr
             //	体力
             ap 			: 15,
             //	金钱
-            money		: facade.config.fileMap.DataConst.threshold.moneyOfInit,
+            money		: this.parent.core.fileMap.DataConst.threshold.moneyOfInit,
             diamond		: 0,
 
             date: '',     //刷新日期，用于每日任务
@@ -51,8 +51,8 @@ class info extends baseMgr
                 "invCode": "",
                 "headIcon": "",
                 "level": 0,
-                "ap": facade.config.fileMap.DataConst.action.init,
-                "money": facade.config.fileMap.DataConst.threshold.moneyOfInit,
+                "ap": this.parent.core.fileMap.DataConst.action.init,
+                "money": this.parent.core.fileMap.DataConst.threshold.moneyOfInit,
                 "diamond":0,
                 "status": 0
             };

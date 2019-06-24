@@ -3,22 +3,6 @@ let {em_Effect_Name, em_Effect_Comm, em_EffectCalcType, mapOfTechCalcType} = fac
 let {SkillStateEnum,conditionEnum, ProfessionType,SkillNameEnum,EmitType,OperationType,StatusOfActionExecute,PeriodTypeEnum,NotifyEnum,AttrChangedType,BattleBuffEnum,AttackMode,EnhanceMode,ActionTypeEnum,ActionExecuteResult} = require('./enum')
 let StatusManager = require('./StatusManager')
 
-const PetList = facade.config.fileMap.HeroList.reduce((sofar, cur) => {
-    cur.loc = cur.locStr.split(',');
-    cur.boot = parseInt(cur.boot);
-    cur.profession = parseInt(cur.profession);
-    cur.ActionList = [];
-    cur.ActionList.push(cur.action1.split(';').reduce((sofar,cur)=>{sofar.push(cur);return sofar;},[]));
-    cur.ActionList.push(cur.action2.split(';').reduce((sofar,cur)=>{sofar.push(cur);return sofar;},[]));
-    cur.ActionList.push(cur.action3.split(';').reduce((sofar,cur)=>{sofar.push(cur);return sofar;},[]));
-    cur.ActionList.push(cur.action4.split(';').reduce((sofar,cur)=>{sofar.push(cur);return sofar;},[]));
-    cur.ActionList.push(cur.action5.split(';').reduce((sofar,cur)=>{sofar.push(cur);return sofar;},[]));
-
-    sofar[cur.id] = cur; 
-    return sofar;
-}, {});
-
-
 /**
  * 实战参数
  */
@@ -410,7 +394,7 @@ class OperationItem
      * @param {*} params 
      */
     getName(params){
-        return `${params[0]}的英雄${PetList[params[1]].name}(位于${params[2]})`;
+        return `${params[0]}的英雄${params[1]}(位于${params[2]})`;
     }
     /**
      * 英雄基本属性

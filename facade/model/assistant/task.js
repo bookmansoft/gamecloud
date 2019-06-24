@@ -16,39 +16,25 @@ let commonFunc = facade.util;
 
 let baseMgr = require('../baseAssistant');
 let TaskObject = require('../../../facade/util/comm/TaskObject');
-let TaskStaticList = {};
-
-//从静态配置表中遍历全部任务
-Object.keys(facade.config.fileMap.task).map($k=>{
-    //创建新对象
-    let $taskObj = new TaskObject();
-    $taskObj.id = $k;
-
-    //从静态配置表中取条件阈值和奖励信息
-    $taskObj.loadFromStatic();
-
-    //将对象放入任务列表
-    TaskStaticList[$taskObj.id]= $taskObj;
-});
 
 /**
  * 任务管理器
  * 从User表中获取任务完成情况表，从配置表中获取静态任务列表，两者联合处理，得出最终的待完成任务列表
  */
 class task extends baseMgr {
-    constructor(parent){
+    constructor(parent) {
         super(parent, 'task');
         this.taskList = {}; //当前可执行任务列表
     }
 
     createTaskObj($k){
-        if(!!TaskStaticList[$k]){
+        if(!!this.parent.core.TaskStaticList[$k]) {
             //创建新对象
             let $taskObj = new TaskObject();
             $taskObj.id = $k;
 
             //从静态配置表中取条件阈值和奖励信息
-            $taskObj.loadFromStatic();
+            $taskObj.loadFromStatic(this.parent.core);
 
             //将对象放入任务列表
             this.taskList[$taskObj.id]= $taskObj;
@@ -119,8 +105,8 @@ class task extends baseMgr {
         }, {});
     }
 
-    get staticList(){
-        return TaskStaticList;
+    get staticList() {
+        return this.parent.core.TaskStaticList;
     }
 
     /**
@@ -240,8 +226,8 @@ class task extends baseMgr {
      * @param $mode         //检测方式：绝对值/累积值
      */
     Execute($ctype, $num, $mode = constList.em_Condition_Checkmode.add){
-        Object.keys(TaskStaticList).map($key=>{//遍历所有静态任务，因为有可能多个任务里都用到了同样的条件
-            if(!this.taskList[$key] && TaskStaticList[$key].conditionMgr.hasCondition($ctype)){
+        Object.keys(this.parent.core.TaskStaticList).map($key=>{//遍历所有静态任务，因为有可能多个任务里都用到了同样的条件
+            if(!this.taskList[$key] && this.parent.core.TaskStaticList[$key].conditionMgr.hasCondition($ctype)){
                 this.createTaskObj($key); //创建新的动态任务
             }
         });

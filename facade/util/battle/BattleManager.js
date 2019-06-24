@@ -1,7 +1,7 @@
 let {BattleBuffEnum, NotifyEnum, EmitType,OperationType,PeriodTypeEnum,AttackMode,ActionTypeEnum} = require('./enum')
 let EventEmitter = require('events').EventEmitter; //事件管理
 let BattleUser = require('./player');
-let {ActionObject,ActionOfUserControl,ConfigMgr} = require('./Action');
+let {ActionObject,ActionOfUserControl} = require('./Action');
 let {OperationItem} = require('./util')
 
 /**
@@ -64,8 +64,8 @@ class BattleRoom extends EventEmitter
 
     /**
      * 创建战场
-     * @param {user} $me
-     * @param {user} $enemy
+     * @param {Object}          $me     {player, id, lv, skill}
+     * @param {Object}          $enemy  {player, id, lv, skill}
      * @return {BattleRoom}
      */
     static CreateRoom($me, $enemy){
@@ -76,10 +76,6 @@ class BattleRoom extends EventEmitter
         return $_battle;
     }
 
-    static getHeroConfig($id){
-        return ConfigMgr.PetList()[$id];
-    }
-
     /**
      * 根据分组信息，以及用户对象，构造英雄的技能列表
      * @param {*} loc 
@@ -87,7 +83,7 @@ class BattleRoom extends EventEmitter
      */
     static getSkills(loc, user){
         return loc.reduce((sofar, cur)=>{
-            let cfg = this.getHeroConfig(cur);
+            let cfg = user.core.ConfigMgr.PetList()[cur];
             if(cfg.profession == 0){ //法术卡，将其包含的技能填充到主角的技能列表中，等级取自法术卡自身的等级,受星级限制开放
                 //升星解锁新的技能
                 let $ev = user.getPotentialMgr().GetHero(cur).getEnLevel() || 1;

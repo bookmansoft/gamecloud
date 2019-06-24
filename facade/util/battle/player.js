@@ -2,7 +2,6 @@ let facade = require('../../Facade')
 let {SkillType, em_Effect_Name, em_Effect_Comm, em_EffectCalcType, mapOfTechCalcType} = facade.const
 let {NotifyEnum, OperationType, EmitType,PeriodTypeEnum,BattleBuffEnum,AttackMode} = require('./enum')
 let {BattleHero} = require('./hero');
-let {ConfigMgr} = require('./Action')
 
 let EventEmitter = require('events').EventEmitter; //事件管理
 let EffectManager = require('../comm/EffectManager');
@@ -14,8 +13,8 @@ class BattleUser extends EventEmitter
 {
     /**
      * 构造函数
-     * @param {user} $_owner
-     * @param {BattleRoom} $bo   
+     * @param {Object}      $_owner {player, id, lv, skill}
+     * @param {BattleRoom}  $bo   
      */
     constructor($_owner, $bo){
         super();
@@ -239,7 +238,7 @@ class BattleUser extends EventEmitter
      * @return {BattleHero}
      */
     summon(hid, $skill=[]){
-        let pet = ConfigMgr.PetList()[hid];
+        let pet = this.user.player.core.ConfigMgr.PetList()[hid];
         if(!!pet){
             let $_SiteNo = this.getTargetLocation(pet.loc);
             if($_SiteNo != -1){

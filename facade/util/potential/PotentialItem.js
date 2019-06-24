@@ -1,7 +1,6 @@
 let facade = require('../../Facade')
 let {PotentialType, em_Effect_Comm} = facade.const
 let PetClientItem = require('./PetClientItem')
-let ConfigManager = require('./ConfigManager')
 let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
 let EffectManager = require('../../../facade/util/comm/EffectManager')
 let EffectObject = require('../../../facade/util/comm/EffectObject')
@@ -14,7 +13,13 @@ let EffectObject = require('../../../facade/util/comm/EffectObject')
  */
 class PotentialItem 
 {
-    constructor($_type){
+    /**
+     * 构造函数
+     * @param {*} $_type            天赋类型
+     * @param {baseMgr} $parent     容器对象
+     */
+    constructor($_type, $parent) {
+        this.parent = $parent;
         this.type = !!$_type ? $_type : PotentialType.Equ;
         /**
          * 记录升级所需花费
@@ -154,7 +159,7 @@ class PotentialItem
                 break;
 
             case PotentialType.CPet: //PVE伙伴的点击攻击力
-                this.power = (ConfigManager.getPowerFormula(this.id))(this.level)
+                this.power = (this.parent.parent.core.potentialConfig.getPowerFormula(this.id))(this.level)
                     .CalcFinallyValue(this.effect(), [em_Effect_Comm.selfPower]);
                 break;
 
@@ -167,7 +172,7 @@ class PotentialItem
      * @return {LargeNumberCalculator}  
      */
     _getEquPower($_level) {
-        let $power = (ConfigManager.getEquPowerFormula(this.id))($_level)
+        let $power = (this.parent.parent.core.potentialConfig.getEquPowerFormula(this.id))($_level)
             .CalcFinallyValue(this.effect(), [em_Effect_Comm.selfPower]) //对自身攻击力的加成
             ._mul_(1 + 331 * this.point) ;//圣光基础加持，包括基础量331和圣光数量；图腾对圣光的增强放在外围计算
 
@@ -248,7 +253,7 @@ class PotentialItem
             switch(this.type){
                 case PotentialType.Equ:
                 {
-                    let $list = ConfigManager.getList();
+                    let $list = this.parent.parent.core.potentialConfig.getList();
                     for(let $value of $list[this.id]['effects']){
                         if($calcLevel < $value['level']){
                             break;
@@ -277,7 +282,7 @@ class PotentialItem
                 }
 
                 case PotentialType.CPet:
-                    let $list = ConfigManager.getFellowList();
+                    let $list = this.parent.parent.core.potentialConfig.getFellowList();
                     for(let $value of $list[this.id]['effects']){ //统计因等级提升已经解锁的、增加攻击力的技能
                         if($calcLevel < $value['level']){
                             break;
@@ -317,7 +322,7 @@ class PotentialItem
 
                 case PotentialType.Pet:
                 {
-                    let $list = ConfigManager.getPetList();
+                    let $list = this.parent.parent.core.potentialConfig.getPetList();
                     let $params = $list[this.id]['effect'].split(',');
                     $te.AddItem(new EffectObject(parseInt($params[0]), parseFloat($params[1]) + parseFloat($params[2])*this.getLevel()));
                     break;
@@ -325,7 +330,7 @@ class PotentialItem
 
                 case PotentialType.Totem:
                 {
-                    let $list = ConfigManager.getTotemList();
+                    let $list = this.parent.parent.core.potentialConfig.getTotemList();
                     let $params = $list[this.id]['effect'].split(',');
                     $te.AddItem(new EffectObject(parseInt($params[0]), parseFloat($params[1]) + parseFloat($params[2])*this.getLevel()));
                     break;

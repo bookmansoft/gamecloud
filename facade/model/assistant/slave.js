@@ -214,13 +214,13 @@ class slave extends baseMgr {
             let ret = this.parent.baseMgr.item.useItem(403, 1);
             if(ret.code == ReturnCode.Success){
                 if(this.parent.getActionMgr().GetExecuteNum(ActionExecuteType.slaveFlattery)<=3){
-                    mst.time -= facade.config.fileMap.DataConst.slave.catchTime * 0.05;
+                    mst.time -= this.parent.core.fileMap.DataConst.slave.catchTime * 0.05;
                 }
                 this.CheckStatus();
                 let fri = this.parent.getTxFriendMgr().getFriend(openid);
                 // 奴隶主收到谄媚推送消息
                 if(!!fri) {
-                    let desc = facade.config.slaveMsg["flattery"].desc;
+                    let desc = this.parent.core.slaveMsg["flattery"].desc;
                     this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
             }
@@ -347,10 +347,10 @@ class slave extends baseMgr {
 
     calcSlaveTime(t){
         let $now = facade.util.now();
-        return Math.ceil(Math.max(0, $now - (t - facade.config.fileMap.DataConst.slave.catchTime)) / 3600.0);
+        return Math.ceil(Math.max(0, $now - (t - this.parent.core.fileMap.DataConst.slave.catchTime)) / 3600.0);
     }
     fullSlaveTime(t){
-        return t >= facade.config.fileMap.DataConst.slave.catchTime;
+        return t >= this.parent.core.fileMap.DataConst.slave.catchTime;
     }
 
     removeSlaveByIdx(idx){
@@ -405,7 +405,7 @@ class slave extends baseMgr {
             this.releaseAll();
 
             //添加新的主人条目
-            this.v.master.push({openid:openid, time: facade.config.fileMap.DataConst.slave.catchTime + facade.util.now()});
+            this.v.master.push({openid:openid, time: this.parent.core.fileMap.DataConst.slave.catchTime + facade.util.now()});
             this.dirty = true;
 
             return ReturnCode.Success;
@@ -435,7 +435,7 @@ class slave extends baseMgr {
             return ReturnCode.socialCatchedBySelf;
         }
         else {
-            this.v.slave.push({openid:openid, time: facade.config.fileMap.DataConst.slave.catchTime + facade.util.now()});
+            this.v.slave.push({openid:openid, time: this.parent.core.fileMap.DataConst.slave.catchTime + facade.util.now()});
             this.dirty = true;
 
             this.parent.baseMgr.info.SetStatus(UserStatus.master); //修改奴隶主状态位

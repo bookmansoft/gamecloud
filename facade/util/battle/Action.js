@@ -4,7 +4,7 @@ let {SkillStateEnum, conditionEnum, ProfessionType,SkillNameEnum,EmitType,Operat
 let {BattleHero} = require('./hero');
 let BattleUser = require('./player');
 let StatusManager = require('./StatusManager')
-let {BattleParam,BattleOperation,BaseBattleParam,ActionResultInfo} = require('./util')
+let {BattleOperation,BaseBattleParam,ActionResultInfo} = require('./util')
 
 /**
  * 配置管理. 技能配置模式描述如下：
@@ -13,33 +13,39 @@ let {BattleParam,BattleOperation,BaseBattleParam,ActionResultInfo} = require('./
  * 3、卡牌：定义于配置文件 HeroList 中，卡牌分为英雄卡和符文，通过 boot 和 ActionList 和技能相关联，
  *      其中 boot 指定和英雄卡相关联的召唤技能的编号，ActionList则罗列了该卡牌自身拥有的技能列表
  */
-const ConfigMgr = { 
-    /**
-     * Combo发动阈值
-     */
-    ComboMax: 2,
-    /**
-     * 恢复技能系数
-     */
-    baseRecoverValue: 0.1,
-    /**
-     * 鼓舞技能系数
-     */
-    baseEncourageValue: 5,
-    /**
-     * 攻击提升技能系数
-     */
-    baseAttackValue: 0.05,
+class ConfigMgr 
+{ 
+    constructor(core) {
+        this.core = core;
+
+        /**
+         * Combo发动阈值
+         */
+        this.ComboMax = 2;
+        /**
+         * 恢复技能系数
+         */
+        this.baseRecoverValue = 0.1;
+        /**
+         * 鼓舞技能系数
+         */
+        this.baseEncourageValue = 5;
+        /**
+         * 攻击提升技能系数
+         */
+        this.baseAttackValue = 0.05;
+    }
+
     /**
      * 职业配置表
      */
-    ProfessionList: function(){ 
-        if(ConfigMgr._ProfessionList == null) {
-            ConfigMgr._ProfessionList = {};
-            facade.config.fileMap.professionList.map(it=>{
+    ProfessionList() { 
+        if(this._ProfessionList == null) {
+            this._ProfessionList = {};
+            this.core.fileMap.professionList.map(it=>{
                 let $combo = it.combo.split(',');
                 let $attackMode = it.attackMode.split(',');
-                ConfigMgr._ProfessionList[it.id] = {
+                this._ProfessionList[it.id] = {
                     BP: it.BP.split(','),
                     attack: (...params)=>{return params[0]*it.attack | 0},
                     defense: (...params)=>{return params[0]*it.defense | 0},
@@ -48,15 +54,16 @@ const ConfigMgr = {
                 };
             });
         }
-        return ConfigMgr._ProfessionList;
-    },
+        return this._ProfessionList;
+    }
+
     /**
      * 技能类型配置表 
      *      映射 SkillType 和 ActionOfFunction，参数：技能类型、订阅事件列表  、发动前提条件、构造函数句柄
      */
-    FunctionList: function(){
-        if(ConfigMgr._FunctionList == null){
-            ConfigMgr._FunctionList = {};
+    FunctionList() {
+        if(this._FunctionList == null){
+            this._FunctionList = {};
             [
                 //先天技能
                 {funcType:SkillType.Attack, CanExecute: function(){return true;}, builder:ActionOfAttack.prototype.constructor},
@@ -80,13 +87,13 @@ const ConfigMgr = {
                 {funcType:SkillType.JianCi, CanExecute:function(){return true;}, builder:ActionOfJianCi.prototype.constructor},
                 {funcType:SkillType.Enchant, CanExecute:function(){
                     //是否有空位符合召唤的条件
-                    return !!this.hero.HurtObject.dst && this.user.getTargetLocation(ConfigMgr.PetList()[this.hero.HurtObject.dst.id].loc) != -1;    
+                    return !!this.hero.HurtObject.dst && this.user.getTargetLocation(this.user.user.player.core.ConfigMgr.PetList()[this.hero.HurtObject.dst.id].loc) != -1;    
                 }, builder:ActionOfEnchant.prototype.constructor},
                 {funcType:SkillType.Alive, CanExecute:function(){
                     return !this.limit([[conditionEnum.globalLimit,1]]); //限制使用频次：全局最多1次
                 }, builder:ActionOfAlive.prototype.constructor},
                 {funcType:SkillType.Illusion, CanExecute:function(){
-                    return this.user.getTargetLocation(ConfigMgr.PetList()[this.hero.id].loc) != -1;    //是否有空位符合召唤的条件
+                    return this.user.getTargetLocation(this.user.user.player.core.ConfigMgr.PetList()[this.hero.id].loc) != -1;    //是否有空位符合召唤的条件
                 }, builder:ActionOfIllusion.prototype.constructor},
                 {funcType:SkillType.XianJi, CanExecute:function(){return true;}, builder:ActionOfXianJi.prototype.constructor},
                 {funcType:SkillType.LiZhi, CanExecute:function(){
@@ -107,31 +114,33 @@ const ConfigMgr = {
                 {funcType:SkillType.QuSan, CanExecute:function(){return true;}, builder:ActionOfQuSan.prototype.constructor},
                 {funcType:SkillType.Attach, CanExecute:function(){return true;}, builder:ActionOfAttach.prototype.constructor},
                 {funcType:SkillType.Summon, CanExecute:function(){
-                    return this.user.getTargetLocation(ConfigMgr.PetList()[this.addon.hid].loc) != -1;    //是否有空位符合召唤的条件
+                    return this.user.getTargetLocation(this.user.user.player.core.ConfigMgr.PetList()[this.addon.hid].loc) != -1;    //是否有空位符合召唤的条件
                 }, builder:ActionOfSummon.prototype.constructor},
                 {funcType:SkillType.Blood, CanExecute:function(){return true;}, builder:ActionOfBlood.prototype.constructor},
             ].map(item=>{
-                ConfigMgr._FunctionList[item.funcType] = item;
+                this._FunctionList[item.funcType] = item;
             });
         }
-        return ConfigMgr._FunctionList;
-    },
+        return this._FunctionList;
+    }
+
     /**
      * 技能类型检索函数
      * @return {ActionOfSkill}
      */
-    func: function($type) {
-        return ConfigMgr.FunctionList()[$type];
-    },
+    func($type) {
+        return this.FunctionList()[$type];
+    }
+
     /**
      * 技能配置表
      */
-    SkillList:function(){
-        if(!ConfigMgr.$SkillList){
-            ConfigMgr.$SkillList = {};
+    SkillList () {
+        if(!this.$SkillList){
+            this.$SkillList = {};
             
-            facade.config.fileMap.skillList.map(it=>{
-                let fi = ConfigMgr.func(it.tid);
+            this.core.fileMap.skillList.map(it=>{
+                let fi = this.func(it.tid);
                 if(!!fi){ 
                     //从技能类型对象中，复制部分属性
                     it.funcType = fi.funcType;
@@ -165,36 +174,39 @@ const ConfigMgr = {
                     it.addon.hid = parseInt(it.addon.hid);
                 }
 
-                ConfigMgr.$SkillList[it.id] = it;
+                this.$SkillList[it.id] = it;
             });
         }
-        return ConfigMgr.$SkillList;
-    },
+        return this.$SkillList;
+    }
+
     /**
      * 可用于顿悟的技能列表
      */
-    randomSkillList: function(){
-        if(!ConfigMgr.$randomSkillList){
-            ConfigMgr.$randomSkillList = Object.keys(ConfigMgr.SkillList()).filter(id=>{
+    randomSkillList() {
+        if(!this.$randomSkillList){
+            this.$randomSkillList = Object.keys(this.SkillList()).filter(id=>{
                 let $id = parseInt(id);
                 return $id > 11 && $id != 101;
             });
         }
-        return ConfigMgr.$randomSkillList;
-    },
+        return this.$randomSkillList;
+    }
+
     /**
      * 技能检索函数
      */
-    skill: function($id){
-        return ConfigMgr.SkillList()[$id];
-    },
+    skill ($id) {
+        return this.SkillList()[$id];
+    }
+
     /**
      * 卡牌配置表
      */
-    PetList: function(){
+    PetList () {
         //id 编号，type 卡牌类型, loc 站位, ActionList 后天技能, 格式："技能ID,技能等级;..."
-        if(!ConfigMgr._PetList){
-            ConfigMgr._PetList = facade.config.fileMap.HeroList.reduce((sofar, cur) => {
+        if(!this._PetList){
+            this._PetList = this.core.fileMap.HeroList.reduce((sofar, cur) => {
                 //对数据做一些预处理
                 cur.loc = cur.locStr.split(',');
                 cur.boot = parseInt(cur.boot);
@@ -213,8 +225,8 @@ const ConfigMgr = {
                 return sofar;
             }, {});
         }
-        return ConfigMgr._PetList;
-    },
+        return this._PetList;
+    }
 };
 
 /**
@@ -533,8 +545,8 @@ class ActionOfSkill extends ActionObject
         this.funcId = $_fid;                  //技能类型
         this.type = ActionTypeEnum.Function;  //事务类型
         
-        if (!!ConfigMgr.skill($_fid)){
-            let $model = ConfigMgr.skill($_fid);
+        if (!!this.user.user.player.core.ConfigMgr.skill($_fid)){
+            let $model = this.user.user.player.core.ConfigMgr.skill($_fid);
 
             this.Notify = new StatusManager($model.Notify.Value);     //关注的事件类型（联合枚举）
             this.CanExecute = $model.CanExecute;    //技能前置执行判定
@@ -891,7 +903,7 @@ class ActionOfRecover extends ActionOfSkill
                 for(let $simHero of this.enemyList) {
                     if ($simHero.BattleParam.Defense > 0){
                         let $OldValue = $simHero.BattleParam.Defense;
-                        $simHero.BattleParam.Defense += ($simHero.BattleParam.Ori_Defense * ConfigMgr.baseRecoverValue * this.Probability) | 0;
+                        $simHero.BattleParam.Defense += ($simHero.BattleParam.Ori_Defense * this.user.user.player.core.ConfigMgr.baseRecoverValue * this.Probability) | 0;
                         if ($simHero.BattleParam.Defense > $OldValue){
                             $simHero.lockFrame(this.hero.CurCondition).record(OperationType.AttrChanged, {ori:this.hero.Index, type:AttrChangedType.Recover, value:$simHero.Attributes});
                             $simHero.Notify(NotifyEnum.Recovered, this.hero);
@@ -1511,7 +1523,7 @@ class ActionOfEncourage extends ActionOfSkill
                 this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.Start, sim:this.enemyList.map(it=>{return it.Index})});
                 for(let $simHero of this.enemyList){
                     let $OldValue = $simHero.BattleParam.HonorValue;
-                    $simHero.BattleParam.HonorValue = Math.min($simHero.BattleParam.HonorValue + ConfigMgr.baseEncourageValue * this.Probability, 100) | 0;
+                    $simHero.BattleParam.HonorValue = Math.min($simHero.BattleParam.HonorValue + this.user.user.player.core.ConfigMgr.baseEncourageValue * this.Probability, 100) | 0;
                     if ($simHero.BattleParam.HonorValue > $OldValue){
                         $simHero.record(OperationType.AttrChanged, {ori:this.hero.Index, type:AttrChangedType.Encourage, value:$simHero.Attributes});
                     }
@@ -1539,7 +1551,7 @@ class ActionOfStudy extends ActionOfSkill
 
         if(!!this.ori){
             let $fn = Object.keys(this.ori.actionList).randomElement()[0];
-            if (!!ConfigMgr.skill($fn) && !this.hero.actionList[$fn]){
+            if (!!this.user.user.player.core.ConfigMgr.skill($fn) && !this.hero.actionList[$fn]){
                 this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.Start, sim:[this.ori.Index], value:$fn});
                 this.hero.addSkill($fn, this.level);
                 this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.End});
@@ -1562,7 +1574,7 @@ class ActionOfInsight extends ActionOfSkill
 
         let recy = 0;
         while(recy++ < 50){
-            let $fn = parseInt(ConfigMgr.randomSkillList().randomElement()[0]);
+            let $fn = parseInt(this.user.user.player.core.ConfigMgr.randomSkillList().randomElement()[0]);
             if (!this.hero.actionList[$fn]){
                 this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.Start, value:$fn});
                 this.hero.addSkill($fn, this.level);
@@ -1586,7 +1598,7 @@ class ActionOfAttach extends ActionOfSkill
         }
 
         let $fn = this.addon.sid;
-        if (!!ConfigMgr.skill($fn) && !this.user.master.actionList[$fn]){
+        if (!!this.user.user.player.core.ConfigMgr.skill($fn) && !this.user.master.actionList[$fn]){
             this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.Start, sim:[this.user.master.Index]});
             this.user.master.addSkill($fn, this.level);
             this.hero.record(OperationType.Skill, {type:this.funcId, state:SkillStateEnum.End});

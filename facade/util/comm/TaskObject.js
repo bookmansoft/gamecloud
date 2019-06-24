@@ -8,8 +8,9 @@ let BonusList = {}
 /**
  * 任务对象
  */
-class TaskObject {
-    constructor(){
+class TaskObject 
+{
+    constructor() {
         this.id = 0;                         //任务唯一编号
         this.status = constList.em_task_status.init;  //任务状态
         this.time = 0;
@@ -38,8 +39,8 @@ class TaskObject {
     /*
      * 从静态配置表中，获取并填充条件阈值和奖励信息
      */
-    loadFromStatic(){
-        let curItem = facade.config.fileMap.task[this.id];
+    loadFromStatic(core) {
+        let curItem = core.fileMap.task[this.id];
 
         curItem.condition.split(';').map($value2=>{
             let $staticConItem = $value2.split(',');

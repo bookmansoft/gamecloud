@@ -103,6 +103,13 @@ class CoreOfBase
         //系统内部事件映射表，由子类视需要载入实际内容
         this.eventHandleList = {};
 
+        //载入通用配置表文件，再由子类视需要加载各自独特的内容(需要注意相互覆盖)
+        this.fileMap = {};
+        for(let fl of facade.config.filelist.mapPath(`config/data`)) {
+            let id = fl.name.split('.')[0];
+            this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+        }
+
         //定时任务管理器
         this.autoTaskMgr = new AutoTaskManager(this);
 

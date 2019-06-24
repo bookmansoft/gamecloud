@@ -7,7 +7,12 @@ let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalcul
  */
 class TollgateObject
 {
-    constructor($no, $user){
+    /**
+     * 构造函数
+     * @param {*}               $no       //关卡编号
+     * @param {BaseUserEntity}  $user     //用户对象
+     */
+    constructor($no, $user) {
         this.owner = $user;
         this.GateNo = $no;
 
@@ -16,7 +21,7 @@ class TollgateObject
 
         if(this.GateNo % 10 == 0){ //大关
             this.GateType = TollgateType.BigGate;
-            this.bossId = parseInt(facade.config.fileMap.MonsterList.randomElement()[0]['id']);
+            this.bossId = parseInt($user.core.fileMap.MonsterList.randomElement()[0]['id']);
 
             if(facade.util.rand(0, 99) < (100 * $user.effect().CalcFinallyValue(em_Effect_Comm.StoneGetRate, 0.6))){//魂石掉率概率测试
                 //（当前关卡数/25（向下取整后）-2）* ( 1 + 图腾效果加成百分比 )
@@ -28,7 +33,7 @@ class TollgateObject
         }
         else if(this.GateNo % 5 == 0){ //中关
             this.GateType = TollgateType.MediumGate;
-            this.bossId = parseInt(facade.config.fileMap.MonsterList.randomElement()[0]['id']);
+            this.bossId = parseInt($user.core.fileMap.MonsterList.randomElement()[0]['id']);
         }
         else{ //小关
             this.GateType = TollgateType.SmallGate;
@@ -37,7 +42,7 @@ class TollgateObject
          * 当前关卡怪物总数，考虑了科技的影响
          * @var int|mixed
          */
-        this.totalMonster = Math.max(1, $user.CalcResult(em_Effect_Comm.ReduceMonsterNum, facade.config.fileMap.TollgateConfig[this.GateType]['baseMonsterNum']));
+        this.totalMonster = Math.max(1, $user.CalcResult(em_Effect_Comm.ReduceMonsterNum, $user.core.fileMap.TollgateConfig[this.GateType]['baseMonsterNum']));
         /**
          * 当前关卡总血量，考虑了科技的影响
          */

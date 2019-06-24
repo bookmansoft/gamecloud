@@ -5,7 +5,6 @@ let EventEmitter = require('events').EventEmitter; //事件管理
 let EffectManager = require('../comm/EffectManager');
 let EffectObject= require('../comm/EffectObject');
 let {OperationItem, BattleParam,BattleOperation,BaseBattleParam,ActionResultInfo} = require('./util')
-let {ConfigMgr} = require('./Action')
 
 /**
  * 五行相克系数表
@@ -339,7 +338,7 @@ class BattleHero extends EventEmitter
      * 增加Combo值直至最大值
      */
     ComboAdd(){
-        this.user.Combo = Math.min(ConfigMgr.ComboMax, this.user.Combo+1);
+        this.user.Combo = Math.min(this.user.user.player.core.ConfigMgr.ComboMax, this.user.Combo+1);
         this.record(OperationType.Combo, {value:this.user.Combo});
     }
 
@@ -348,7 +347,7 @@ class BattleHero extends EventEmitter
      * @return {Boolean}
      */
     get ComboReady(){
-        if(this.user.Combo >= ConfigMgr.ComboMax){
+        if(this.user.Combo >= this.user.user.player.core.ConfigMgr.ComboMax){
             this.user.Combo = 0;
             this.record(OperationType.ComboReady, {});
             return true;
@@ -421,7 +420,7 @@ class BattleHero extends EventEmitter
         //let $lv = this.GetActionLevel($fid);
         //if ($lv == -1 || (Math.random()*100 | 0) <= (33 + $lv * 2)) {//执行判定：先天技能（必定发动，如普攻等），或者后天技能经概率判定发动
         try{
-            let si = ConfigMgr.skill($fid);
+            let si = this.user.user.player.core.ConfigMgr.skill($fid);
             let $ret = new si.builder($fid);
             $ret.hero = this;
             $ret.ori = $source;
@@ -445,7 +444,7 @@ class BattleHero extends EventEmitter
      * @return {Boolean}
      */
     isMature($type){
-        return this.user.CountVersion >= this.actionList[$type].mature + this.Effect.CalcFinallyValue(em_Effect_Comm.Fee, ConfigMgr.skill($type).addon.fee);
+        return this.user.CountVersion >= this.actionList[$type].mature + this.Effect.CalcFinallyValue(em_Effect_Comm.Fee, this.user.user.player.core.ConfigMgr.skill($type).addon.fee);
     }
 
     /**
@@ -464,13 +463,13 @@ class BattleHero extends EventEmitter
         // if(list.length >= 1){
         //     // 选取其中费用最高的技能中的随意一个发动
         //     let maxFee = list.reduce((sofar,cur)=>{
-        //         if(sofar < ConfigMgr.skill(cur).addon.fee){
-        //             sofar = ConfigMgr.skill(cur).addon.fee;
+        //         if(sofar < this.user.user.player.core.ConfigMgr.skill(cur).addon.fee){
+        //             sofar = this.user.user.player.core.ConfigMgr.skill(cur).addon.fee;
         //         }
         //         return sofar;
         //     },0);
         //     let $af = list.reduce((sofar,cur)=>{
-        //         if(ConfigMgr.skill(cur).addon.fee == maxFee){
+        //         if(this.user.user.player.core.ConfigMgr.skill(cur).addon.fee == maxFee){
         //             sofar.push(cur);
         //         }
         //         return sofar;
@@ -543,7 +542,7 @@ class BattleHero extends EventEmitter
      */
     actionByNotify($nt){
         return Object.keys(this.actionList).reduce((sofar, cur)=>{
-            if(ConfigMgr.skill(cur).Notify.Check($nt) && this.isMature(cur)){
+            if(this.user.user.player.core.ConfigMgr.skill(cur).Notify.Check($nt) && this.isMature(cur)){
                 sofar.push(cur);
             }
             return sofar;
@@ -713,7 +712,7 @@ class BattleHero extends EventEmitter
             $simUser = this.user;
         }
 
-        let $_SiteNo = $simUser.getTargetLocation(ConfigMgr.PetList()[this.id].loc);
+        let $_SiteNo = $simUser.getTargetLocation(this.user.user.player.core.ConfigMgr.PetList()[this.id].loc);
         if ($_SiteNo == -1){
             return null;
         }
@@ -760,9 +759,9 @@ class BattleHero extends EventEmitter
         $ho.nature = $hi.nature;        //五行属性，金木水火土 12345
         $ho.BattleParam.Ori_Attack = parseInt($hi.attack);                 //攻击
         $ho.BattleParam.Ori_Defense = parseInt($hi.defense);               //物理防御
-        $ho.combo = ConfigMgr.ProfessionList()[$hi.profession].combo;                                           //Combo设定
-        $ho.defaultAttackMode = ConfigMgr.ProfessionList()[$hi.profession].attackMode;
-        $ho.BattleParam.current.read(...ConfigMgr.ProfessionList()[$hi.profession].BP).multi((1+0.05*$level));  //荣誉值集合 - 使用配置表进行初始化
+        $ho.combo = this.user.user.player.core.ConfigMgr.ProfessionList()[$hi.profession].combo;                                           //Combo设定
+        $ho.defaultAttackMode = this.user.user.player.core.ConfigMgr.ProfessionList()[$hi.profession].attackMode;
+        $ho.BattleParam.current.read(...this.user.user.player.core.ConfigMgr.ProfessionList()[$hi.profession].BP).multi((1+0.05*$level));  //荣誉值集合 - 使用配置表进行初始化
 
         //默认添加攻击、求生、混乱攻击技能，等级传入-1表示必然发动
         $ho.addSkill(SkillType.Attack, -1);
@@ -779,14 +778,14 @@ class BattleHero extends EventEmitter
             else{
                 $lv = $level; //让技能等级取英雄等级
             }
-            if (!!ConfigMgr.skill($it) && !$ho.actionList[$it]){
+            if (!!this.user.user.player.core.ConfigMgr.skill($it) && !$ho.actionList[$it]){
                 $ho.addSkill($it, $lv);
             }
         });
 
         //添加外部注入的技能，仅用于主角英雄的创建过程中
         $skill.map(it=>{
-            if (!!ConfigMgr.skill(it[0]) && !$ho.actionList[it[0]]){
+            if (!!this.user.user.player.core.ConfigMgr.skill(it[0]) && !$ho.actionList[it[0]]){
                 $ho.addSkill(it[0], it[1]);
             }
         });

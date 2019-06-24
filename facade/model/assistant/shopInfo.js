@@ -32,7 +32,7 @@ class shopInfo extends baseMgr
     static get items(){
         if(!shopInfo.$items){
             shopInfo.$items = new Collection();
-            for(let $item of facade.config.fileMap.pGoods){
+            for(let $item of this.parent.core.fileMap.pGoods){
                 shopInfo.$items.set(parseInt($item.id), $item);
             }
         }
@@ -45,7 +45,7 @@ class shopInfo extends baseMgr
     static get shops(){
         if(!shopInfo.$shops){
             shopInfo.$shops = {};
-            let $config = facade.config.fileMap.pShops;
+            let $config = this.parent.core.fileMap.pShops;
             for(let $key in $config){
                 shopInfo.$shops[$key] = {
                     "mt": $config[$key].mt, 
