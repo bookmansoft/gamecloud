@@ -225,6 +225,19 @@ class CoreOfBase
             });
         });
 
+        this.potentialConfig = new ConfigManager(this);
+
+        //遍历静态配置表，载入全部任务
+        this.TaskStaticList = {};
+
+        //战斗配置管理
+        this.ConfigMgr = new ConfigMgr(this);
+
+        /**
+         * 角色升级配置表
+         */
+        this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
+
         //载入用户自定义的全局扩展服务对象(不扫描子目录)，子类会加载对应子目录中的专用扩展服务对象
         facade.config.filelist.mapPath('app/service', false).map(srv=>{
             let srvObj = require(srv.path);
