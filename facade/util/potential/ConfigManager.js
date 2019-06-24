@@ -84,24 +84,32 @@ class ConfigManager
     getPetList() {
         if(this.HeroList == null){
             this.HeroList = {};
-            this.core.fileMap.HeroList.map(item=>{
+            this.core.fileMap.HeroList.map(item => {
+                let ren;
+
                 //升级消耗公式
-                let ren = ToUpgradeResInfo(item.upgrade);
-                item.upgrade = {type:ren.type, id: ren.id, calc: $lv => {
-                    return ren.num + (parseInt($lv)-1) * parseInt(ren.step);
-                }}
+                if(typeof item.upgrade == 'string') {
+                    ren = ToUpgradeResInfo(item.upgrade);
+                    item.upgrade = {type:ren.type, id: ren.id, calc: $lv => {
+                        return ren.num + (parseInt($lv)-1) * parseInt(ren.step);
+                    }}
+                }
 
-                //强化消耗公式
-                ren = ToUpgradeResInfo(item.enhance);
-                item.enhance = {type:ren.type, id: ren.id, calc: $lv => {
-                    return (parseInt(ren.num) + Math.pow(parseInt($lv)-1, 3) * parseInt(ren.step)) | 0;
-                }}
+                if(typeof item.enhance == 'string') {
+                    //强化消耗公式
+                    ren = ToUpgradeResInfo(item.enhance);
+                    item.enhance = {type:ren.type, id: ren.id, calc: $lv => {
+                        return (parseInt(ren.num) + Math.pow(parseInt($lv)-1, 3) * parseInt(ren.step)) | 0;
+                    }}
+                }
 
-                //进阶消耗公式
-                ren = ToUpgradeResInfo(item.adv);
-                item.advance = {type:ren.type, id: ren.id, calc: ($lv) => {
-                    return (parseInt(ren.num) + Math.pow(parseInt($lv)-1, 3) * parseInt(ren.step)) | 0;
-                }}
+                if(typeof item.adv == 'string') {
+                    //进阶消耗公式
+                    ren = ToUpgradeResInfo(item.adv);
+                    item.advance = {type:ren.type, id: ren.id, calc: ($lv) => {
+                        return (parseInt(ren.num) + Math.pow(parseInt($lv)-1, 3) * parseInt(ren.step)) | 0;
+                    }}
+                }
 
                 this.HeroList[item["id"]] = item;
             })
@@ -134,8 +142,10 @@ class ConfigManager
                         }
                     }
                 });
-                let $ls = item.power.split(',');
-                item.power = {ori:$ls[0], step:$ls[1], cost:$ls[2]};
+                if(typeof item.power == 'string') {
+                    let $ls = item.power.split(',');
+                    item.power = {ori:$ls[0], step:$ls[1], cost:$ls[2]};
+                }
                 this.pTechList[item["id"]] = item;
             })
         }
@@ -216,8 +226,10 @@ class ConfigManager
                 //激活配置
                 item.activeInfo = ToUpgradeResInfo(item.chip);
 
-                let $ls = item.power.split(',');
-                item.power = {ori:$ls[0], step:$ls[1]};
+                if(typeof item.power == 'string') {
+                    let $ls = item.power.split(',');
+                    item.power = {ori:$ls[0], step:$ls[1]};
+                }
 
                 item.effects = []; //随等级解锁、提升攻击力的技能
                 item.effectStr.split(';').map(effect=>{

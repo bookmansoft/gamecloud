@@ -162,11 +162,11 @@ class CoreOfLogic extends CoreOfBase
         });
 
         //加载持久化层的数据
-        console.time('Load Db');
+        console.time(`Load Db On ${this.constructor.name}`);
         await this.service.activity.loadDb(); //首先载入活动信息，后续的用户积分信息才能顺利注册
 
         Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll())).then(()=>{
-            console.timeEnd('Load Db');
+            console.timeEnd(`Load Db On ${this.constructor.name}`);
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 
             //启动对外网络服务

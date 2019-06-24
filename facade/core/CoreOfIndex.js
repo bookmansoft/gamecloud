@@ -178,9 +178,7 @@ class CoreOfIndex extends facade.CoreOfBase
 
             let pl = domain.split('.');
             if(pl.length > 1) {
-                if(facade.CoreOfLogic.mapping.indexOf(pl[1]) != -1) {
-                    stype = pl[1];
-                }
+                stype = pl[1];
             }
 
             if(!this.serversInfo[stype]) {//非法类型
@@ -245,13 +243,11 @@ class CoreOfIndex extends facade.CoreOfBase
      */
     async loadAllUsers(cb){
         try{
-            //遍历所有服务器，以便加载所有逻辑服用户的索引
+            //遍历所有服务器，以便加载所有用户的索引
             for(let stype in this.serversInfo) {
-                if(facade.CoreOfLogic.mapping.indexOf(stype) != -1) {
-                    for(let id in this.serversInfo[stype]){
-                        let item = this.serversInfo[stype][id];
-                        await this.service.servers.loadIndex(item.mysql, stype, id); //载入分服的用户
-                    }
+                for(let id in this.serversInfo[stype]){
+                    let item = this.serversInfo[stype][id];
+                    await this.service.servers.loadIndex(item.mysql, stype, id); //载入分服的用户
                 }
             }
 

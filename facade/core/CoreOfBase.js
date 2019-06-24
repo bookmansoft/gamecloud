@@ -11,6 +11,8 @@ let connectMonitor = require('../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../util/taskManager')
 let Mapping = require('../util/mixin/Mapping')
 let Ranking = require('../util/mixin/Ranking')
+let ConfigManager = require('../util/potential/ConfigManager')
+let {ConfigMgr} = require('../util/battle/Action')
 
 /**
  * 门面管理类
