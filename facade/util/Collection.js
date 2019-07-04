@@ -43,6 +43,156 @@ class Collection
         if(!!val){
             this.load(val);
         }
+
+        this.$dirty = true;
+    }
+
+    /**
+     * 综合查询, 现在支持聚合语法，例如 ['@total','price'] 可以查询总价
+     * @param {[[]]}    query 
+     * @param {[]}      order [attr, mode]
+     */
+    query(query, order) {
+        let size = 10;
+        let page = 1;
+        let $amount = [];
+
+        for(let i = 0; i < query.length; i++) {
+            let item = query[i];
+
+            if(!item || !Array.isArray(item)) {
+                delete query[i];
+                continue;
+            }
+
+            if(item[0] == 'size') {
+                size = item[1];
+                delete query[i];
+                continue;
+            }
+
+            if(item[0] == 'page') {
+                page = item[1];
+                delete query[i];
+                continue;
+            }
+
+            //聚合字段
+            if(item[0] == '@total' || item[0] == '@sum') {
+                $amount.push(['sum', item[1]]);     //记录聚合字段
+                size = 0xffffffff;                  //将页尺寸调为无穷大
+                delete query[i];
+                continue;
+            } else if(item[0] == '@max') {
+                $amount.push(['max', item[1]]);     //记录聚合字段
+                size = 0xffffffff;                  //将页尺寸调为无穷大
+                delete query[i];
+                continue;
+            } else if(item[0] == '@min') {
+                $amount.push(['min', item[1]]);     //记录聚合字段
+                size = 0xffffffff;                  //将页尺寸调为无穷大
+                delete query[i];
+                continue;
+            }
+             else if(item[0] == '@average') {
+                $amount.push(['average', item[1]]); //记录聚合字段
+                size = 0xffffffff;                  //将页尺寸调为无穷大
+                delete query[i];
+                continue;
+            }
+        }
+        let master = this;
+
+        let rt = master.where(query);
+        if(Array.isArray(order) && order.length > 2) {
+            rt = rt.orderby(order[0], order[1]);
+        }
+        return rt.paginate(size, page, $amount).result();
+    }
+
+    /**
+     * 数据集需要更新标志
+     */
+    get dirty() {
+        return this.$dirty;
+    }
+    set dirty(val) {
+        this.$dirty = val;
+    }
+    /**
+     * 返回查询结果
+     * @param {Array} attrs 字段筛选
+     */
+    result(attrs) {
+        let ret = {
+            list: this.records(),       //条目列表，当使用聚合函数时为空
+            count: this.count,          //总条目数
+            page: this.pageNum,         //总页数
+            cur: this.pageCur,          //当前页码
+            countCur: this.countCur     //当前页条目数
+        };
+        if(Array.isArray(this.attrs)) {
+            this.attrs.map(attr=>{
+                ret[attr[1]] = this[attr[1]];
+            });
+        }
+        return ret;
+    }
+
+    /**
+     * 根据传入的 pre 函数进行筛选
+     * @param {*} pre 
+     */
+    async predict(pre) {
+        let ret = [...this.data];
+        let result = [];
+        for(let [k, v] of ret) {
+            if(await pre(k, v)) {
+                result.push([k,v]);
+            }
+        }
+        return new Collection(result);
+    }
+
+    deletes(conditions) {
+        let ls = this.where(conditions).getKeys();
+        for(let key of ls) {
+            this.data.delete(key);
+        }
+        this.items = null;
+    }
+
+    clear() {
+        this.data.clear();
+        this.items = null;
+    }
+
+
+    getKeys() {
+        return [...this.data.keys()];
+    }
+
+    getSize(){
+        return this.data.size;
+    }
+
+    /**
+     * 查询传入的ID集合中，本地存储中不存在的ID，返回其集合
+     * @param {Array} ids       ID集合 
+     */
+    excludeCids(ids) {
+        ids = ids || [];
+        if(!Array.isArray(ids)){
+            return [];
+        }
+
+        ids = Array.from(new Set(ids)); //去重
+        return ids.reduce((sofar, cur) => {
+            if(!this.has(cur)){
+                sofar.push(cur);
+            }
+            return sofar;
+        }, []);
     }
 
     /**
@@ -73,8 +223,8 @@ class Collection
     /**
      * 设定分页参数
      * @param {*} pageSize  每页包含的条目数
-     * @param {*} current   当前页码
-     * @param {Array} attrs 属性选择
+     * @param {*} current   当前页码 base 1
+     * @param {Array} attrs 聚合属性
      */
     paginate(pageSize, current, attrs){
         if(!this.items){
@@ -93,6 +243,7 @@ class Collection
         }
         this.pageCur = Math.max(1,Math.min(this.pageNum, current));
         this.attrs = attrs;
+        this.count = this.items.length;
 
         return this;
     }
@@ -122,20 +273,76 @@ class Collection
 
         let $pageItems = [];
 
+        if(this.pageCur > this.pageNum) {
+            return $pageItems;
+        }
+
+        this.countCur = 0;
         let self = this;
         for(let i = this.pageSize*(this.pageCur-1); i<this.pageSize*this.pageCur; i++){
             if(!this.items[i]){
                 break;
             }
 
-            if(!!this.attrs && this.attrs.constructor == Array){
-                $pageItems.push(this.attrs.reduce((sofar,cur)=>{
+            this.countCur++;
+
+            //属性选择
+            let it = null;
+            if(Array.isArray(attrs)) {
+                it = attrs.reduce((sofar,cur) => {
                     sofar[cur] = GetAttr(self.items[i], cur);
                     return sofar;
-                }, {}));
+                }, {});
             }
             else{
-                $pageItems.push(this.items[i]);
+                it = this.items[i];
+            }
+
+            //计算聚合函数
+            if(Array.isArray(this.attrs) && this.attrs.length > 0) {
+                this.attrs.map(attr => {
+                    self[attr[1]] = self[attr[1]] || null;
+
+                    let val = null;
+                    let ks = attr[1].split('.');
+                    for(let k of ks) {
+                        if(!val) {
+                            val = self.items[i][k];
+                        } else {
+                            val = val[k];
+                        }
+    
+                        if(typeof val == 'undefined') {
+                            break;
+                        }
+                    }
+                    if(!!val) {
+                        switch(attr[0]) {
+                            case 'sum': {
+                                if(!self[attr[1]]) {
+                                    self[attr[1]] = 0;
+                                }
+                                self[attr[1]] += val;
+                                break;
+                            }
+                            case 'max': {
+                                if(!self[attr[1]] || self[attr[1]] < val) {
+                                    self[attr[1]] = val;
+                                }
+                                break;
+                            }
+                            case 'min': {
+                                if(!self[attr[1]] || self[attr[1]] > val) {
+                                    self[attr[1]] = val;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                });
+            } else {
+                $pageItems.push(it);
+
             }
         }
 
@@ -149,39 +356,64 @@ class Collection
     where(conditions){
         let ret = [...this.data];
         for(let cond of conditions){
-            if(cond.constructor != Array || cond.length < 2){
+            if(!cond || !Array.isArray(cond) || cond.length < 2) {
                 continue;
             }
     
             let $c = {k:cond[0], sign:cond.length==2 ? '==' : cond[1], v:cond.length==2 ? cond[1] : cond[2]};
+            if(!$c.k || typeof $c.v == 'undefined') {
+                continue;
+            }
+
             ret = ret.filter(([k,v]) => {
-                if(!GetAttr(v, $c.k)) {
-                    return false;
+                let val = null;
+
+                let ks = $c.k.split('.');
+                for(let k of ks) {
+                    if(!val) {
+                        val = v[k];
+                    } else {
+                        val = val[k];
+                    }
+
+                    if(typeof val == 'undefined') { //如果该属性不存在，默认失败
+                        return false; 
+                    }
                 }
 
                 switch($c.sign) {
-                    case 'include':
-                        return $c.v.constructor == Array && $c.v.indexOf(GetAttr(v, $c.k)) != -1;
-                    case 'exclude':
-                        return $c.v.constructor != Array || $c.v.indexOf(GetAttr(v, $c.k)) == -1;
                     case '==':
-                        return GetAttr(v, $c.k) == $c.v;
+                        return val == $c.v;
                     case '>':
-                        return GetAttr(v, $c.k) > $c.v;
+                        return val > $c.v;
                     case '<':
-                        return GetAttr(v, $c.k) < $c.v;
+                        return val < $c.v;
                     case '!=':
-                        return GetAttr(v, $c.k) != $c.v;
+                        return val != $c.v;
                     case '>=':
-                        return GetAttr(v, $c.k) >= $c.v;
+                        return val >= $c.v;
                     case '<=':
-                        return GetAttr(v, $c.k) <= $c.v;
+                        return val <= $c.v;
+                    case 'include':
+                        if(typeof $c.v === 'string' || Array.isArray($c.v)) {
+                            return !!val && $c.v.indexOf(val) != -1;
+                        } else {
+                            return false
+                        }
+                    case 'exclude':
+                        if(typeof $c.v === 'string' || Array.isArray($c.v)) {
+                            return !val || $c.v.indexOf(val) == -1;
+                        } else {
+                            return true;
+                        }
+                    default:
+                        return false;
                 }
             });
         }
         return new Collection(ret);
     }
-
+    
     /**
      * 去重操作
      * @param {*} cols 1个或多个用于去重比较的Collection
@@ -202,7 +434,7 @@ class Collection
         this.data.set(key, value);
         this.items = null;
     }
-
+    
     get(key){
         return this.data.get(key);
     }
@@ -218,10 +450,11 @@ class Collection
      * @param {*} ary 
      */
     load(ary){
+        this.items = null;
         this.data.clear();
-        ary.map(k=>{
+        for(let k of ary){
             this.data.set(k[0], k[1]);
-        });
+        }
     }
 
     /**
