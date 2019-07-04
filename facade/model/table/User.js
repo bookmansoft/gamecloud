@@ -13,6 +13,7 @@ let User = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.hos
         diamond: Sequelize.INTEGER,         //代币（钻石），单独存储，以便于检索和排序
         status: Sequelize.INTEGER,          //复合状态，表示各类特殊权限的开启和关闭
         aid: Sequelize.INTEGER,             //联盟ID
+        role: Sequelize.INTEGER,            //身份信息
         refreshTime: Sequelize.STRING,      //刷新时间，用于控制各类随时间增长的收益
 
         score: Sequelize.INTEGER,           //历史最高分，单独存储，以便于检索和排序
