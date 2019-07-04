@@ -779,11 +779,11 @@ class BaseUserEntity extends BaseEntity
     static getDefaultValue(userName, domain, openid){
         return {
             name:userName,
-            info:`{"name": "", "id": 0, "domain":"${domain}", "uuid": "${openid}","invCode": "","headIcon": "","level": 0,"ap": 0,"money": 0, "diamond":0, "rank": 0,"status": 0}`,
+            info:`{"name": "", "id": 0, "domain":"${domain}", "ap": 0,"money": 0, "diamond":0, "rank": 0,"status": 0}`,
             task:'',
             login: '{}',
             item: '{}',
-            txinfo: '{"openid": "","openkey": "","pf": "","nickname": "","gender": "","figureurl": "","is_blue_vip": false,"is_blue_year_vip": false,"blue_vip_level": 0,"is_super_blue_vip": false}',
+            txinfo: '{"openid": "","openkey": "","pf": "","nickname": "","gender": "","figureurl": ""}',
             txFriend: '{"friendList": {}}',
         };
     }

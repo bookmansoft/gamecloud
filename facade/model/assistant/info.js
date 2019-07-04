@@ -16,7 +16,7 @@ class info extends baseMgr
             //	邀请码
             invCode		: '',
             //	头像
-            headIcon	: 0,
+            avatar_uri	: '',
             //	文化值 (公司等级)
             level		: 0,
             //	体力
@@ -47,9 +47,7 @@ class info extends baseMgr
                 "name": this.parent.name,
                 "id": this.parent.id,
                 "domain": this.parent.domain,
-                "uuid": this.parent.uuid,
-                "invCode": "",
-                "headIcon": "",
+                "avatar_uri": "",
                 "level": 0,
                 "ap": this.parent.core.fileMap.DataConst.action.init,
                 "money": this.parent.core.fileMap.DataConst.threshold.moneyOfInit,
@@ -162,38 +160,14 @@ class info extends baseMgr
     set address(val){
         this.SetRecord(RecordType.address,val);
     }
-
-    /**
-     * 是否机器人
-     * @returns {boolean}
-     */
-    getRobot(){
-        return (this.v.robot == null) ? false : this.v.robot;
-    }
-    /**
-     * 设置为机器人
-     */
-    setRobot(){
-        this.v.robot = true;
-        this.dirty = true;
-    }
-
-    //	设置邀请码
-    SetInvCode (invCode) {
-		this.v.invCode = invCode;
-	};
-    //	获取邀请码
-    GetInvCode () {
-		return this.v.invCode;
-	};
     //	设置头像
     SetHeadIcon (headIcon) {
-		this.v.headIcon = headIcon;
+		this.v.avatar_uri = headIcon;
 		this.dirty = true;
 	};
     //	获取头像
     GetHeadIcon() {
-		return this.v.headIcon;
+		return this.v.avatar_uri;
 	};
 }
 
