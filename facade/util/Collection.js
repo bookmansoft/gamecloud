@@ -167,7 +167,6 @@ class Collection
         this.items = null;
     }
 
-
     getKeys() {
         return [...this.data.keys()];
     }
@@ -367,9 +366,9 @@ class Collection
                 let ks = $c.k.split('.');
                 for(let k of ks) {
                     if(!val) {
-                        val = v[k];
+                        val = GetAttr(v, k);
                     } else {
-                        val = val[k];
+                        val = GetAttr(val, k);
                     }
 
                     if(typeof val == 'undefined') { //如果该属性不存在，默认失败
@@ -390,6 +389,12 @@ class Collection
                         return val >= $c.v;
                     case '<=':
                         return val <= $c.v;
+                    case 'like':
+                        if(typeof $c.v === 'string' && typeof val === 'string') {
+                            return $c.v.indexOf(val) != -1 || val.indexOf($c.v) != -1;
+                        } else {
+                            return false
+                        }
                     case 'include':
                         if(typeof $c.v === 'string' || Array.isArray($c.v)) {
                             return !!val && $c.v.indexOf(val) != -1;
