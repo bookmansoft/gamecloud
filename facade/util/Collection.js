@@ -125,14 +125,14 @@ class Collection
      */
     result(attrs) {
         let ret = {
-            list: this.records(),       //条目列表，当使用聚合函数时为空
+            list: this.records(attrs),  //条目列表，当使用聚合函数时，通过页面设置使其为空
             count: this.count,          //总条目数
             page: this.pageNum,         //总页数
             cur: this.pageCur,          //当前页码
             countCur: this.countCur     //当前页条目数
         };
-        if(Array.isArray(this.attrs)) {
-            this.attrs.map(attr=>{
+        if(Array.isArray(this.statistic)) {//复制所有聚合属性值
+            this.statistic.map(attr=>{
                 ret[attr[1]] = this[attr[1]];
             });
         }
@@ -222,11 +222,11 @@ class Collection
 
     /**
      * 设定分页参数
-     * @param {*} pageSize  每页包含的条目数
-     * @param {*} current   当前页码 base 1
-     * @param {Array} attrs 聚合属性
+     * @param {*} pageSize          页宽
+     * @param {*} current           页码 base 1
+     * @param {Array} statistic     聚合属性
      */
-    paginate(pageSize, current, attrs){
+    paginate(pageSize, current, statistic) {
         if(!this.items){
             this.items = this.ToArray();
         }
@@ -242,7 +242,7 @@ class Collection
             this.pageNum = ((this.items.length / this.pageSize) | 0) + 1;
         }
         this.pageCur = Math.max(1,Math.min(this.pageNum, current));
-        this.attrs = attrs;
+        this.statistic = statistic;
         this.count = this.items.length;
 
         return this;
@@ -265,10 +265,6 @@ class Collection
             this.pageSize = this.items.length;
             this.pageNum = 1;
             this.pageCur = 1;
-        }
-
-        if(!!attrs){
-            this.attrs = attrs;
         }
 
         let $pageItems = [];
@@ -299,8 +295,8 @@ class Collection
             }
 
             //计算聚合函数
-            if(Array.isArray(this.attrs) && this.attrs.length > 0) {
-                this.attrs.map(attr => {
+            if(Array.isArray(this.statistic) && this.statistic.length > 0) {
+                this.statistic.map(attr => {
                     self[attr[1]] = self[attr[1]] || null;
 
                     let val = null;
