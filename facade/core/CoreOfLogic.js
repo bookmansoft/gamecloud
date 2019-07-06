@@ -23,22 +23,10 @@ class CoreOfLogic extends CoreOfBase
             default: ['parseParams', 'authHandle', 'commonHandle', 'afterHandle']
         };
         
-        //载入控制器
-        this.$router = {};
-
         //载入框架规定的Service
         facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
-
-        //事件映射
-        this.eventHandleList = {};
-        //载入框架规范的逻辑事件
-        facade.config.filelist.mapPackagePath(`${__dirname}/../events`).map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
         });
 
         facade.config.filelist.mapPackagePath(`${__dirname}/../control/${this.constructor.name}`).map(ctrl=>{
@@ -126,13 +114,6 @@ class CoreOfLogic extends CoreOfBase
                 this.upgradeChip[j] = Math.ceil(this.upgradeChip[j] + this.fileMap.constdata.debrisConumRate.num * (i-1));
             }
         }
-
-        //载入用户自定义的逻辑事件
-        facade.config.filelist.mapPath('app/events').map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
-        });
     }
 
     /**

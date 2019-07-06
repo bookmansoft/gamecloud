@@ -38,6 +38,9 @@ class CoreOfBase
          */
         this.credentials = {};
 
+        //载入控制器
+        this.$router = {};
+
         let keyName = process.cwd() + '/config/cert/server.key', crtName = process.cwd() + '/config/cert/server.crt';
         if(fs.existsSync(keyName) && fs.existsSync(crtName)) {
             this.credentials.key = fs.readFileSync(keyName, 'utf8');
@@ -102,8 +105,14 @@ class CoreOfBase
          */
         this.control = {};
 
-        //系统内部事件映射表，由子类视需要载入实际内容
+        //系统内部事件映射表，由子类视需要补充加载
         this.eventHandleList = {};
+        //载入框架规范的逻辑事件
+        facade.config.filelist.mapPackagePath(`${__dirname}/../events`).map(srv=>{
+            let handle = require(srv.path).handle;
+            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+            this.eventHandleList[handleName] = handle.bind(this);
+        });
 
         //载入通用配置表文件，再由子类视需要加载各自独特的内容(需要注意相互覆盖)
         this.fileMap = {};
@@ -251,6 +260,13 @@ class CoreOfBase
             let handle = require(srv.path).handle;
             let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
             this.middleware[handleName] = handle;
+        });
+
+        //载入用户自定义的逻辑事件
+        facade.config.filelist.mapPath('app/events').map(srv=>{
+            let handle = require(srv.path).handle;
+            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+            this.eventHandleList[handleName] = handle.bind(this);
         });
     }
 

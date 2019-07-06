@@ -26,7 +26,6 @@ class CoreOfIndex extends facade.CoreOfBase
         });
 
         //载入控制器
-        this.$router = {};
         facade.config.filelist.mapPackagePath(`${__dirname}/../control/${this.constructor.name}`).map(ctrl=>{
             let ctrlObj = require(ctrl.path);
             let token = ctrl.name.split('.')[0];
