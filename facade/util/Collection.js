@@ -195,6 +195,41 @@ class Collection
     }
 
     /**
+     * 查询传入的属性值数组中，本地存储中不存在的那些值，返回其集合
+     * @param {Array}   values  属性值数组
+     * @param {String}  attr    属性名称
+     */
+    excludeProperty(values, attr) {
+        values = values || [];
+        if(!Array.isArray(values)){
+            return [];
+        }
+
+        values = Array.from(new Set(values)); //去重
+
+        for(let v of this.data) {
+            let val = null;
+
+            //兼容多层级属性
+            for(let k of attr.split('.')) {
+                if(!val) {
+                    val = GetAttr(v[1], k);
+                } else {
+                    val = GetAttr(val, k);
+                }
+            }
+
+            //判断并扣除已存在属性值
+            let idx = values.indexOf(val);
+            if(idx >= 0) {
+                values.splice(idx, 1);
+            }
+        }
+
+        return values;
+    }
+
+    /**
      * 排序并缓存排序结果，支持链式操作
      * @param {*} attr 
      * @param {*} mode 
