@@ -490,12 +490,13 @@ class CoreOfBase
      * @param {*} ev 
      * @param {*} data 
      */
-    notifyEvent(ev, data){
-        if(!!this.eventHandleList[ev]){
+    async notifyEvent(ev, data) {
+        if(!!this.eventHandleList[ev]) {
             try{
-                this.eventHandleList[ev](data);
+                return await this.eventHandleList[ev](data); //{code, data}
             }
-            catch(e){
+            catch(e) {
+                return { code:-1 };
                 console.error(e);
             }
         }
