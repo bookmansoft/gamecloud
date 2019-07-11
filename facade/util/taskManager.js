@@ -113,17 +113,16 @@ class AutoTaskManager
     /**
      * tick事件句柄
      */
-    checkTask() {
+    async checkTask() {
         try {
             let curTime = (new Date()).valueOf();
             //检测监视器状态，当状态失效时，就从监控列表中删除
             for(let id of Object.keys(this.monitorRecord)) {
                 if(this.monitorRecord[id].$taskTime.check()) { //监控周期时间检测
-                    this.monitorRecord[id].execute(this.core).then(ret=>{
-                        if(ret) {
-                            delete this.monitorRecord[id];
-                        }
-                    });
+                    let ret = await this.monitorRecord[id].execute(this.core);
+                    if(!!ret) {
+                        delete this.monitorRecord[id];
+                    }
                 }
             }
 
