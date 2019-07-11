@@ -29,16 +29,25 @@ class commonMonitor
      *      true    ：状态失效，监控任务将被移出队列，不再接受检测
      *      false   ：状态有效，监控任务继续停留在队列中，接受后续检测
      */
-    execute(fo){
-        if(!!this.cls){
-            if(!!this.cls.RunMonitor && this.cls.RunMonitor.constructor == Function){
-                return this.cls.RunMonitor(fo);
+    async execute(fo) {
+        let ret = true;
+        if(!!this.cls) {
+            if(!!this.cls.RunMonitor && this.cls.RunMonitor.constructor == Function) {
+                try {
+                    ret = await this.cls.RunMonitor(fo)
+                } catch(e) {
+                    console.log('commonMonitor', e);
+                }
             }
             else if(this.cls.constructor == Function){
-                return this.cls(fo);
+                try {
+                    ret = await this.cls(fo);
+                } catch(e) {
+                    console.log('commonMonitor', e);
+                }
             }
         }
-        return true;
+        return ret;
     }
 }
 
@@ -108,11 +117,13 @@ class AutoTaskManager
         try {
             let curTime = (new Date()).valueOf();
             //检测监视器状态，当状态失效时，就从监控列表中删除
-            for(let id of Object.keys(this.monitorRecord)){
-                if(this.monitorRecord[id].$taskTime.check()){ //监控周期时间检测
-                    if(this.monitorRecord[id].execute(this.core)){
-                        delete this.monitorRecord[id];
-                    }
+            for(let id of Object.keys(this.monitorRecord)) {
+                if(this.monitorRecord[id].$taskTime.check()) { //监控周期时间检测
+                    this.monitorRecord[id].execute(this.core).then(ret=>{
+                        if(ret) {
+                            delete this.monitorRecord[id];
+                        }
+                    });
                 }
             }
 
