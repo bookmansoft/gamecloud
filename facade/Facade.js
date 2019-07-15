@@ -31,6 +31,25 @@ let iniFile = require(`${process.cwd()}/gameconfig`);
 class Facade
 {
     /**
+     * 添加一个静态内容服务站
+     * @param {*} protocol          协议 http / https
+     * @param {*} host              主机地址
+     * @param {*} port              主机端口
+     * @param {*} route             访问路径，例如 '/'
+     * @param {*} directory         映射的文件目录
+     */
+    addWebSite(protocol, host, port, route, directory) {
+        let app = express();
+        app.use(route, express.static(directory));
+
+        let httpObj = require(protocol);
+        let hrv = httpObj.createServer(app);
+        hrv.listen(port, host, () => {
+            console.log(`网站服务在 ${protocol}://${host}:${port} 上准备就绪`);
+        });
+    }
+
+    /**
      * 系统主引导流程
      * @param {*} options 启动参数数组
      */
