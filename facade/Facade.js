@@ -38,7 +38,7 @@ class Facade
      * @param {*} route             访问路径，例如 '/'
      * @param {*} directory         映射的文件目录
      */
-    addWebSite(protocol, host, port, route, directory) {
+    static addWebSite(protocol, host, port, route, directory) {
         let app = express();
         app.use(route, express.static(directory));
 
