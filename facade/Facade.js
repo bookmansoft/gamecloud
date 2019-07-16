@@ -35,17 +35,20 @@ class Facade
      * @param {*} protocol          协议 http / https
      * @param {*} host              主机地址
      * @param {*} port              主机端口
-     * @param {*} route             访问路径，例如 '/'
-     * @param {*} directory         映射的文件目录
+     * @param {Object} route        路由设置
      */
-    static addWebSite(protocol, host, port, route, directory) {
+    static addWebSite(protocol, host, port, route) {
         let app = express();
-        app.use(route, express.static(directory));
+        if(Array.isArray(route)) {
+            route.map(rt=>{
+                app.use(rt.path, express.static(rt.dir));
+            });
+        }
 
         let httpObj = require(protocol);
         let hrv = httpObj.createServer(app);
         hrv.listen(port, host, () => {
-            console.log(`网站服务在 ${protocol}://${host}:${port} 上准备就绪`);
+            console.log(`静态网站服务在 ${protocol}://${host}:${port} 上准备就绪`);
         });
     }
 
@@ -129,7 +132,7 @@ class Facade
         });
 
         if(typeof startup == 'function') {
-            startup(this.current);
+            await startup(this.current);
         }
 
         return core;
