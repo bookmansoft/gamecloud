@@ -1,6 +1,7 @@
 /**
  * bootstrap
  */
+let httpProxy = require('http-proxy');
 let express = require('express');
 let EventEmitter = require('events').EventEmitter;
 EventEmitter.defaultMaxListeners = 0;
@@ -31,7 +32,35 @@ let iniFile = require(`${process.cwd()}/gameconfig`);
 class Facade
 {
     /**
+     * 启动支持反向代理的静态门户网站
+     * @param {String} options.protocol      协议 http/https
+     * @param {Object} options.router        路由 {host: {target,}}
+     * @param {String} options.port          守护端口
+     */
+    static startProxy(options) {
+        // 新建一个代理 Proxy Server 对象  
+        var proxy = httpProxy.createProxyServer({});  
+        proxy.on('error', function (err, req, res) {  
+            res.writeHead(500, {'Content-Type': 'text/plain'});  
+            res.end('Something went wrong.');  
+        });  
+        // 在每次请求中，调用 proxy.web(req, res config) 方法进行请求分发  
+        var server = (require(options.protocol||'http')).createServer(function(req, res) {  
+            var host = req.headers.host, ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            if(options.router[host]) {
+                proxy.web(req, res, { target: options.router[host].target });
+            } else {
+                res.writeHead(200, {'Content-Type': 'text/plain'});  
+                res.end('Welcome! visit [wallet.vallnet.cn] for wallet service and [crm.vallnet.cn] for crm service.');
+            }
+        });  
+        server.listen(options.port);
+    }
+
+    /**
      * 添加一个静态内容服务站
+     * @description 相比通过 facade.boot 传入 static 数组而言，该方法能灵活指定协议、地址和端口
+     * 
      * @param {*} protocol          协议 http / https
      * @param {*} host              主机地址
      * @param {*} port              主机端口

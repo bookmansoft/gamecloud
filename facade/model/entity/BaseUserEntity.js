@@ -390,7 +390,9 @@ class BaseUserEntity extends BaseEntity
 		}
 
         if(isDirty){
-            this.orm.save().catch(e=>{});
+            this.orm.save().catch(e=>{
+                console.error(e);
+            });
         }
     }
 

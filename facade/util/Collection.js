@@ -269,6 +269,9 @@ class Collection
             current = 1;
         }
         this.pageSize = pageSize;
+        if(!this.pageSize || this.pageSize < 0) {
+            this.pageSize = this.items.length || 10;
+        }
         if(this.items.length % this.pageSize == 0){
             this.pageNum = (this.items.length / this.pageSize) | 0;
         }
@@ -295,8 +298,8 @@ class Collection
             return [];
         }
 
-        if(!this.pageSize){
-            this.pageSize = this.items.length;
+        if(!this.pageSize || this.pageSize < 0) {
+            this.pageSize = this.items.length || 10;
             this.pageNum = 1;
             this.pageCur = 1;
         }
