@@ -489,17 +489,17 @@ class CoreOfBase
      * 触发内部自定义事件
      * @param {*} ev 
      * @param {*} data 
+     * @returns {Object} {code, data}
      */
     async notifyEvent(ev, data) {
         if(!!this.eventHandleList[ev]) {
-            try{
-                return await this.eventHandleList[ev](data); //{code, data}
-            }
-            catch(e) {
-                return { code:-1 };
-                console.error(e);
+            try {
+                return await this.eventHandleList[ev](data);
+            } catch(e) {
+                return Promise.reject(e);
             }
         }
+        return {code:0};
     }
 
     /**
