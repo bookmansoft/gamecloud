@@ -567,8 +567,9 @@ const NotifyType = {
  */
 const PurchaseStatus = {
     create: 0,          //订单已生成
-    cancel: 1,          //订单已取消
-    commit: 2,          //订单已确认支付
+    prepay: 1,          //订单已支付 - client
+    commit: 2,          //订单已支付 - server
+    cancel: 3,          //订单已取消
 };
 
 /**

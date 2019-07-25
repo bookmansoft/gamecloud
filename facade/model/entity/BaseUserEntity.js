@@ -226,12 +226,21 @@ class BaseUserEntity extends BaseEntity
             this.dirty = true;
         }
     }
+    /**
+     * 在微信环境下，实际存放的是 unionid
+     */
 	get openid(){
 		return this.orm.uuid;
 	}
 	set openid(val){
 		this.orm.uuid = val;
 		this.dirty = true;
+    }
+    /**
+     * 读取微信环境下原始的 openid ，因为微信支付接口要求提交 openid 而不能是 unionid
+     */
+    get openidOri() {
+        return this.baseMgr.info.getAttr('openid');
     }
 
     /**
@@ -715,7 +724,7 @@ class BaseUserEntity extends BaseEntity
                     domain:domain,
                     uuid:openid
                 },
-                defaults: this.getDefaultValue(userName, domain, openid),
+                defaults: this.getDefaultValue(userName, domain),
             });
             return it[0];
         } catch(e) {
@@ -776,9 +785,8 @@ class BaseUserEntity extends BaseEntity
      * 填充新用户默认注册信息
      * @param {*} userName 
      * @param {*} domain 
-     * @param {*} openid 
      */
-    static getDefaultValue(userName, domain, openid){
+    static getDefaultValue(userName, domain){
         return {
             name:userName,
             info:`{"name": "", "id": 0, "domain":"${domain}", "ap": 0,"money": 0, "diamond":0, "rank": 0,"status": 0}`,

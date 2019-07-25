@@ -161,7 +161,7 @@ class Facade
         });
 
         if(typeof startup == 'function') {
-            await startup(this.current);
+            await startup(core);
         }
 
         return core;
@@ -172,17 +172,17 @@ class Facade
      * @param {*} env 运行环境
      */
     static FactoryOfCore(env) {
+        let ret = null;
         if(!!this.serverTypeMapping[env.serverType] && !!this.ini.servers[env.serverType] && !!this.ini.servers[env.serverType][env["serverId"]]) {
-            this.current = new this.serverTypeMapping[env.serverType](this.tools.extend(
+            ret = new this.serverTypeMapping[env.serverType](this.tools.extend(
                 {serverType: env.serverType, serverId: env.serverId},
                 this.ini.servers["Index"][1],
                 this.ini.servers[env.serverType][env["serverId"]]
             ));
-        }
-        else{
+        } else {
             throw new Error(`无法识别的服务器类型和编号 ${env.serverType}.${env.serverId}`);
         }
-        return this.current;
+        return ret;
     }    
 
     /**
@@ -299,7 +299,7 @@ class Facade
      * 指向原生基础日志类
      */
     static get BaseLogEntity() {
-        return require('./model/entity/log');
+        return require('./model/entity/BuyLogEntity');
     }
 
     //endregion

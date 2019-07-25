@@ -142,7 +142,7 @@ class social extends baseCtl {
                 if(user.baseMgr.action.Execute(ActionExecuteType.slaveCommend, 1, true)) {
                     //向好友发送消息
                     user.socialNotify($msg, objData.openid);
-                    let fri = user.baseMgr.txFriend.getFriend($msg.info.dst);
+                    // let fri = user.baseMgr.txFriend.getFriend($msg.info.dst);
                     // if(!!fri) {
                     //     user.core.service.txApi.send_gamebar_msg(user,$msg.info.dst,3,"对你说最近表现的不错继续加油再有365个月我会考虑让你转正","V1_AND_QZ_4.9.3_148_RDM_T");
                     // }
