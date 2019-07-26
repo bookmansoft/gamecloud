@@ -127,7 +127,22 @@ class CoreOfBase
         //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
         this.facade = facade;
 
+        //初始载入的数据库表列表
         this.loadingList = {};
+
+        //特殊资源处理登记 - 并非存储于背包中的普通物品
+        this.specialRes = {};
+        this.RegisterResHandle('$default', (user, bonus) => {
+        });
+    }
+
+    /**
+     * 登记特殊资源处理句柄
+     * @param {*} type      资源类型
+     * @param {Function} handle    处理句柄 (user, bonus) => {}
+     */
+    RegisterResHandle(type, handle) {
+        this.specialRes[type] = handle;
     }
 
     /**
@@ -165,6 +180,21 @@ class CoreOfBase
      */
     GetObject(etype, index, itype = facade.const.IndexType.Primary){
         return this.GetMapping(etype).GetObject(index, itype);
+    }
+
+    /**
+     * 处理特殊奖励
+     * @param {*} user 
+     * @param {*} bonus 
+     */
+    handleSpecialRes(user, bonus) {
+        if(this.specialRes[bonus.type]) {
+            this.specialRes[bonus.type](user, bonus);
+            return true;
+        } else {
+            this.specialRes['$default'](user, bonus);
+        }
+        return false;
     }
 
     /**

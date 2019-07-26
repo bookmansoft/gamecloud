@@ -82,37 +82,9 @@ class BonusObject
                 BonusObject.getBonus(user, bi.bonus);
             }
         }
-        else {//单项奖励
-            //部分奖项并非存储于背包中的普通物品，需要特殊处理
-            if(bonus.type == ResType.VIP) {//VIP有效期，做特殊处理
-                user.baseMgr.vip.increase(bonus.num);
-            }
-            else if(bonus.type == ResType.FellowHead) {//直接购买宠物，而非碎片合成
-                user.getPotentialMgr().ActiveCPet(bonus.id, false);
-            }
-            else if(bonus.type == ResType.ActionHead) {//购买技能
-                user.getPotentialMgr().ActionAdd(bonus.id, 1);
-                user.getPotentialMgr().Action(bonus.id);
-            }
-            else if(bonus.type == ResType.Gold){//大数型虚拟币，将num作为指数
-                //添加资源
-                user.getPocket().AddRes(LargeNumberCalculator.instance(1, bonus.num), false, ResType.Gold); //可以超过上限
-            }
-            else {//普通物品
-                if(bonus.type == ResType.PetChipHead && bonus.id == 0){//特殊逻辑：生成随机碎片 2017.7.13
-                    let rate = Math.random() /*随机数*/, cur = 0/*记录累计概率*/;
-                    for(let rid of Object.keys(user.core.fileMap.HeroList)) {
-                        cur += parseFloat(user.core.fileMap.HeroList[rid].rate); //从角色表中获取掉率并进行累计
-                        if(rate < cur) { //本次随机数小于累计概率，找到符合条件的碎片
-                            bonus.id = (parseInt(rid) + 1).toString(); 
-                            break;
-                        }
-                    }
-                } 
-    
-                //添加资源
-                user.getPocket().AddRes(bonus.num, false, bonus.type, bonus.id); //可以超过上限
-            }
+        else {
+            //单项奖励
+            user.core.handleSpecialRes(user, bonus);
             //发出事件，进行后续处理，例如任务检测等
             user.core.notifyEvent('user.resAdd', {user:user, data:{type:bonus.type, id: !!bonus.id ? bonus.id : 0, value:bonus.num}});
         }

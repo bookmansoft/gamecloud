@@ -3,12 +3,13 @@
  */
 let facade = require('../Facade')
 let CoreOfBase = facade.CoreOfBase
-let {serverType, EntityType, ReturnCode, CommMode} = facade.const
+let {serverType, EntityType, ReturnCode, CommMode, ResType} = facade.const
 let socketClient = require('socket.io-client')
 let {User} = require('../model/table/User');
 let TaskObject = require('../util/comm/TaskObject');
 let ConfigManager = require('../util/potential/ConfigManager')
 let {ConfigMgr} = require('../util/battle/Action')
+let LargeNumberCalculator = facade.Util.LargeNumberCalculator
 
 /**
  * 逻辑服对应的门面类
@@ -52,6 +53,40 @@ class CoreOfLogic extends CoreOfBase
             EntityType.Mail,            //载入邮件
             EntityType.BuyLog           //载入消费日志
         ];
+
+        this.RegisterResHandle(ResType.VIP, (user, bonus) => {
+            //VIP有效期，做特殊处理
+            user.baseMgr.vip.increase(bonus.num);
+        });
+        this.RegisterResHandle(ResType.FellowHead, (user, bonus) => {
+            //直接购买宠物，而非碎片合成
+            user.getPotentialMgr().ActiveCPet(bonus.id, false);
+        });
+        this.RegisterResHandle(ResType.ActionHead, (user, bonus) => {
+            //购买技能
+            user.getPotentialMgr().ActionAdd(bonus.id, 1);
+            user.getPotentialMgr().Action(bonus.id);
+        });
+        this.RegisterResHandle(ResType.Gold, (user, bonus) => {
+            //大数型虚拟币，将num作为指数
+            user.getPocket().AddRes(LargeNumberCalculator.instance(1, bonus.num), false, ResType.Gold); //可以超过上限
+        });
+        this.RegisterResHandle('$default', (user, bonus) => {
+            //不属于特殊物品的普通物品
+            if(bonus.type == ResType.PetChipHead && bonus.id == 0){//特殊逻辑：生成随机碎片 2017.7.13
+                let rate = Math.random() /*随机数*/, cur = 0/*记录累计概率*/;
+                for(let rid of Object.keys(user.core.fileMap.HeroList)) {
+                    cur += parseFloat(user.core.fileMap.HeroList[rid].rate); //从角色表中获取掉率并进行累计
+                    if(rate < cur) { //本次随机数小于累计概率，找到符合条件的碎片
+                        bonus.id = (parseInt(rid) + 1).toString(); 
+                        break;
+                    }
+                }
+            } 
+
+            //添加资源
+            user.getPocket().AddRes(bonus.num, false, bonus.type, bonus.id); //可以超过上限
+        });
     }
 
     async loadModel() {

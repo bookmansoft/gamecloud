@@ -388,6 +388,10 @@ class Collection
      */
     where(conditions){
         let ret = [...this.data];
+        if(ret.length == 0) { 
+            return new Collection(ret); 
+        }
+        
         for(let cond of conditions){
             if(!cond || !Array.isArray(cond) || cond.length < 2) {
                 continue;
