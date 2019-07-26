@@ -1,7 +1,6 @@
 let facade = require('../../Facade')
 let {ResType} = facade.const
 let UserEntity = facade.entities.UserEntity
-let LargeNumberCalculator = require('./LargeNumberCalculator')
 
 class BonusObject
 {
@@ -11,17 +10,16 @@ class BonusObject
      * @param {*} bonus 可以是序列化字符串('[{type:1, num:1},...]'), 也可以是数组([{type:1, num:1},...])，或者单个Bonus({type:1, num:1})
      */
     static getBonus(user, bonus){
-		if(!bonus){
+		if(!bonus) {
 			return;
 		}
 
-        if(bonus.constructor == String){
+        if(typeof bonus == 'string') {
             BonusObject.getBonus(user, JSON.parse(bonus));
         }
-        else if(bonus.constructor == Array){
+        else if(Array.isArray(bonus)) {
             bonus.map(item=>BonusObject.$getBonus(user, item));
-        }
-        else{
+        } else {
             BonusObject.$getBonus(user, bonus);
         }
 	}
@@ -72,7 +70,7 @@ class BonusObject
      * @param {*} bonus Bonus的JSO或字符串形式({type:1, num:1})
      */
 	static $getBonus(user, bonus){
-        if(bonus.constructor == String){
+        if(typeof bonus == 'string') {
             bonus = JSON.parse(bonus);
         }
 

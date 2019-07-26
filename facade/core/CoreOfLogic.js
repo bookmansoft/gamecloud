@@ -46,6 +46,7 @@ class CoreOfLogic extends CoreOfBase
             }
         });
 
+        //载入数据库表
         this.loadingList = [
             EntityType.User,            //载入用户
             EntityType.Ally,            //载入联盟信息
@@ -54,24 +55,55 @@ class CoreOfLogic extends CoreOfBase
             EntityType.BuyLog           //载入消费日志
         ];
 
-        this.RegisterResHandle(ResType.VIP, (user, bonus) => {
+        this.potentialConfig = new ConfigManager(this);
+
+        //遍历静态配置表，载入全部任务
+        this.TaskStaticList = {};
+        Object.keys(this.fileMap.task).map($k=>{
+            //创建新对象
+            let $taskObj = new TaskObject();
+            $taskObj.id = $k;
+        
+            //从静态配置表中取条件阈值和奖励信息
+            $taskObj.loadFromStatic(this);
+        
+            //将对象放入任务列表
+            this.TaskStaticList[$taskObj.id]= $taskObj;
+        });
+
+        //战斗配置管理
+        this.ConfigMgr = new ConfigMgr(this);
+
+        /**
+         * 角色升级配置表
+         */
+        this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
+        for(let j = 2; j <= 30; j++) {
+            this.upgradeChip[j] = this.upgradeChip[1];
+            for(let i = 2; i <= j; i++){
+                this.upgradeChip[j] = Math.ceil(this.upgradeChip[j] + this.fileMap.constdata.debrisConumRate.num * (i-1));
+            }
+        }
+
+        //注册商品处理句柄
+        this.RegisterResHandle(ResType.VIP, async (user, bonus) => {
             //VIP有效期，做特殊处理
             user.baseMgr.vip.increase(bonus.num);
         });
-        this.RegisterResHandle(ResType.FellowHead, (user, bonus) => {
+        this.RegisterResHandle(ResType.FellowHead, async (user, bonus) => {
             //直接购买宠物，而非碎片合成
             user.getPotentialMgr().ActiveCPet(bonus.id, false);
         });
-        this.RegisterResHandle(ResType.ActionHead, (user, bonus) => {
+        this.RegisterResHandle(ResType.ActionHead, async (user, bonus) => {
             //购买技能
             user.getPotentialMgr().ActionAdd(bonus.id, 1);
             user.getPotentialMgr().Action(bonus.id);
         });
-        this.RegisterResHandle(ResType.Gold, (user, bonus) => {
+        this.RegisterResHandle(ResType.Gold, async (user, bonus) => {
             //大数型虚拟币，将num作为指数
             user.getPocket().AddRes(LargeNumberCalculator.instance(1, bonus.num), false, ResType.Gold); //可以超过上限
         });
-        this.RegisterResHandle('$default', (user, bonus) => {
+        this.RegisterResHandle('$default', async (user, bonus) => {
             //不属于特殊物品的普通物品
             if(bonus.type == ResType.PetChipHead && bonus.id == 0){//特殊逻辑：生成随机碎片 2017.7.13
                 let rate = Math.random() /*随机数*/, cur = 0/*记录累计概率*/;
@@ -119,36 +151,6 @@ class CoreOfLogic extends CoreOfBase
             let id = fl.name.split('.')[0];
             this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
         }
-
-        this.potentialConfig = new ConfigManager(this);
-
-        //遍历静态配置表，载入全部任务
-        this.TaskStaticList = {};
-        Object.keys(this.fileMap.task).map($k=>{
-            //创建新对象
-            let $taskObj = new TaskObject();
-            $taskObj.id = $k;
-        
-            //从静态配置表中取条件阈值和奖励信息
-            $taskObj.loadFromStatic(this);
-        
-            //将对象放入任务列表
-            this.TaskStaticList[$taskObj.id]= $taskObj;
-        });
-
-        //战斗配置管理
-        this.ConfigMgr = new ConfigMgr(this);
-
-        /**
-         * 角色升级配置表
-         */
-        this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
-        for(let j = 2; j <= 30; j++) {
-            this.upgradeChip[j] = this.upgradeChip[1];
-            for(let i = 2; i <= j; i++){
-                this.upgradeChip[j] = Math.ceil(this.upgradeChip[j] + this.fileMap.constdata.debrisConumRate.num * (i-1));
-            }
-        }
     }
 
     /**
@@ -171,11 +173,6 @@ class CoreOfLogic extends CoreOfBase
      */
     async Start(app){
         super.Start(app);
-
-        //载入路由配置
-        Object.keys(this.$router).map(id=>{
-            app.use("/", this.makeRouter(id, this.$router[id]));
-        });
 
         //加载持久化层的数据
         console.time(`Load Db On ${this.constructor.name}`);

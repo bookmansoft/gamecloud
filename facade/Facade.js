@@ -69,8 +69,21 @@ class Facade
     static addWebSite(protocol, host, port, route) {
         let app = express();
         if(Array.isArray(route)) {
-            route.map(rt=>{
-                app.use(rt.path, express.static(rt.dir));
+            route.map(rt => {
+                if(typeof rt.dir == 'string') {
+                    app.use(rt.path, express.static(rt.dir));
+                } else if(typeof rt.dir == 'function') {
+                    let router = express.Router();
+                    router.request(path, async (req, res) => {
+                        try {
+                            res.send(await rt.dir(req.query));
+                        } catch(e) {
+                            res.end();
+                            console.error(e);
+                        }
+                    });
+                    app.use("/", router);
+                }
             });
         }
 
@@ -141,11 +154,14 @@ class Facade
         
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         await core.Start(app);
-        core.app = app;
 
         if(options.static) {
             for(let [route, path] of options.static) {
-                app.use(route, express.static(path));
+                if(typeof path == 'string') {
+                    core.static(route, path);
+                } else if(typeof path == 'function') {
+                    core.addRouter(route, path);
+                }
             }
         }
 
@@ -170,6 +186,7 @@ class Facade
     /**
      * 创建核心类实例的类工厂
      * @param {*} env 运行环境
+     * @returns {CoreOfBase}
      */
     static FactoryOfCore(env) {
         let ret = null;

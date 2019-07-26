@@ -49,7 +49,7 @@ class task extends baseMgr {
      * @param {*} $params
      */
     LoadData($params){
-        if(!$params || $params.constructor != String){
+        if(!$params || typeof $params != 'string') {
             return;
         }
         

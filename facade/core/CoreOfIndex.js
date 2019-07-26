@@ -98,11 +98,6 @@ class CoreOfIndex extends facade.CoreOfBase
     async Start(app){
         super.Start(app);
 
-        //载入路由配置
-        Object.keys(this.$router).map(id=>{
-            app.use("/", this.makeRouter(id, this.$router[id]));
-        });
-
         //缓存管理器
         this.cacheMgr = new facade.tools.cache(this);
 

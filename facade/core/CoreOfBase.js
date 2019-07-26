@@ -30,7 +30,7 @@ class CoreOfBase
     constructor($env) {
         //为节点命名，外部不可更改
         this.$nodeName = 'base';
-
+        this.app = null; //express 对象的缓存
         let self = this;
 
         /**
@@ -132,7 +132,7 @@ class CoreOfBase
 
         //特殊资源处理登记 - 并非存储于背包中的普通物品
         this.specialRes = {};
-        this.RegisterResHandle('$default', (user, bonus) => {
+        this.RegisterResHandle('$default', async (user, bonus) => {
         });
     }
 
@@ -151,9 +151,38 @@ class CoreOfBase
      * @param {*} path 
      */
     static(route, path) {
-        if(this.app) {
-            this.app.use(route, express.static(path));
+        this.app.use(route, express.static(path));
+    }
+
+    /**
+     * 添加静态型路由
+     * @param {String}      path      路由的路径
+     * @param {Function}    func      路由处理句柄 data => {}
+     */
+    addRouter(path, func) {
+        if(!this.app) {
+            return;
         }
+
+        let router = express.Router();
+        router.get(path, async (req, res) => {
+            try {
+                res.send(await (func.bind(this))(req.query));
+            } catch(e) {
+                res.end();
+                console.error(e);
+            }
+        });
+        router.post(path, async (req, res) => {
+            try {
+                res.send(await (func.bind(this))(req.query));
+            } catch(e) {
+                res.end();
+                console.error(e);
+            }
+        });
+
+        this.app.use("/", router);
     }
 
     /**
@@ -189,12 +218,14 @@ class CoreOfBase
      */
     handleSpecialRes(user, bonus) {
         if(this.specialRes[bonus.type]) {
-            this.specialRes[bonus.type](user, bonus);
-            return true;
+            this.specialRes[bonus.type](user, bonus).catch(e=>{
+                console.log(e);
+            });
         } else {
-            this.specialRes['$default'](user, bonus);
+            this.specialRes['$default'](user, bonus).catch(e=>{
+                console.log(e);
+            });
         }
-        return false;
     }
 
     /**
@@ -266,8 +297,6 @@ class CoreOfBase
             });
         });
 
-        this.potentialConfig = new ConfigManager(this);
-
         //遍历静态配置表，载入全部任务
         this.TaskStaticList = {};
 
@@ -305,7 +334,14 @@ class CoreOfBase
      * 绑定Http Server服务，将对index.html的访问映射到Control
      * @param {*} app   Http Server对象
      */
-    async Start(app){
+    async Start(app) {
+        this.app = app;
+
+        //加载路由配置
+        Object.keys(this.$router).map(id=>{
+            app.use("/", this.makeRouter(id, this.$router[id]));
+        });
+
         app.get('/index.html', async (req, res) => {
             console.log(`来访URL(${Date()})：${JSON.stringify(req.query)}`);
 
@@ -331,6 +367,7 @@ class CoreOfBase
                 res.end();
             }
         });
+
         app.post('/index.html', async (req, res) => {
             console.log(`来访URL(${Date()})：${JSON.stringify(req.body)}`);
 
@@ -368,20 +405,19 @@ class CoreOfBase
 
         config.map(item=>{
             router.get(item[0], async (req, res) => {
-                try{
+                try {
+                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {} 而非普通控制器方法的 async (user, data) => {}
                     let ret = await this.callFunc(control, item[1], req.query);
-                    //console.log(ret);
                     res.send(ret);
-                }
-                catch(e){
+                } catch(e) {
                     console.error(e);
                     res.end();
                 }
             });
             router.post(item[0], async (req, res) => {
                 try{
+                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {} 而非普通控制器方法的 async (user, data) => {}
                     let ret = await this.callFunc(control, item[1], req.body);
-                    //console.log(ret);
                     res.send(ret);
                 }
                 catch(e){
