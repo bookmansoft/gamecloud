@@ -34,15 +34,20 @@ exports.up = function(db) {
     setting: {type: 'string', length: 500}, 
     hisGateNo: {type: 'int', defaultValue: 1},
     role: {type: 'int', defaultValue: 1001},
-    info: {type: 'string', length: 500}, 
+    info: {type: 'string', length: 2000}, 
     pet: {type: 'string', length: 500}, 
     txinfo: {type: 'string', length: 500}, 
     txBule: {type: 'string', length: 500}, 
     item: {type: 'string', length: 500}, 
     vip: {type: 'string', length: 500}, 
     friend: {type: 'string', length: 500}, 
-    task: {type: 'string', length: 500},                       //任务
+    task: {type: 'string', length: 500},                        //任务
     txFriend: {type: 'string', length: 500}, 
+    execInfo: { type: 'string', length: 500},                   //行为限制信息存储字段
+    pocket: { type: 'string', length: 500},                     //包裹序列化串存储字段
+    shopInfo: { type: 'string', length: 2000},                  //商品属性列表、已购买纪录的缓存
+    aid: { type: 'int', defaultValue: 0},                       //联盟ID
+    invite: { type: 'string', length: 255},                     //申请、邀请记录
   }).then(
     function(result) {
       db.addIndex('m_player', 'domanId', ['domain', 'uuid'], true, (err, result)=>{});

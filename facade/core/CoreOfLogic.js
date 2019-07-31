@@ -55,10 +55,7 @@ class CoreOfLogic extends CoreOfBase
             EntityType.BuyLog           //载入消费日志
         ];
 
-        this.potentialConfig = new ConfigManager(this);
-
         //遍历静态配置表，载入全部任务
-        this.TaskStaticList = {};
         Object.keys(this.fileMap.task).map($k=>{
             //创建新对象
             let $taskObj = new TaskObject();
@@ -70,9 +67,6 @@ class CoreOfLogic extends CoreOfBase
             //将对象放入任务列表
             this.TaskStaticList[$taskObj.id]= $taskObj;
         });
-
-        //战斗配置管理
-        this.ConfigMgr = new ConfigMgr(this);
 
         /**
          * 角色升级配置表

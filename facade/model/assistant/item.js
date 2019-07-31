@@ -1,5 +1,5 @@
 let facade = require('../../../facade/Facade')
-let {ReturnCode, ResTypeStr, em_Effect_Comm, ResType} = facade.const
+let {ReturnCode, em_Effect_Comm, ResType} = facade.const
 let baseMgr = facade.Assistant
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator
 let {isNumber} = require('../../util/reg')
@@ -50,7 +50,7 @@ class item extends baseMgr
     GetRes(...xid) {
         let [type, id] = [...xid];
         let $t = this.combineId(type, id);
-        if($t != -1) {
+        if(!!$t) {
             switch(type){
                 case ResType.Gold:
                     return !!this.v[$t] ? LargeNumberCalculator.FromString(this.v[$t].num) : LargeNumberCalculator.FromString('0,0');
@@ -91,10 +91,6 @@ class item extends baseMgr
         let [type, id] = [...xid]
 
         let tid = this.combineId(type, id);
-        if(tid < 0 || tid >= 100) {
-            return;
-        }
-
         if(!this.v[tid]) {
             this.v[tid] = {num: 0};
         }
@@ -118,10 +114,12 @@ class item extends baseMgr
      */
     combineId(type, id=0) {
         type = this.checkType(type);
-        if(type < 100) {
-            return type; //非法类型，以及数值小于100的类型(单独索引)：直接返回 type
+        if(type < 0) {
+            return '';
+        } else if(type < 100) {
+            return `${type}`; //非法类型，以及数值小于100的类型(单独索引)：直接返回 type
         }
-        return type + id; //数值大于等于100的类型(复合索引)：返回 type+id
+        return `${type}.${id}`; //数值大于等于100的类型(复合索引)：返回 `type.id`
     }
 
     /**
@@ -130,8 +128,8 @@ class item extends baseMgr
      */
     checkType(type) {
         if(!isNumber(type)) {
-            if(!!ResTypeStr[type]) {
-                return ResTypeStr[type];
+            if(!!ResType[type]) {
+                return ResType[type];
             } else {
                 return -1; //参数非法
             }
@@ -149,7 +147,7 @@ class item extends baseMgr
     AddRes(num, max, ...xid) {
         let [type, id] = [...xid];
         let $t = this.combineId(type, id);
-        if($t!=-1) {
+        if(!!$t) {
             if(!this.v[$t]) {
                 this.v[$t] = {num:0};
             }

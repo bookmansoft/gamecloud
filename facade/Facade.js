@@ -99,25 +99,10 @@ class Facade
      * @param {*} options 启动参数数组
      */
     static async boot(options, startup) {
-        this.serverType = {};
-        this.serverTypeMapping = {};
-
-        //自动从指定目录载入系统定义和用户自定义的核心类
-        let corelist = filelist.mapPackagePath(`${__dirname}/./core`);
-        if(this.$addition) {
-            corelist = corelist.concat(filelist.mapPath('app/core'));
-        }
-        corelist.map(srv => {
-            let srvObj = require(srv.path);
-            this.serverType[srv.name.split('.')[0]] = srvObj; //节点类列表
-            srvObj.mapping.map(key => {
-                this.serverTypeMapping[key] = srvObj; //节点类映射列表，每个节点类可能映射多个条目
-            });
-        });
+        options = options || {};
 
         //主程序启动，提供包括Http、Socket、路由解析等服务
-        let core = this.FactoryOfCore(!!options?options.env:{});
-        extendObj(core.options, options);
+        let core = this.FactoryOfCore(options);
 
         if(this.$addition) { //加载用户自定义模块
             await core.loadModel();
@@ -157,12 +142,12 @@ class Facade
 
         if(options.static) {
             for(let [route, path] of options.static) {
-                if(typeof path == 'string') {
-                    core.static(route, path);
-                } else if(typeof path == 'function') {
-                    core.addRouter(route, path);
-                }
+                core.addRouter(route, path);
             }
+        }
+
+        if(typeof startup == 'function') {
+            await startup(core);
         }
 
         //下发404 必须在控制器路由、静态资源路由全部加载之后设定
@@ -176,30 +161,46 @@ class Facade
             res.status(500).send('Something broke!');
         });
 
-        if(typeof startup == 'function') {
-            await startup(core);
-        }
-
         return core;
     }
 
     /**
      * 创建核心类实例的类工厂
-     * @param {*} env 运行环境
+     * @param {*} options.env 运行环境
      * @returns {CoreOfBase}
      */
-    static FactoryOfCore(env) {
-        let ret = null;
+    static FactoryOfCore(options) {
+        if(!this.serverType || !!this.serverTypeMapping) {
+            this.serverType = {};
+            this.serverTypeMapping = {};
+    
+            //自动从指定目录载入系统定义和用户自定义的核心类
+            let corelist = filelist.mapPackagePath(`${__dirname}/./core`);
+            if(this.$addition) {
+                corelist = corelist.concat(filelist.mapPath('app/core'));
+            }
+            corelist.map(srv => {
+                let srvObj = require(srv.path);
+                this.serverType[srv.name.split('.')[0]] = srvObj; //节点类列表
+                srvObj.mapping.map(key => {
+                    this.serverTypeMapping[key] = srvObj; //节点类映射列表，每个节点类可能映射多个条目
+                });
+            });
+        }
+
+        let env = options.env || {};
         if(!!this.serverTypeMapping[env.serverType] && !!this.ini.servers[env.serverType] && !!this.ini.servers[env.serverType][env["serverId"]]) {
-            ret = new this.serverTypeMapping[env.serverType](this.tools.extend(
+            let ret = new this.serverTypeMapping[env.serverType](this.tools.extend(
                 {serverType: env.serverType, serverId: env.serverId},
                 this.ini.servers["Index"][1],
                 this.ini.servers[env.serverType][env["serverId"]]
             ));
+            extendObj(ret.options, options);
+            return ret;
         } else {
             throw new Error(`无法识别的服务器类型和编号 ${env.serverType}.${env.serverId}`);
         }
-        return ret;
+        return null;
     }    
 
     /**
@@ -478,6 +479,20 @@ class Facade
         }
 
         return this.$constList;
+    }
+
+    /**
+     * 添加用户自定义资源类型
+     * @param {*} num   资源类型数值定义，数值介乎 90000～99999 之间
+     * @param {*} type  资源类型字符串定义
+     * @returns {Boolean} 定义是否生效
+     */
+    static addResType(num, type) {
+        if(num >= 90000 && num <= 99999 && !this.const.ResType[type]) {
+            this.const.ResType[type] = num;
+            return true;
+        }
+        return false;
     }
 }
 

@@ -124,6 +124,11 @@ class CoreOfBase
         //定时任务管理器
         this.autoTaskMgr = new AutoTaskManager(this);
 
+        this.potentialConfig = new ConfigManager(this);
+        this.TaskStaticList = {};
+        //战斗配置管理
+        this.ConfigMgr = new ConfigMgr(this);
+
         //映射门面对象，方便在this指针指向FacadeOfBase实例的环境内快速调用
         this.facade = facade;
 
@@ -146,43 +151,38 @@ class CoreOfBase
     }
 
     /**
-     * 设置静态资源映射
-     * @param {*} route 
-     * @param {*} path 
-     */
-    static(route, path) {
-        this.app.use(route, express.static(path));
-    }
-
-    /**
-     * 添加静态型路由
+     * 添加路由: 静态型或函数型
      * @param {String}      path      路由的路径
-     * @param {Function}    func      路由处理句柄 data => {}
+     * @param {Function}    func      资源路径或者路由处理句柄 data => {}
      */
     addRouter(path, func) {
         if(!this.app) {
             return;
         }
 
-        let router = express.Router();
-        router.get(path, async (req, res) => {
-            try {
-                res.send(await (func.bind(this))(req.query));
-            } catch(e) {
-                res.end();
-                console.error(e);
-            }
-        });
-        router.post(path, async (req, res) => {
-            try {
-                res.send(await (func.bind(this))(req.query));
-            } catch(e) {
-                res.end();
-                console.error(e);
-            }
-        });
-
-        this.app.use("/", router);
+        if(typeof func == 'string') {
+            this.app.use(path, express.static(func));
+        } else if(typeof func == 'function') {
+            let router = express.Router();
+            router.get(path, async (req, res) => {
+                try {
+                    res.send(await (func.bind(this))(req.query));
+                } catch(e) {
+                    res.end();
+                    console.error(e);
+                }
+            });
+            router.post(path, async (req, res) => {
+                try {
+                    res.send(await (func.bind(this))(req.query));
+                } catch(e) {
+                    res.end();
+                    console.error(e);
+                }
+            });
+    
+            this.app.use("/", router);
+        }
     }
 
     /**

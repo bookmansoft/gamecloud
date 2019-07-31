@@ -1,4 +1,8 @@
 /**
+ * 罗列自定义枚举和数据结构
+ */
+
+/**
  *  枚举定义文件，使用范例：
  *  let {ReturnCode} = require('./comm');
  *  console.log(ReturnCode.Error);
@@ -16,25 +20,32 @@ const RecordType = {
 }
 
 /**
- * 资源类型
+ * 资源类型 type, 约定100以内的为独立索引，100以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
  */
 const ResType = {
     /**
      * 元宝   'D'
      */
     Diamond: 1,
+    "D" : 1,
     /**
      * 金币   'M'
      */
-    Gold: 2,
+    Coin: 2,
+    "M" : 2,
     /**
-     * 魂石
+     * 大数型金币 'L'
      */
-    Stone: 3,
+    Gold: 3,
+    "L" : 3,
     /**
      * 天赋点，也就是圣光。圣光可以在商城直接购买
      */
     Potential : 4,
+    /**
+     * 魂石
+     */
+    Stone: 5,
     /**
      * 荣誉值，用于工会管理
      */
@@ -51,6 +62,7 @@ const ResType = {
      * 体力值  'A'
      */
     Action : 9,
+    "A": 9,
     /**
      * 圣光分配
      */
@@ -75,44 +87,64 @@ const ResType = {
      * 力量源泉
      */
     OriOfPower : 19,
-    VIP: 20 ,           //'V' VIP特权（单位：天）
     /**
-     * 'coin' 数值型虚拟币，和Gold代表的大数型虚拟币不同
+     * 'V' VIP特权（单位：天）
      */
-    Coin: 21,
+    VIP: 20,
+    "V": 20,
     /**
      * 英魂 转生后由魂石转化而来
      */
     StoneHero : 103,
-    
-    PetChipHead : 1000,     //"C" 用于升星的魔宠碎片
-    PetHead : 1200,         //魔宠
-
-    ActionHead : 1994,      //时效类技能
-
+    /**
+     * "C" 用于升星的魔宠碎片
+     */
+    PetChipHead : 1000,     
+    "C": 1000,
+    /**
+     * 魔宠
+     */
+    PetHead : 1200,
+    /**
+     * 时效类技能
+     */
+    ActionHead : 1994,
     FellowChipHead : 3000,  //PVE伙伴碎片
     FellowHead : 3100,      //PVE伙伴
-
-    Road: 10000,    //"road"道路
-    Role: 20000,    //"role" 角色
-    Scene:30000,    //"scene" 场景
-    Item: 40000,    //"I" 道具
-    Box: 50000,     //"box" 礼包
+    /**
+     * "road" 道路
+     */
+    Road: 10000,
+    "road": 10000,
+    /**
+     * "role" 角色
+     */
+    Role: 20000,
+    "role": 20000,
+    /**
+     * "scene" 场景
+     */
+    Scene: 30000,
+    "scene": 30000,
+    /**
+     * "I" 道具
+     */
+    Item: 40000,
+    "I": 40000,
+    /**
+     * "box" 礼包
+     */
+    Box: 50000,
+    "box": 50000,
 }
 
 /**
- * 资源类型的字符串形式
+ * 从复合索引推导出资源类型
+ * @param {*} val 
  */
-const ResTypeStr = {
-    "D" : ResType.Diamond,
-    "M" : ResType.Gold,         //大数型虚拟币
-    "coin": ResType.Coin,       //数值型虚拟币
-    "road": ResType.Road,
-    "scene": ResType.Scene,
-    "I": ResType.Item,
-    "box": ResType.Box,
-    "A": ResType.Action,
-    "V": ResType.VIP,
+function GetResType(val) {
+    let tp = val.split('.');
+    return ResType[tp[0]];
 }
 
 /**
@@ -1106,6 +1138,12 @@ const OperEnum = {
     Catch:6,            //抓捕结束
     StartEscape: 7,     //起义开始
     Escape:8,           //起义结束
+};
+
+/**
+ * 关卡操作类型(疯狂的悟空)
+ */
+const OperEnumType = {
 
     /**
      * 通过了关卡，包括小关和大关
@@ -1557,7 +1595,7 @@ exports = module.exports = {
     em_Ally_Oper:em_Ally_Oper,
     UserAuthorityNum:UserAuthorityNum,
     ResType: ResType,
-    ResTypeStr:ResTypeStr,
+    GetResType: GetResType,
     ActionType:ActionType,
     UserVipLevelSetting:UserVipLevelSetting,
     AllyPower:AllyPower,
