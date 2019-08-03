@@ -558,9 +558,11 @@ class CoreOfBase
      * @returns {Object} {code, data}
      */
     async notifyEvent(ev, data) {
-        if(!!this.eventHandleList[ev]) {
+        //优先搜索根目录，再搜索节点目录
+        let func = !!this.eventHandleList[ev] ? this.eventHandleList[ev] : this.eventHandleList[`${this.constructor.name}.${ev}`];
+        if(!!func) {
             try {
-                return await this.eventHandleList[ev](data);
+                return await func(data);
             } catch(e) {
                 return Promise.reject(e);
             }

@@ -21,7 +21,7 @@ class CoreOfLogic extends CoreOfBase
 
         //中间件设定
         this.middlewareSetting = {
-            default: ['parseParams', 'authHandle', 'commonHandle', 'afterHandle']
+            default: ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle']
         };
         
         //载入框架规定的Service

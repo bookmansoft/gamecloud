@@ -1,5 +1,5 @@
-let facade = require('../../../facade/Facade')
-let {EventData} = require('../../../facade/util/comm/EventData')
+let facade = require('../../../../facade/Facade')
+let {EventData} = require('../../../../facade/util/comm/EventData')
 /**
  * Created by admin on 2017-05-26.
  * @param {EventData} event
