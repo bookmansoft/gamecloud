@@ -20,8 +20,12 @@ Array.prototype.array_diff = function(...params){
  */
 function GetAttr(obj, attr) {
     if(!!obj) {
-        if(typeof obj.attr == 'undefined' && typeof obj.getAttr == 'function') {
-            return obj.getAttr(attr);
+        if(typeof obj[attr] == 'undefined') {
+            if(typeof obj.getAttr == 'function') {
+                return obj.getAttr(attr);
+            }
+        } else {
+            return obj[attr];
         }
     }
 
