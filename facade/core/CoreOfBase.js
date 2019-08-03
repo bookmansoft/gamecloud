@@ -56,11 +56,10 @@ class CoreOfBase
          */
         this.options = $env;
         
-        //中间件设定，子类可覆盖
-        this.middlewareSetting = {
-            default: ['parseParams', 'commonHandle']
-        };
-
+        //中间件配置管理，子类可覆盖, 约定和类名称相同的中间件为鉴权中间件
+        this.middlewareSetting = {};
+        this.middlewareSetting.default = ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle'];
+        
         //扩展服务对象列表
         this.service = {};
         //载入框架预定义的全局扩展服务对象(不包括子目录)，子类会加载对应子目录中的专用扩展服务对象

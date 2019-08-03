@@ -14,10 +14,8 @@ class CoreOfIndex extends facade.CoreOfBase
         
         this.testRoute = new Set(); //直连测试服的openid列表
 
-        //中间件设定
-        this.middlewareSetting = {
-            default: ['parseParams', 'commonHandle']
-        };
+        //中间件设定 - 注意不要覆盖父类构造函数已经做出的设定
+        this.middlewareSetting.default = ['parseParams', 'commonHandle'];
     }
 
     /**

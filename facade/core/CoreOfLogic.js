@@ -19,11 +19,6 @@ class CoreOfLogic extends CoreOfBase
     constructor($env){
         super($env);
 
-        //中间件设定
-        this.middlewareSetting = {
-            default: ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle']
-        };
-
         //载入数据库表
         this.loadingList = [
             EntityType.User,            //载入用户
