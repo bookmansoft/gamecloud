@@ -6,6 +6,16 @@ let {ReturnCode, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyTy
  * Updated by liub on 2017-05-05.
  */
 class config extends facade.Control {
+    get router() {
+        return [
+            [`/config`, 'getfile'], //通过标准 GET 方法获取配置文件
+        ];
+    }
+
+    async getfile(objData) {
+        return this.get(null, objData);
+    }
+
     /**
      * 查询并返回配置文件
      * @param user

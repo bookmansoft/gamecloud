@@ -132,7 +132,7 @@ class CoreOfBase
         this.facade = facade;
 
         //初始载入的数据库表列表
-        this.loadingList = {};
+        this.loadingList = [];
 
         //特殊资源处理登记 - 并非存储于背包中的普通物品
         this.specialRes = {};
