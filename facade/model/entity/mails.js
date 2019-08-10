@@ -5,6 +5,8 @@ let {Mail} = require("../table/Mail")
 let UserEntity = facade.entities.UserEntity
 let BaseEntity = facade.BaseEntity
 let CoreOfBase = facade.CoreOfBase
+let Sequelize = require('sequelize');
+const {gt} = Sequelize.Op;
 
 /**
  * 消息管理器
@@ -59,23 +61,26 @@ class mails extends BaseEntity
         return [];
     }
 
-    get src(){
+    get src() {
         return this.orm.src;
     }
-    get dst(){
+    get dst() {
         return this.orm.dst;
     }
-    get content(){
+    get content() {
         return this.orm.content;
     }
-    get time(){
+    get time() {
         return this.orm.time;
     }
-    get state(){
+    get state() {
         return this.orm.state;
     }
-    get id(){
+    get id() {
         return this.orm.id;
+    }
+    get sn() {
+        this.orm.sn;
     }
 
     //region 集合功能
@@ -84,9 +89,13 @@ class mails extends BaseEntity
      * 索引值，用于配合Mapping类的索引/反向索引
      */
     IndexOf(type){
-        switch(type){
-            default:
+        switch(type) {
+            case IndexType.Domain: {
+                return this.orm.sn;
+            }
+            default: {
                 return this.orm.id;
+            }
         }
     }
 
@@ -105,7 +114,7 @@ class mails extends BaseEntity
     /**
      * 创建时的回调函数
      */
-    static async onCreate(mysql, uo, content, src, dst) {
+    static async onCreate(mysql, uo, content, src, dst, time, sn) {
         try {
             if(content.constructor == Object) { //数据库字段格式为string，此处适配下
                 content = JSON.stringify(content);
@@ -114,7 +123,8 @@ class mails extends BaseEntity
             let it = await Mail(mysql).create({
                 src: src,
                 dst: dst,
-                time: facade.util.now(),
+                time: time || facade.util.now(),
+                sn: sn || '',
                 content: content,
                 state: 0            //未读取状态
             });
@@ -161,10 +171,10 @@ class mails extends BaseEntity
             let $expired = facade.util.now() - 3600*24*30; //只读取一个月内的邮件
             let ret = await Mail(mysql).findAll({
                 where: {
-                    time: {$gt: $expired}
+                    time: {[gt]: $expired}
                 }
             });
-            ret.map(it=>{
+            ret.map(it => {
                 callback(it);
             });
         } catch(e){}

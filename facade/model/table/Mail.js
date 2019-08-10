@@ -11,8 +11,9 @@ let Mail = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.hos
         src: Sequelize.STRING,
         dst: Sequelize.STRING,
         content: Sequelize.STRING,
-        time: Sequelize.STRING,
-        state: Sequelize.INTEGER
+        time: Sequelize.INTEGER,
+        state: Sequelize.INTEGER,
+        sn: Sequelize.STRING,
     },
     {
         // 是否需要增加createdAt、updatedAt、deletedAt字段

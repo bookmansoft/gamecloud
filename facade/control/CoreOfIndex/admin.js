@@ -1,5 +1,4 @@
 let facade = require('../../Facade')
-let Sequelize = require('sequelize');
 let query = require('../../util/mysql');
 
 /**
