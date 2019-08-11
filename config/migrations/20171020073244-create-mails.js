@@ -19,10 +19,10 @@ exports.up = function(db) {
     id: { type: 'int', primaryKey: true, autoIncrement: true},  //日志编号
     src: {type: 'string', length: 100},
     dst: {type: 'string', length: 100},
-    content: {type: 'string', length: 500},
+    content: {type: 'string', length: 1000},
     time: {type: 'int'},
     state: {type: 'int', defaultValue:0},
-    sn: {type: 'string', length: 50},
+    sn: {type: 'string', length: 100},
   });
 };
 
