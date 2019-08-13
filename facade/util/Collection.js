@@ -18,7 +18,7 @@ Array.prototype.array_diff = function(...params){
  * @param {*} obj       对象
  * @param {*} attr      属性名称
  */
-function GetAttr(obj, attr) {
+function getAttr(obj, attr) {
     if(!!obj) {
         if(typeof obj[attr] == 'undefined') {
             if(typeof obj.getAttr == 'function') {
@@ -217,9 +217,9 @@ class Collection
             //兼容多层级属性
             for(let k of attr.split('.')) {
                 if(!val) {
-                    val = GetAttr(v[1], k);
+                    val = getAttr(v[1], k);
                 } else {
-                    val = GetAttr(val, k);
+                    val = getAttr(val, k);
                 }
             }
 
@@ -246,12 +246,12 @@ class Collection
         switch(mode){
             case 'desc':
                 this.items = this.items.sort((a,b)=>{
-                    return GetAttr(b, attr) - GetAttr(a, attr);
+                    return getAttr(b, attr) - getAttr(a, attr);
                 });
                 break;
             case 'asc':
                 this.items = this.items.sort((a,b)=>{
-                    return GetAttr(a, attr) - GetAttr(b, attr);
+                    return getAttr(a, attr) - getAttr(b, attr);
                 });
                 break;
         }
@@ -327,7 +327,7 @@ class Collection
             let it = null;
             if(Array.isArray(attrs)) {
                 it = attrs.reduce((sofar,cur) => {
-                    sofar[cur] = GetAttr(self.items[i], cur);
+                    sofar[cur] = getAttr(self.items[i], cur);
                     return sofar;
                 }, {});
             }
@@ -412,9 +412,9 @@ class Collection
                 let ks = $c.k.split('.');
                 for(let k of ks) {
                     if(!val) {
-                        val = GetAttr(v, k);
+                        val = getAttr(v, k);
                     } else {
-                        val = GetAttr(val, k);
+                        val = getAttr(val, k);
                     }
 
                     if(typeof val == 'undefined') { //如果该属性不存在，默认失败

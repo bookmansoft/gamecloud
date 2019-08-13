@@ -37,6 +37,23 @@ class baseAssistant
     }
 
     /**
+     * 获取一个特定类型的记录值
+     * @param {*}  
+     */
+    getAttr($type) {
+        return this.v[$type] || 0;
+    }
+    /**
+     * 设置一个特定类型的记录值
+     * @param {*}  
+     * @param {*} val 
+     */
+    setAttr($type, val){
+        this.v[$type] = val || 0;
+        this.dirty = true;
+    }
+
+    /**
      * 获取脏数据标志
      * @returns {*}
      */

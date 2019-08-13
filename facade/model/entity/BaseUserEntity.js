@@ -693,6 +693,15 @@ class BaseUserEntity extends BaseEntity
         return this.orm[attr];
     }
 
+    setAttr(attr, val){
+        this.orm[attr] = val;
+        this.dirty = true;
+    }
+
+    getAttr(attr){
+        return this.orm[attr];
+    }
+
     /**
      * 使用Mapping映射类时的配置参数
      */
