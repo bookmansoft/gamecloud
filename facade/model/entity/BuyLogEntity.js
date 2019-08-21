@@ -49,7 +49,7 @@ class BuyLogEntity extends BaseEntity
     /**
      * 创建时的回调函数
      */
-    static async onCreate(mysql, domainid, trade_no, product, product_desc, total_fee) {
+    static async onCreate(mysql, domainid, trade_no, product, product_desc, total_fee, fee_type) {
         try {
             let it = await BuyLog(mysql).create({
                 'domainid': domainid,
@@ -57,6 +57,7 @@ class BuyLogEntity extends BaseEntity
                 'product': (typeof product == 'string' ? product : JSON.stringify(product)),
                 'product_desc': product_desc,
                 'total_fee': total_fee,
+                'fee_type': fee_type,
                 'result': PurchaseStatus.create,
             });
             await it.save();
