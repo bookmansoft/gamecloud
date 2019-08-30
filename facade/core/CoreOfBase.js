@@ -456,8 +456,8 @@ class CoreOfBase
         config.map(item=>{
             router.get(item[0], async (req, res) => {
                 try {
-                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {} 而非普通控制器方法的 async (user, data) => {}
-                    let ret = await this.callFunc(control, item[1], req.query);
+                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {params} 而非普通控制器方法的 async (user, data) => {}
+                    let ret = await this.callFunc(control, item[1], Object.assign({req:req, res:res}, req.query||{}, req.params||{}, req.body||{}));
                     res.send(ret);
                 } catch(e) {
                     console.error(e);
@@ -466,8 +466,8 @@ class CoreOfBase
             });
             router.post(item[0], async (req, res) => {
                 try{
-                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {} 而非普通控制器方法的 async (user, data) => {}
-                    let ret = await this.callFunc(control, item[1], req.body);
+                    //配置型路由不能自动注入用户对象，这类路由的处理句柄是 async data => {params} 而非普通控制器方法的 async (user, data) => {}
+                    let ret = await this.callFunc(control, item[1], Object.assign({req:req, res:res}, req.query||{}, req.params||{}, req.body||{}));
                     res.send(ret);
                 }
                 catch(e){
