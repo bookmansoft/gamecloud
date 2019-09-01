@@ -1,7 +1,7 @@
-let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../define/comm')
+let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../core/CoreOfBase/define/comm')
 let commonFunc = require('../commonFunc')
-let EffectManager = require('../../../facade/util/comm/EffectManager')
-let EffectObject = require('../../../facade/util/comm/EffectObject')
+let EffectManager = require('../comm/EffectManager')
+let EffectObject = require('../comm/EffectObject')
 
 /**
  * 时效性技能类，包括：

@@ -1,6 +1,5 @@
 let facade = require('../../Facade')
 let {ResType} = facade.const
-let UserEntity = facade.entities.UserEntity
 
 class BonusObject
 {

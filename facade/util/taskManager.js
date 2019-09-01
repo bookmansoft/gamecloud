@@ -1,6 +1,6 @@
 let facade = require('../Facade')
 let CoreOfBase = facade.CoreOfBase
-let um = require('./updateMgr');
+let um = facade.tools.updateMgr
 
 /**
  * 通用监控对象

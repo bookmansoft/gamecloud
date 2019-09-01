@@ -1,6 +1,5 @@
 let facade = require('../../Facade')
 let {EntityType, UserStatus} = facade.const
-let UserEntity = facade.entities.UserEntity
 let CoreOfBase = facade.CoreOfBase
 
 /**

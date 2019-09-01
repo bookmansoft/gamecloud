@@ -1,6 +1,3 @@
-let facade = require('../../Facade')
-let UserEntity = facade.entities.UserEntity
-
 /**
  * 自定义事件信息结构
  */

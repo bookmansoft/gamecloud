@@ -170,18 +170,18 @@ class Facade
      * @returns {CoreOfBase}
      */
     static FactoryOfCore(options) {
-        if(!this.serverType || !!this.serverTypeMapping) {
+        if(!this.serverType || !this.serverTypeMapping) {
             this.serverType = {};
             this.serverTypeMapping = {};
     
             //自动从指定目录载入系统定义和用户自定义的核心类
-            let corelist = filelist.mapPackagePath(`${__dirname}/./core`);
+            let corelist = filelist.mapPackagePath(`${__dirname}/./core/`, {filename:'core.js'});
             if(this.$addition) {
-                corelist = corelist.concat(filelist.mapPath('app/core'));
+                corelist = corelist.concat(filelist.mapPath('app/core/'), {filename:'core.js'});
             }
             corelist.map(srv => {
                 let srvObj = require(srv.path);
-                this.serverType[srv.name.split('.')[0]] = srvObj; //节点类列表
+                this.serverType[srv.cname] = srvObj; //节点类列表
                 srvObj.mapping.map(key => {
                     this.serverTypeMapping[key] = srvObj; //节点类映射列表，每个节点类可能映射多个条目
                 });
@@ -200,7 +200,6 @@ class Facade
         } else {
             throw new Error(`无法识别的服务器类型和编号 ${env.serverType}.${env.serverId}`);
         }
-        return null;
     }    
 
     /**
@@ -245,13 +244,13 @@ class Facade
 
     //region 内置的节点类
     static get CoreOfBase() {
-        return require('./core/CoreOfBase');
+        return require('./core/CoreOfBase/core');
     }
     static get CoreOfIndex() {
-        return require('./core/CoreOfIndex');
+        return require('./core/CoreOfIndex/core');
     }
     static get CoreOfLogic() {
-        return require('./core/CoreOfLogic');
+        return require('./core/CoreOfLogic/core');
     }
     //endregion
 
@@ -280,7 +279,7 @@ class Facade
      * 基础助手类
      */
     static get Assistant(){
-        return require('./model/baseAssistant');
+        return require('./util/baseAssistant');
     }
 
     /**
@@ -288,7 +287,7 @@ class Facade
      */
     static get Assistants() {
         return {
-            Pocket: require('./model/assistant/item'),
+            Pocket: require('./core/CoreOfBase/model/assistant/item'),
         }
     }
 
@@ -296,21 +295,21 @@ class Facade
      * 指向原生基础实体类
      */
     static get BaseEntity(){
-        return require('./model/BaseEntity');
+        return require('./util/BaseEntity');
     }
 
     /**
      * 指向原生基础用户类
      */
     static get BaseUserEntity() {
-        return require('./model/entity/BaseUserEntity');
+        return require('./core/CoreOfBase/model/entity/BaseUserEntity');
     }
 
     /**
      * 指向原生基础联盟类
      */
     static get BaseAllyObject() {
-        return require('./model/entity/BaseAllyObject');
+        return require('./core/CoreOfBase/model/entity/BaseAllyObject');
     }
     
     /**
@@ -340,52 +339,6 @@ class Facade
             }
         }
         return this.$assistants;
-    }
-    /**
-     * 返回全部表映射类
-     */
-    static get models() {
-        if(!this.$models){
-            //载入全部ORM模块
-            this.$models = {};
-            filelist.mapPackagePath(`${__dirname}/./model/table`).map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.$models[mid] = require(mod.path)[mid];
-            });
-            if(this.$addition) {
-                filelist.mapPath('app/model/table').map(mod=>{
-                    let mid = mod.name.split('.')[0];
-                    this.$models[mid] = require(mod.path)[mid];
-                });
-            }
-        }
-        return this.$models;
-    }
-    /**
-     * 返回全部 ORM 映射类
-     */
-    static get entities(){
-        if(!this.$entities) {
-            this.$entities = {};
-
-            //载入原生Entity模块
-            filelist.mapPackagePath(`${__dirname}/./model/entity`).map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.$entities[mid] = require(mod.path);
-            });
-            //将 UserEntity AllyObject 也指向原生模块 
-            this.$entities.UserEntity = require('./model/entity/BaseUserEntity');  //指向原生定义的角色类
-            this.$entities.AllyObject = require('./model/entity/BaseAllyObject');  //指向原生定义的联盟类
-
-            if(this.$addition) {
-                //载入用户自定义Entity模块，如果用户有重载 UserEntity AllyObject 则自动覆盖之前的设置
-                filelist.mapPath('app/model/entity').map(mod=>{
-                    let mid = mod.name.split('.')[0];
-                    this.$entities[mid] = require(mod.path);
-                });
-            }
-        }
-        return this.$entities;
     }
 
     /**
@@ -452,9 +405,9 @@ class Facade
     static get const(){
         if(!this.$constList) {
             //加载核心常量定义
-            this.$constList = require( './define/comm');
+            this.$constList = require( './core/CoreOfBase/define/comm');
             //加载扩展常量定义
-            for(let fl of filelist.mapPackagePath(`${__dirname}/./define`)){
+            for(let fl of filelist.mapPackagePath(`${__dirname}/./core/CoreOfBase/define`)){
                 let id = fl.name.split('.')[0];
                 if(id != 'comm'){
                     let n = require(fl.path);
@@ -464,7 +417,7 @@ class Facade
 
             if(this.$addition) {
                 //加载用户自定义常量定义
-                for(let fl of filelist.mapPath('app/define')){
+                for(let fl of filelist.mapPath('app/core/CoreOfBase/define')){
                     let n = require(fl.path);
                     extendObj(this.$constList, n);
                 }
@@ -506,6 +459,10 @@ class Util
         return require('./util/comm/EffectManager');
     }
 
+    static get ChatPrivateManager() {
+        return require('./util/comm/ChatPrivateManager');
+    }
+
     static get EffectObject() {
         return require('./util/comm/EffectObject');
     }
@@ -534,6 +491,10 @@ class Util
     static get BattleHero() {
         let {BattleHero} = require('./util/battle/hero');
         return BattleHero;
+    }
+
+    static get TaskObject() {
+        return require('./util/comm/TaskObject');
     }
 
     static get LargeNumberCalculator() {

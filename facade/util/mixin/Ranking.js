@@ -1,4 +1,4 @@
-let {RankType, IndexType} = require('../../define/comm')
+let {RankType, IndexType} = require('../../core/CoreOfBase/define/comm')
 
 /**
  * 排序管理，标准流程如下：

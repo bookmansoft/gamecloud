@@ -1,9 +1,9 @@
 let facade = require('../../Facade')
 let {PotentialType, em_Effect_Comm} = facade.const
 let PetClientItem = require('./PetClientItem')
-let LargeNumberCalculator = require('../../../facade/util/comm/LargeNumberCalculator')
-let EffectManager = require('../../../facade/util/comm/EffectManager')
-let EffectObject = require('../../../facade/util/comm/EffectObject')
+let LargeNumberCalculator = facade.Util.LargeNumberCalculator
+let EffectManager = facade.Util.EffectManager
+let EffectObject = facade.Util.EffectObject
 
 /**
  * 天赋对象，复用于法宝、图腾、PVE宠物、PVP宠物。

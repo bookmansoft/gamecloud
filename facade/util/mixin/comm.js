@@ -1,6 +1,3 @@
-let {IndexType, ReturnCode} = require('../../define/comm')
-let Collection = require('../Collection')
-
 /**
  * Mixin函数，用于多个类之间的方法注入
  * 

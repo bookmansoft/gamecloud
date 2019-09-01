@@ -1,4 +1,4 @@
-let CoreOfBase = require('../core/CoreOfBase')
+let CoreOfBase = require('../core/CoreOfBase/core')
 /**
  * Created by liub on 2017-03-26.
  */
