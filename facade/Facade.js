@@ -98,7 +98,7 @@ class Facade
      * 系统主引导流程
      * @param {*} options 启动参数数组
      */
-    static async boot(options, startup) {
+    static async boot(options) {
         options = options || {};
 
         //主程序启动，提供包括Http、Socket、路由解析等服务
@@ -146,8 +146,9 @@ class Facade
             }
         }
 
-        if(typeof startup == 'function') {
-            await startup(core);
+        //如果通过 plugin 机制定义了 startAfter 函数，则在此自动执行
+        if(typeof core.startAfter == 'function') {
+            await core.startAfter();
         }
 
         //下发404 必须在控制器路由、静态资源路由全部加载之后设定
