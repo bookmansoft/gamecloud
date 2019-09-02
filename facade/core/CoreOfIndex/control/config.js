@@ -1,4 +1,4 @@
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {ReturnCode, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
 
 /**

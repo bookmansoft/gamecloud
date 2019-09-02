@@ -17,6 +17,7 @@ let vip = require('../assistant/vip')
 let {User} = require('../table/User')
 let InviteManager = require('../assistant/InviteMgr')
 let BaseEntity = facade.BaseEntity
+const crypto = require('crypto');
 
 //如果在 BaseUserEntity 的静态方法中，用 this.preList 形式使用，会造成 BaseUserEntity 的子类无法访问，因此前置为全局变量
 let preList = {};
@@ -52,15 +53,17 @@ class BaseUserEntity extends BaseEntity
         //region 载入assistant对象
         this.baseMgr = {};
 
-        facade.config.filelist.mapPackagePath(`${__dirname}/../../model/assistant`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
-        });
-        if(facade.addition) {
-            facade.config.filelist.mapPath('app/model/assistant', false).map(srv=>{
+        for(let cls of core.GetInheritArray()) {
+            facade.config.filelist.mapPackagePath(`${__dirname}/../../../${cls}/model/assistant`).map(srv=>{
                 let srvObj = require(srv.path);
                 this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
             });
+            if(facade.addition) {
+                facade.config.filelist.mapPath(`app/core/${cls}/model/assistant`, false).map(srv=>{
+                    let srvObj = require(srv.path);
+                    this.baseMgr[srv.name.split('.')[0]] = new srvObj(this);
+                });
+            }
         }
         //endregion
         
@@ -241,6 +244,19 @@ class BaseUserEntity extends BaseEntity
      */
     get openidOri() {
         return this.baseMgr.info.getAttr('openid');
+    }
+    /**
+     * 读取用户账号
+     */
+    get account() {
+        return this.$account;
+    }
+    get domainId() {
+        return this.$domainId;
+    }
+    set domainId(val) {
+        this.$domainId = val;
+        this.$account = crypto.createHash('sha1').update(Buffer.from(val,'utf8')).digest().toString('hex');
     }
 
     /**

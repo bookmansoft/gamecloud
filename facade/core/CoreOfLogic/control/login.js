@@ -1,4 +1,4 @@
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {em_Effect_Comm, UserStatus, NotifyType, OperEnum, ReturnCode, ActionExecuteType} = facade.const
 
 class login extends facade.Control

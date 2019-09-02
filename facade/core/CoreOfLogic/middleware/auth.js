@@ -1,4 +1,4 @@
-let facade = require('../Facade')
+let facade = require('../../../Facade')
 let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus} = facade.const
 let CommonFunc = facade.util
 let extendObj = facade.tools.extend

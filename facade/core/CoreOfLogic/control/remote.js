@@ -1,4 +1,4 @@
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {ReturnCode, EntityType, PurchaseStatus} = facade.const
 
 /**

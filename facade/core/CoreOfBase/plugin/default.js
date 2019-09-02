@@ -1,5 +1,3 @@
-let CoreOfBase = require('../core/CoreOfBase')
-
 /**
  * URL转CDN地址
  * @param {CoreOfBase} env

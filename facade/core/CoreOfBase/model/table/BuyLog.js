@@ -2,7 +2,7 @@
  * Created by Administrator on 2017-03-21.
  */
 var Sequelize = require('sequelize');
-var conn = require('../../util/sequel');
+var conn = require('../../../../util/sequel');
 
 //建立数据库ORM模型
 let BuyLog = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define('buylog', {

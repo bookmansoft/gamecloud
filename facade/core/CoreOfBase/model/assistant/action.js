@@ -1,4 +1,4 @@
-let facade = require('../../../../../facade/Facade')
+let facade = require('../../../../Facade')
 let {em_Effect_Comm, ActionExecuteType, NotifyType} = facade.const
 let baseMgr = facade.Assistant
 

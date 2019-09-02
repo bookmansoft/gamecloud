@@ -1,5 +1,5 @@
 let StateMachine = require('javascript-state-machine')
-let facade = require('../../../../../facade/Facade')
+let facade = require('../../../../Facade')
 let {NotifyType, EntityType, PurchaseType, em_Condition_Checkmode, em_Condition_Type, ResType, TollgateConstant, StayStatus, EventEnum, TollgateType, em_Effect_Comm, ReturnCode, OperEnum} = facade.const
 let baseMgr = facade.Assistant
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator

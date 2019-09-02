@@ -1,10 +1,9 @@
-let LargeNumberCalculator = require('./LargeNumberCalculator')
-
 /**
  * Created by liub on 2017-04-07.
  */
 let facade = require('../../Facade')
-let EffectObject = require('./EffectObject');
+let LargeNumberCalculator = facade.Util.LargeNumberCalculator
+let EffectObject = facade.Util.EffectObject
 let {em_EffectCalcType, mapOfTechCalcType} = facade.const
 
 /**

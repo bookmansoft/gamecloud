@@ -1,4 +1,4 @@
-let facade = require('../../../../../facade/Facade')
+let facade = require('../../../../Facade')
 let baseMgr = facade.Assistant
 let {em_Effect_Comm, ReturnCode, EventEnum, EventConfig} = facade.const
 let GateEvent = require('../../../../util/tollgate/GateEvent')

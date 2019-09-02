@@ -7,7 +7,6 @@ let {serverType, EntityType, ReturnCode, CommMode, ResType} = facade.const
 let TaskObject = facade.Util.TaskObject
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator
 let socketClient = require('socket.io-client')
-let {User} = require('./model/table/User');
 
 /**
  * 逻辑服对应的门面类
@@ -132,7 +131,7 @@ class CoreOfLogic extends CoreOfBase
         
         //用户活动信息载入        
         try{
-            let ret = await User(this.options.mysql).findAll();
+            let ret = await this.models.User(this.options.mysql).findAll();
             for(let i = 0; i++; i < ret.length){
                 let pUser = await this.GetObject(EntityType.User, ret[i].id);
                 //载入玩家的活动参与信息

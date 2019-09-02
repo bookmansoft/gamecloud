@@ -2,7 +2,7 @@
  * 社交互动流程
  * Updated by liub on 2017-07-24.
  */
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let baseCtl = facade.Control
 let {UserStatus, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, em_Condition_Checkmode, ResType, OperEnum, ReturnCode} = facade.const
 

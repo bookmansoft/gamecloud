@@ -1,4 +1,4 @@
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {ReturnCode} = facade.const
 let baseCtl = facade.Control
 

@@ -1,7 +1,7 @@
 /**
  * Created by liub on 2017-04-06.
  */
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {ReturnCode} = facade.const
 
 /**

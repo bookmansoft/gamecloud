@@ -1,4 +1,4 @@
-let facade = require('../Facade')
+let facade = require('../../../Facade')
 let {MiddlewareParam} = facade.const
 
 /**

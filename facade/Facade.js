@@ -177,7 +177,7 @@ class Facade
             //自动从指定目录载入系统定义和用户自定义的核心类
             let corelist = filelist.mapPackagePath(`${__dirname}/./core/`, {filename:'core.js'});
             if(this.$addition) {
-                corelist = corelist.concat(filelist.mapPath('app/core/'), {filename:'core.js'});
+                corelist = corelist.concat(filelist.mapPath('app/core/', {filename:'core.js'}));
             }
             corelist.map(srv => {
                 let srvObj = require(srv.path);
@@ -316,7 +316,7 @@ class Facade
      * 指向原生基础日志类
      */
     static get BaseLogEntity() {
-        return require('./model/entity/BuyLogEntity');
+        return require('./core/CoreOfBase/model/entity/BuyLogEntity');
     }
 
     //endregion

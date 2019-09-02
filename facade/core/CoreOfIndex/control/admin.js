@@ -1,5 +1,5 @@
-let facade = require('../../Facade')
-let query = require('../../util/mysql');
+let facade = require('../../../Facade')
+let query = require('../../../util/mysql');
 
 /**
  * 配置管理器

@@ -1,7 +1,7 @@
 /**
  * Created by liub on 2017-04-06.
  */
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {EntityType, IndexType, DomainType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 

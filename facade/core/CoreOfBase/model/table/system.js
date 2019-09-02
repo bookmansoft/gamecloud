@@ -2,7 +2,7 @@
  * Created by Administrator on 2017-05-31.
  */
 var Sequelize = require('sequelize');
-var conn = require('../../util/sequel');
+var conn = require('../../../../util/sequel');
 
 exports.system = (mysql) => conn.seqConnector(mysql.db, mysql.sa, mysql.pwd, mysql.host, mysql.port).define(
 	'system', //默认表名。一般这里写单数，生成时会自动转换成复数形式

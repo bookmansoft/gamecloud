@@ -1,5 +1,3 @@
-let facade = require('../Facade')
-
 /**
  * 属性管理类的父类
  */

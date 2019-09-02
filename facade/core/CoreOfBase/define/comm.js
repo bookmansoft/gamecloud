@@ -179,6 +179,7 @@ const IndexType = {
     Domain:2,           //复合键，可能由多个字段组合而成
     Name:3,             //Name-ID键值对
     Token:4,            //令牌
+    Account:5,          //钱包账户
 }
 
 /**

@@ -1,4 +1,4 @@
-let facade = require('../../Facade')
+let facade = require('../../../Facade')
 let {ResType, ReturnCode} = facade.const
 /**
  * 活动功能相关的控制器

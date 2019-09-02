@@ -57,38 +57,11 @@ class CoreOfBase
         
         //中间件配置管理，子类可覆盖, 约定和类名称相同的中间件为鉴权中间件
         this.middlewareSetting = {};
-        this.middlewareSetting.default = ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle'];
+        this.middlewareSetting.default = ['parseParams', 'auth', 'commonHandle', 'afterHandle'];
         
         //中间件列表
         this.middleware = {};
-        //载入框架规定的中间件
-        facade.config.filelist.mapPackagePath(`${__dirname}/../middleware`).map(srv => {
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.middleware[handleName] = handle;
-        });
-
-        //挂载plugin函数到核心类
-        facade.config.filelist.mapPackagePath(`${__dirname}/../plugin`).map(srv=>{
-            let funcList = require(srv.path);
-            let moduleName = srv.name.split('.')[0];
-            Object.keys(funcList).map(key=>{
-                if(moduleName == 'default'){
-                    this[key] = function(...arg){
-                        return funcList[key](self, ...arg);
-                    }
-                }
-                else{
-                    if(!this[moduleName]){
-                        this[moduleName] = {};
-                    }
-                    this[moduleName][key] = function(...arg){
-                        return funcList[key](self, ...arg);
-                    }
-                }
-            });
-        });
-
+        this.service = {};
         /**
          * Control列表 由子类构造函数载入实际内容
          * @type {Array<Control>}
@@ -97,18 +70,74 @@ class CoreOfBase
 
         //系统内部事件映射表，由子类视需要补充加载
         this.eventHandleList = {};
-        //载入框架规范的逻辑事件
-        facade.config.filelist.mapPackagePath(`${__dirname}/../events`).map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
-        });
 
-        //载入通用配置表文件，再由子类视需要加载各自独特的内容(需要注意相互覆盖)
+        //配置表列表
         this.fileMap = {};
-        for(let fl of facade.config.filelist.mapPath(`config/data`)) {
-            let id = fl.name.split('.')[0];
-            this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+
+        for(let cls of this.GetInheritArray()) {
+            //载入控制器
+            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/control`).map(ctrl => {
+                let ctrlObj = require(ctrl.path);
+                let token = ctrl.name.split('.')[0];
+                this.control[token] = new ctrlObj(this);
+    
+                //读取控制器自带的中间件设置
+                if(!!this.control[token].middleware) {
+                    this.middlewareSetting[token] = this.control[token].middleware;
+                }
+    
+                //读取控制器自带的Url路由设置
+                if(!!this.control[token].router) {
+                    this.$router[token] = this.control[token].router;
+                }
+            });
+
+            //载入框架预定义的Service(具备可继承特性)
+            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/service`).map(srv => {
+                let srvObj = require(srv.path);
+                this.service[srv.name.split('.')[0]] = new srvObj(this);
+            });
+
+            //载入框架规定的中间件
+            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/middleware`).map(srv => {
+                let handle = require(srv.path).handle;
+                let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+                this.middleware[handleName] = handle;
+            });
+
+            //载入框架预定义的plugin函数(具备可继承特性)
+            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/plugin`).map(srv=>{
+                let funcList = require(srv.path);
+                let moduleName = srv.name.split('.')[0];
+                Object.keys(funcList).map(key=>{
+                    if(moduleName == 'default'){
+                        this[key] = function(...arg){
+                            return funcList[key](self, ...arg);
+                        }
+                    }
+                    else{
+                        if(!this[moduleName]){
+                            this[moduleName] = {};
+                        }
+                        this[moduleName][key] = function(...arg){
+                            return funcList[key](self, ...arg);
+                        }
+                    }
+                });
+            });
+
+            //载入框架规范的逻辑事件
+            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/events`).map(srv=>{
+                let handle = require(srv.path).handle;
+                let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+                this.eventHandleList[handleName] = handle.bind(this);
+            });
+
+            //载入配置表文件, 可继承
+            for(let fl of facade.config.filelist.mapPath(`config/data`)) {
+                let id = fl.name.split('.')[0];
+                this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+            }
         }
 
         //定时任务管理器
@@ -129,32 +158,6 @@ class CoreOfBase
         this.specialRes = {};
         this.RegisterResHandle('$default', async (user, bonus) => {
         });
-
-        //载入框架预定义的全局扩展服务对象
-        this.service = {};
-        for(let cls of this.GetInheritArray()) {
-            facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/service`).map(srv => {
-                let srvObj = require(srv.path);
-                this.service[srv.name.split('.')[0]] = new srvObj(this);
-            });
-        }
-
-        //载入控制器
-        facade.config.filelist.mapPackagePath(`${__dirname}/../control/${this.constructor.name}`).map(ctrl => {
-            let ctrlObj = require(ctrl.path);
-            let token = ctrl.name.split('.')[0];
-            this.control[token] = new ctrlObj(this);
-
-            //读取控制器自带的中间件设置
-            if(!!this.control[token].middleware) {
-                this.middlewareSetting[token] = this.control[token].middleware;
-            }
-
-            //读取控制器自带的Url路由设置
-            if(!!this.control[token].router) {
-                this.$router[token] = this.control[token].router;
-            }
-        });
     }
 
     /**
@@ -171,17 +174,20 @@ class CoreOfBase
      */
     get models() {
         if(!this.$models){
-            //载入全部ORM模块
             this.$models = {};
-            facade.config.filelist.mapPackagePath(`${__dirname}/../${this.constructor.name}/model/table`).map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.$models[mid] = require(mod.path)[mid];
-            });
-            if(this.$addition) {
-                facade.config.filelist.mapPath(`app/${this.constructor.name}/model/table`).map(mod=>{
+
+            for(let cls of this.GetInheritArray()) {
+                //载入全部ORM模块
+                facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/model/table`).map(mod=>{
                     let mid = mod.name.split('.')[0];
                     this.$models[mid] = require(mod.path)[mid];
                 });
+                if(facade.$addition) {
+                    facade.config.filelist.mapPath(`app/core/${cls}/model/table`).map(mod=>{
+                        let mid = mod.name.split('.')[0];
+                        this.$models[mid] = require(mod.path)[mid];
+                    });
+                }
             }
         }
         return this.$models;
@@ -193,22 +199,24 @@ class CoreOfBase
     get entities() {
         if(!this.$entities) {
             this.$entities = {};
-
-            //载入原生Entity模块
-            facade.config.filelist.mapPackagePath(`${__dirname}/../${this.constructor.name}/model/entity`).map(mod=>{
-                let mid = mod.name.split('.')[0];
-                this.$entities[mid] = require(mod.path);
-            });
             //将 UserEntity AllyObject 也指向原生模块 
             this.$entities.UserEntity = require('./model/entity/BaseUserEntity');  //指向原生定义的角色类
             this.$entities.AllyObject = require('./model/entity/BaseAllyObject');  //指向原生定义的联盟类
 
-            if(this.$addition) {
-                //载入用户自定义Entity模块，如果用户有重载 UserEntity AllyObject 则自动覆盖之前的设置
-                facade.config.filelist.mapPath(`app/${this.constructor.name}/model/entity`).map(mod=>{
+            for(let cls of this.GetInheritArray()) { 
+                //载入原生Entity模块
+                facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/model/entity`).map(mod=>{
                     let mid = mod.name.split('.')[0];
                     this.$entities[mid] = require(mod.path);
                 });
+
+                if(facade.$addition) {
+                    //载入用户自定义Entity模块，如果用户有重载 UserEntity AllyObject 则自动覆盖之前的设置
+                    facade.config.filelist.mapPath(`app/core/${cls}/model/entity`).map(mod=>{
+                        let mid = mod.name.split('.')[0];
+                        this.$entities[mid] = require(mod.path);
+                    });
+                }
             }
         }
         return this.$entities;
@@ -336,6 +344,9 @@ class CoreOfBase
         return this.GetRanking(obj).result(id, type);
     }
 
+    /**
+     * 返回描述类继承关系的数组，以基类为首个元素
+     */
     GetInheritArray() {
         let proto = this.__proto__, clsInherit = [];
         while(proto) {
@@ -354,34 +365,6 @@ class CoreOfBase
     async loadModel() {
         let self = this;
 
-        //载入用户自定义的全局扩展服务对象
-        for(let cls of this.GetInheritArray()) {
-            facade.config.filelist.mapPath(`app/${this.constructor.name}/service/${cls}`).map(srv=>{
-                let srvObj = require(srv.path);
-                this.service[srv.name.split('.')[0]] = new srvObj(this);
-            });
-        }
-
-        //挂载用户自定义的plugin函数到核心类
-        facade.config.filelist.mapPath('app/plugin').map(srv=>{
-            let funcList = require(srv.path);
-            let moduleName = srv.name.split('.')[0];
-            Object.keys(funcList).map(key=>{
-                if(moduleName == 'default') {
-                    this[key] = function(...arg){
-                        return funcList[key](self, ...arg);
-                    }
-                } else {
-                    if(!this[moduleName]){
-                        this[moduleName] = {};
-                    }
-                    this[moduleName][key] = function(...arg){
-                        return funcList[key](self, ...arg);
-                    }
-                }
-            });
-        });
-
         //遍历静态配置表，载入全部任务
         this.TaskStaticList = {};
 
@@ -393,41 +376,69 @@ class CoreOfBase
          */
         this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
 
-        //载入用户自定义中间件，@note:将覆盖同名系统中间件
-        facade.config.filelist.mapPath('app/middleware').map(srv => {
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.middleware[handleName] = handle;
-        });
+        for(let cls of this.GetInheritArray()) {
+            //载入用户自定义的全局扩展服务对象
+            facade.config.filelist.mapPath(`app/core/${cls}/service`).map(srv=>{
+                let srvObj = require(srv.path);
+                this.service[srv.name.split('.')[0]] = new srvObj(this);
+            });
 
-        //载入用户自定义的逻辑事件
-        facade.config.filelist.mapPath('app/events').map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
-        });
+            //挂载用户自定义的plugin函数到核心类
+            facade.config.filelist.mapPath(`app/core/${cls}/plugin`).map(srv=>{
+                let funcList = require(srv.path);
+                let moduleName = srv.name.split('.')[0];
+                Object.keys(funcList).map(key=>{
+                    if(moduleName == 'default') {
+                        this[key] = function(...arg){
+                            return funcList[key](self, ...arg);
+                        }
+                    } else {
+                        if(!this[moduleName]){
+                            this[moduleName] = {};
+                        }
+                        this[moduleName][key] = function(...arg){
+                            return funcList[key](self, ...arg);
+                        }
+                    }
+                });
+            });
 
-        //载入各自独立的配置文件
-        for(let fl of facade.config.filelist.mapPath(`config/${this.constructor.name}`)) {
-            let id = fl.name.split('.')[0];
-            this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+            //载入各自独立的控制器
+            facade.config.filelist.mapPath(`app/core/${cls}/control`).map(ctrl => {
+                let ctrlObj = require(ctrl.path);
+                let token = ctrl.name.split('.')[0];
+                this.control[token] = new ctrlObj(this);
+    
+                //读取控制器自带的中间件设置
+                if(!!this.control[token].middleware){
+                    this.middlewareSetting[token] = this.control[token].middleware;
+                }
+                //读取控制器自带的Url路由设置
+                if(!!this.control[token].router){
+                    this.$router[token] = this.control[token].router;
+                }
+            });
+
+            //载入用户自定义中间件，@note:将覆盖同名系统中间件
+            facade.config.filelist.mapPath(`app/core/${cls}/middleware`).map(srv => {
+                let handle = require(srv.path).handle;
+                let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+                this.middleware[handleName] = handle;
+            });
+
+            //载入用户自定义的逻辑事件
+            facade.config.filelist.mapPath(`app/core/${cls}/events`).map(srv=>{
+                let handle = require(srv.path).handle;
+                let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
+                this.eventHandleList[handleName] = handle.bind(this);
+            });
+
+            //载入用户自定义配置文件
+            for(let fl of facade.config.filelist.mapPath(`config/${cls}`)) {
+                let id = fl.name.split('.')[0];
+                this.fileMap[id] = facade.config.ini.get(fl.path).GetInfo();
+            }
         }
-
-        //载入各自独立的控制器
-        facade.config.filelist.mapPath(`app/control/${this.constructor.name}`).map(ctrl=>{
-            let ctrlObj = require(ctrl.path);
-            let token = ctrl.name.split('.')[0];
-            this.control[token] = new ctrlObj(this);
-
-            //读取控制器自带的中间件设置
-            if(!!this.control[token].middleware){
-                this.middlewareSetting[token] = this.control[token].middleware;
-            }
-            //读取控制器自带的Url路由设置
-            if(!!this.control[token].router){
-                this.$router[token] = this.control[token].router;
-            }
-        });
     }
 
     /**
@@ -659,8 +670,7 @@ class CoreOfBase
      * @returns {Object} {code, data}
      */
     async notifyEvent(ev, data) {
-        //优先搜索根目录，再搜索节点目录
-        let func = !!this.eventHandleList[ev] ? this.eventHandleList[ev] : this.eventHandleList[`${this.constructor.name}.${ev}`];
+        let func = this.eventHandleList[ev];
         if(!!func) {
             try {
                 return await func(data);
