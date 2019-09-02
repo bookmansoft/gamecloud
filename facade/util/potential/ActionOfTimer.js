@@ -1,4 +1,4 @@
-let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../core/CoreOfBase/define/comm')
+let {ActionType, ActionStatus, em_Effect_Comm, ReturnCode} = require( '../../core/CoreOfBase/enum')
 let commonFunc = require('../commonFunc')
 let EffectManager = require('../comm/EffectManager')
 let EffectObject = require('../comm/EffectObject')

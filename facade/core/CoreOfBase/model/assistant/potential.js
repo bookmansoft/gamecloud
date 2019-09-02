@@ -946,7 +946,16 @@ class potential extends baseMgr
             $item.Execute($user);
             this.dirty = this.dirty || $item.isDarty;
         }
-        return this.actions;
+        return Object.keys(this.actions).reduce((sofar, cur) => {
+            sofar[cur] = {};
+            for(let key of Object.keys(this.actions[cur])) {
+                if(key == 'core') { //跳过复杂对象，避免序列化失败
+                    continue;
+                }
+                sofar[cur][key] = this.actions[cur][key];
+            }
+            return sofar;
+        }, {});
     }
 
     //#endregion

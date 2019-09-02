@@ -3,8 +3,8 @@ let io = require('socket.io')
 let fs = require('fs')
 
 let facade = require('../../Facade')
-let {ReturnCode, EntityType, IndexType, CommMode} = facade.const
-let {env} = require('./define/env')
+let extendObj = facade.tools.extend
+let {ReturnCode, EntityType, IndexType, CommMode, env} = facade.const
 let Control = facade.Control
 let connectMonitor = require('../../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../../util/taskManager')
@@ -167,6 +167,34 @@ class CoreOfBase
      */
     RegisterResHandle(type, handle) {
         this.specialRes[type] = handle;
+    }
+
+    /**
+     * 获取常用枚举集
+     */
+    get const() {
+        if(!this.$constList) {
+            this.$constList = {};
+
+            for(let cls of this.GetInheritArray()) {
+                try {
+                    let en = require(`${__dirname}/../${cls}/enum`);
+                    if(!!en) {
+                        extendObj(this.$constList, en);
+                    }
+                } catch(e) { }
+
+                if(facade.$addition) {
+                    try {
+                        let en = require(`${process.cwd()}/app/core/${cls}/enum`);
+                        if(!!en) {
+                            extendObj(this.$constList, en);
+                        }
+                    } catch(e) { }
+                }
+            }
+        }
+        return this.$constList;
     }
 
     /**

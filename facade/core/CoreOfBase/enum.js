@@ -1592,7 +1592,152 @@ const RarityType = {
     Lv5: 5,
 }
 
+/**
+ * 领域类型
+ */
+const DomainType = {
+    MF: "mf",               //MoreFun
+    TX: "tx",               //空间
+    TXX: "txx",             //QQ
+    D360: "360",            //360
+    OFFICIAL: "offcial",    //官网
+    SYSTEM: "system",       //RPC
+    ADMIN: "admin",         //系统管理员
+    WX: "authwx",           //系统管理员
+};
+
+const DomainClass = [
+    '', 'IOS', 'Android', 'Test',
+];
+
+/**
+ * 服务器运行环境参数对象，此对象数据结构和 gameconfig.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
+ */
+const env = {
+    serverType:"IOS",         //服务器类型
+    serverId:1,               //服务器编号
+    debug: true,              //本地测试模式
+    UrlHead: "http",          //协议选择: http/https
+    MaxConnection: 3000,      //最大并发连接
+    MaxRegister: 12000,       //单服最大注册用户数
+    PoolMax: 500,             //最大数据库并发连接
+    game_secret: "",          //加密密钥
+    game_name: "",         
+    clientPath: "./client",
+    adminPath: "./admin",
+    redis: {
+        host: "127.0.0.1",
+        port: 6379,
+        opts: {}
+    },
+    mysql: {
+        logging : false,
+        db: "",
+        sa: "",
+        pwd: "",
+        host: "127.0.0.1",
+        port: 3306
+    },
+    webserver: {
+        mapping: "127.0.0.1",
+        host: "127.0.0.1",
+        port: 9901
+    },
+    auth: {
+        openid: "555",
+        openkey: "555",
+        domain: "tx.IOS",
+        tokenExp: 600,
+        sessionExp: 7200,
+        pf: "wanba_ts"
+    },
+    admin:{
+        role:{
+            default: "chick.server",
+            system: "chick.server"
+        },
+        game_secret: ""
+    },
+    tx: {
+        appid: "",
+        appkey: "",
+        pay_appid: "",
+        pay_appkey: "",
+        reportApiUrl: "",
+        openApiUrl: "",
+        openApiUrlWithPay:""
+    },
+    360:{
+        appid:"",
+        game_key: "",
+        game_secret: ""
+    }    
+}
+
+/**
+ * 活动的类型枚举，注意值要连续设置（base 0）
+ */
+const ActivityType = {
+    /**
+     * 鸡小德
+     */
+    // Action: 0,       //累计花费的体力
+    // Money: 1,        //累计花费的金币
+    // Diamond:2,          //累计花费的钻石
+    // Gate:3,             //累计通关次数
+    // Revive:4,           //累计复活次数
+    // Slave:5,            //累计抓取奴隶
+    /**
+     * 猴子
+     */
+    Money:0,          //累计花费的金币
+    Diamond: 1,        //累计花费的钻石    
+};
+ActivityType.len = Object.keys(ActivityType).length; //枚举的数量
+
+/**
+ * 不同类型活动的分数转化率
+ */
+const ActivityScoreRate = {
+    0:10,
+    1:1,    
+    // 2:1,
+    // 3:1,
+    // 4:1,
+    // 5:1,
+}
+
+/**
+ * 活动的状态枚举
+ */
+const DailyActivityStatus = {
+    Idle: 'Idle',       //空闲状态
+    Active: 'Active',   //活跃状态
+    Bonus: 'Bonus',     //奖励展示状态
+    Ready: 'Ready',     //预热
+    End:'End',          //活动结束
+};
+
+/**
+ * 活动的状态枚举
+ */
+const ActivityStatus = {
+    Idle: 'Idle',       //空闲状态
+    Active: 'Active',   //活跃状态（周一到周六）
+    Bonus: 'Bonus',     //奖励展示状态（周天）
+};
+
+const ActivityRankMax = 100000; //最大可获奖的排名
+
 exports = module.exports = {
+    ActivityRankMax: ActivityRankMax,
+    ActivityType: ActivityType,
+    ActivityStatus: ActivityStatus,
+    ActivityScoreRate: ActivityScoreRate,
+    DailyActivityStatus:DailyActivityStatus,
+    env: env,
+    DomainType: DomainType,
+    DomainClass: DomainClass,
     em_Ally_Oper:em_Ally_Oper,
     UserAuthorityNum:UserAuthorityNum,
     ResType: ResType,

@@ -1,4 +1,4 @@
-let {IndexType} = require('../../core/CoreOfBase/define/comm')
+let {IndexType} = require('../../core/CoreOfBase/enum')
 let {now} = require('../commonFunc')
 let Collection = require('../Collection')
 

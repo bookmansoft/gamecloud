@@ -838,7 +838,7 @@ class BaseUserEntity extends BaseEntity
             ret = false;
         }
 
-        if(CommonFunc.now() - preList[id].time > 3600*2){
+        if(!!preList[id] && (CommonFunc.now() - preList[id].time) > 3600*2) {
             delete preList[id];
             ret = false;
         }

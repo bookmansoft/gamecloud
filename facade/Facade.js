@@ -402,36 +402,15 @@ class Facade
     }
     /**
      * 获取常用枚举集
+     * @description facade.const 只载入 CoreOfBase/enum 中的常量定义，而 core.const 严格按照原型链顺序载入全部常量定义
      */
     static get const(){
         if(!this.$constList) {
-            //加载核心常量定义
-            this.$constList = require( './core/CoreOfBase/define/comm');
-            //加载扩展常量定义
-            for(let fl of filelist.mapPackagePath(`${__dirname}/./core/CoreOfBase/define`)){
-                let id = fl.name.split('.')[0];
-                if(id != 'comm'){
-                    let n = require(fl.path);
-                    extendObj(this.$constList, n);
-                }
-            }
-
+            this.$constList = require(`${__dirname}/core/CoreOfBase/enum`);
             if(this.$addition) {
-                //加载用户自定义常量定义
-                for(let fl of filelist.mapPath('app/core/CoreOfBase/define')){
-                    let n = require(fl.path);
-                    extendObj(this.$constList, n);
-                }
+                extendObj(this.$constList, require(`${process.cwd()}/app/core/CoreOfBase/enum`));
             }
-
-            this.$constList.AddConditionType = (name, val) => {
-                this.$constList.em_Condition_Type[name] = val;
-            };
-            this.$constList.AddResType = (name, val) => {
-                this.$constList.ResType[name] = val;
-            };
         }
-
         return this.$constList;
     }
 
@@ -454,6 +433,15 @@ class Util
 {
     static get BonusObject() {
         return require('./util/comm/BonusObject');
+    }
+
+    static get ConfigManager() {
+        return require('./util/potential/ConfigManager');
+    }
+
+    static get ConfigMgr() {
+        let {ConfigMgr} = require('./util/battle/Action');
+        return ConfigMgr;
     }
 
     static get EffectManager() {

@@ -287,7 +287,7 @@ class ConfigManager
      * @return {Function}
      */
     getEquPowerFormula($id) {
-        return function($lv) {
+        return ($lv) => {
             if(!this.pTechList[$id]){
                 return LargeNumberCalculator.Load(0);
             }
@@ -305,7 +305,7 @@ class ConfigManager
      * @return {LargeNumberCalculator}
      */
     getPowerFormula($id) {
-        return function($lv) {
+        return ($lv) => {
             if(!this.getFellowList()[$id]){
                 return 0;
             }

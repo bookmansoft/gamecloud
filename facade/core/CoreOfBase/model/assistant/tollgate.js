@@ -1,6 +1,6 @@
 let StateMachine = require('javascript-state-machine')
 let facade = require('../../../../Facade')
-let {NotifyType, EntityType, PurchaseType, em_Condition_Checkmode, em_Condition_Type, ResType, TollgateConstant, StayStatus, EventEnum, TollgateType, em_Effect_Comm, ReturnCode, OperEnum} = facade.const
+let {NotifyType, EntityType, PurchaseType, em_Condition_Checkmode, em_Condition_Type, ResType, TollgateConstant, StayStatus, EventEnum, TollgateType, em_Effect_Comm, ReturnCode} = facade.const
 let baseMgr = facade.Assistant
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator
 let OperationInfo = require('../../../../util/tollgate/OperationInfo')
@@ -381,8 +381,7 @@ class tollgate extends baseMgr
      *      4、挂机状态下，除结束挂机外、不接受任何用户操作。客户端和服务端按照一个时间节奏推进关卡进度，以服务端为准。
      *      5、挂机状态下，服务端不必实时计算各类收益，仅仅简单下行当前关卡数、挂机结束时间即可。在自动或手动结束挂机流程时，一次性计算全部收益。
      */
-    doSomething($params)
-    {
+    doSomething($params) {
         //对上行参数做适当校验
         $params.Oper = parseInt($params.Oper);
         $params.monsterNum = Math.min(parseInt($params.monsterNum), this.totalMonster);
@@ -392,6 +391,8 @@ class tollgate extends baseMgr
         let $curTime = facade.util.now();
 
         this.errorCode = ReturnCode.Success;
+
+        let OperEnum = this.parent.core.const.OperEnum;
 
         //客户端提交新的校验点（当前关卡编号、当前消灭的怪物数量）请求服务端校验，分为如下几种情况：
         //1.1、通过了一个小关，上行确认后进入下一个关卡，如校验失败，回滚到上一次校验点
