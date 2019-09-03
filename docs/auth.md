@@ -107,7 +107,7 @@ class authOfNew extends facade.Control
             t: now(),                         //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
             userId: objData.id,               //将客户端上行的平台用户 ID
         };
-        auth.sign = sign(auth, facade.current.options[DomainType.D360].game_secret);
+        auth.sign = sign(auth, facade.current.options['360'].game_secret);
         return auth;
     }
 
@@ -115,7 +115,7 @@ class authOfNew extends facade.Control
      * 验证签名函数，约定函数名必须为 check
      */
     async check(oemInfo) {
-        let _sign = (oemInfo.auth.sign == facade.util.sign(oemInfo.auth, facade.current.options[DomainType.D360].game_secret));
+        let _sign = (oemInfo.auth.sign == facade.util.sign(oemInfo.auth, facade.current.options['360'].game_secret));
         let _exp = (Math.abs(oemInfo.auth.t - now()) <= 300);
         if (!_sign || !_exp) {
             throw new Error('authThirdPartFailed'); //未通过验证，抛出异常

@@ -406,7 +406,7 @@ class Facade
      */
     static get const(){
         if(!this.$constList) {
-            this.$constList = require(`${__dirname}/core/CoreOfBase/enum`);
+            this.$constList = require('./core/CoreOfBase/enum');
             if(this.$addition) {
                 extendObj(this.$constList, require(`${process.cwd()}/app/core/CoreOfBase/enum`));
             }

@@ -2,7 +2,7 @@
  * Created by liub on 2017-04-06.
  */
 let facade = require('../../../Facade')
-let {EntityType, IndexType, DomainType, ReturnCode} = facade.const
+let {EntityType, IndexType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 
 class authPay extends facade.Control {
@@ -28,7 +28,7 @@ class authPay extends facade.Control {
             avatar: objData.id,                 //头像
             is_tourist: 1,                      //是否为游客
         };
-        ret.sign = sign(ret, this.core.options[DomainType.D360].game_secret);
+        ret.sign = sign(ret, this.core.options['360'].game_secret);
         return ret;
     }
 

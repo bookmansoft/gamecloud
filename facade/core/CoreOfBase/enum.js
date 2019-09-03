@@ -1593,24 +1593,6 @@ const RarityType = {
 }
 
 /**
- * 领域类型
- */
-const DomainType = {
-    MF: "mf",               //MoreFun
-    TX: "tx",               //空间
-    TXX: "txx",             //QQ
-    D360: "360",            //360
-    OFFICIAL: "offcial",    //官网
-    SYSTEM: "system",       //RPC
-    ADMIN: "admin",         //系统管理员
-    WX: "authwx",           //系统管理员
-};
-
-const DomainClass = [
-    '', 'IOS', 'Android', 'Test',
-];
-
-/**
  * 服务器运行环境参数对象，此对象数据结构和 gameconfig.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
  */
 const env = {
@@ -1736,8 +1718,6 @@ exports = module.exports = {
     ActivityScoreRate: ActivityScoreRate,
     DailyActivityStatus:DailyActivityStatus,
     env: env,
-    DomainType: DomainType,
-    DomainClass: DomainClass,
     em_Ally_Oper:em_Ally_Oper,
     UserAuthorityNum:UserAuthorityNum,
     ResType: ResType,

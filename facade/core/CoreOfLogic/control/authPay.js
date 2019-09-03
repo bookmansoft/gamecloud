@@ -3,7 +3,7 @@ let facade = require('../../../Facade')
  * Created by liub on 2017-04-06.
  */
 
-let {DomainType, ReturnCode} = facade.const
+let {ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 
 /**
@@ -37,7 +37,7 @@ class authPay extends facade.Control
             avatar: objData.id,                     //头像
             is_tourist: 1,                          //是否为游客
         };
-        ret.sign = sign(ret, this.core.options[DomainType.D360].game_secret);
+        ret.sign = sign(ret, this.core.options['360'].game_secret);
         return ret;
     }
 
@@ -109,7 +109,7 @@ class authPay extends facade.Control
      */
     async pay360(req) {
         let params = {
-            game_key: this.core.options[DomainType.D360].game_key, //采信己方预设值
+            game_key: this.core.options['360'].game_key, //采信己方预设值
             plat_user_id: req.plat_user_id,
             order_id: req.order_id,
             amount: req.amount,
@@ -117,7 +117,7 @@ class authPay extends facade.Control
             sign: req.sign
         };
 
-        if(!params.sign == sign(params, this.core.options[DomainType.D360].game_secret)){ //签名校验错误
+        if(!params.sign == sign(params, this.core.options['360'].game_secret)){ //签名校验错误
             return "error.auth";
         }
 
