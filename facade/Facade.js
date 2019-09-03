@@ -404,7 +404,7 @@ class Facade
      * 获取常用枚举集
      * @description facade.const 只载入 CoreOfBase/enum 中的常量定义，而 core.const 严格按照原型链顺序载入全部常量定义
      */
-    static get const(){
+    static get const() {
         if(!this.$constList) {
             this.$constList = require('./core/CoreOfBase/enum');
             if(this.$addition) {

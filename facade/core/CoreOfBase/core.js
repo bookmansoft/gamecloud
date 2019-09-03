@@ -178,7 +178,7 @@ class CoreOfBase
 
             for(let cls of this.GetInheritArray()) {
                 try {
-                    let en = require(`${__dirname}/../${cls}/enum`);
+                    let en = require(`../${cls}/enum`);
                     if(!!en) {
                         extendObj(this.$constList, en);
                     }
