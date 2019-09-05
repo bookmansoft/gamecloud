@@ -5,10 +5,11 @@ let facade = require('../../../Facade')
 let {EntityType, IndexType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 
-class authPay extends facade.Control {
-    /**
-     * 针对Url访问的路由设置
-     */
+/**
+ * 第三方认证支付接口
+ */
+class authPay extends facade.Control 
+{
     get router() {
         return [
             ['/auth360.html', 'auth360'],         //模拟 360 网关下发签名集
@@ -19,6 +20,10 @@ class authPay extends facade.Control {
         ]
     }
 
+    /**
+     * for test only: 用于为测试环境下的直连模式生产验证信息
+     * @param {*} objData 
+     */
     async auth360(objData){
         let ret = {
             t: now(),                           //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟

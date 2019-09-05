@@ -1,9 +1,8 @@
-let facade = require('../../../Facade')
 /**
  * Created by liub on 2017-04-06.
  */
-
-let {ReturnCode} = facade.const
+let facade = require('../../../Facade')
+let {EntityType, IndexType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 
 /**
@@ -11,9 +10,6 @@ let {now, ms, sign} = facade.util
  */
 class authPay extends facade.Control
 {
-    /**
-     * 控制器自带的Url路由信息
-     */
     get router() {
         return [
             ['/auth360.html', 'auth360'],         //模拟 360 网关下发签名集

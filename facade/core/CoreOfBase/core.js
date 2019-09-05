@@ -75,7 +75,7 @@ class CoreOfBase
         this.fileMap = {};
 
         for(let cls of this.GetInheritArray()) {
-            //载入控制器
+            //载入控制器(具备文件级可继承特性，继承过程中，低级的同名控制器模块会被高级的覆盖)
             facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/control`).map(ctrl => {
                 let ctrlObj = require(ctrl.path);
                 let token = ctrl.name.split('.')[0];
@@ -92,34 +92,36 @@ class CoreOfBase
                 }
             });
 
-            //载入框架预定义的Service(具备可继承特性)
+            //载入框架预定义的Service(具备文件级可继承特性，继承过程中，低级的同名服务模块会被高级的覆盖)
             facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/service`).map(srv => {
                 let srvObj = require(srv.path);
                 this.service[srv.name.split('.')[0]] = new srvObj(this);
             });
 
-            //载入框架规定的中间件
+            //载入框架规定的中间件(具备文件级可继承特性，继承过程中，低级的同名中间件模块会被高级的覆盖)
             facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/middleware`).map(srv => {
                 let handle = require(srv.path).handle;
                 let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
                 this.middleware[handleName] = handle;
             });
 
-            //载入框架预定义的plugin函数(具备可继承特性)
+            //载入框架预定义的plugin函数(具备函数级可继承特性，继承过程中，低级的同名函数(而不是文件模块)会被高级的覆盖)
             facade.config.filelist.mapPackagePath(`${__dirname}/../${cls}/plugin`).map(srv=>{
-                let funcList = require(srv.path);
                 let moduleName = srv.name.split('.')[0];
-                Object.keys(funcList).map(key=>{
-                    if(moduleName == 'default'){
-                        this[key] = function(...arg){
+
+                let funcList = require(srv.path);
+                Object.keys(funcList).map(key => {
+                    if(moduleName == 'default') {
+                        //default.js 中的函数，作为Core的一级属性
+                        this[key] = function(...arg) {
                             return funcList[key](self, ...arg);
                         }
-                    }
-                    else{
-                        if(!this[moduleName]){
+                    } else {
+                        //其余文件模块中的函数，以模块名为一级属性，函数为二级属性
+                        if(!this[moduleName]) {
                             this[moduleName] = {};
                         }
-                        this[moduleName][key] = function(...arg){
+                        this[moduleName][key] = function(...arg) {
                             return funcList[key](self, ...arg);
                         }
                     }

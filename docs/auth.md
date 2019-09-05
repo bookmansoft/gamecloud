@@ -8,7 +8,7 @@
 let msg = await remote.locate(
     host,   //LBS服务器地址
     port，  //LBS服务器端口
-).fetching({"func": "config.getServerInfo", "oemInfo": oemInfo});
+).fetching({"func": "lb.getServerInfo", "oemInfo": oemInfo});
 
 if(!!msg && msg.code == ReturnCode.Success) {
     console.log(msg.data.ip, msg.data.port); //屏显获取的目标逻辑服地址

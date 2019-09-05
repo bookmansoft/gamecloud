@@ -1,14 +1,12 @@
 let facade = require('../../../Facade')
-let {ReturnCode, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {ReturnCode} = facade.const
 
 /**
  * 配置管理器
  * Updated by liub on 2017-05-05.
  */
-class config extends facade.Control {
-    /**
-     * 中间件设定，子类可覆盖
-     */
+class config extends facade.Control 
+{
     get middleware() {
         return ['parseParams', 'commonHandle'];
     }
@@ -22,13 +20,23 @@ class config extends facade.Control {
     async get(user, objData) {
         try {
             if(!!this.core.fileMap[objData.file]) {
-                return {code:ReturnCode.Success, data:this.core.fileMap[objData.file]};
+                return {code: ReturnCode.Success, data: this.core.fileMap[objData.file]};
             } else {
-                return {code:ReturnCode.Error};
+                return {code: ReturnCode.Error};
             }
         } catch(e) {
             console.error(e);
         }
+    }
+
+    get router() {
+        return [
+            [`/config`, 'getfile'], //通过标准 GET 方法获取配置文件
+        ];
+    }
+
+    async getfile(objData) {
+        return this.get(null, objData);
     }
 }
 

@@ -1,61 +1,18 @@
 let facade = require('../../../Facade')
-let {ReturnCode, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {ReturnCode, UserStatus} = facade.const
 
 /**
  * 配置管理器
  * Updated by liub on 2017-05-05.
  */
-class config extends facade.Control {
-    get router() {
-        return [
-            [`/config`, 'getfile'], //通过标准 GET 方法获取配置文件
-        ];
-    }
-
-    async getfile(objData) {
-        return this.get(null, objData);
-    }
-
-    /**
-     * 查询并返回配置文件
-     * @param user
-     * @param objData
-     * @returns {Promise.<*>}
-     */
-    async get(user, objData) {
-        try {
-            if(!!this.core.fileMap[objData.file]) {
-                return {code:ReturnCode.Success, data: this.core.fileMap[objData.file]};
-            } else {
-                return {code:ReturnCode.Error};
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }
-
-    /**
-     * 获取服务器列表
-     * @param user
-     * @param objData
-     * @returns {{code: number, data: *}}
-     */
-    getServerList(user, objData){
-        return {
-            code:ReturnCode.Success,
-            data:this.core.service.servers.forServers(srv=>{
-                return `${srv.stype}.${srv.sid}`;
-            }),
-        };
-    }
-
+class lb extends facade.Control {
     /**
      * 为客户端分配远程访问地址和端口
      * @param pUser
      * @param info
      * @returns {{ret: boolean, data: {ip: *, port}}}
      */
-    async getServerInfo(pUser, info){
+    async getServerInfo(pUser, info) {
         try{
             //优先路由:强制切换到Test域
             if(this.core.testRoute.has(info.oemInfo.openid)) {
@@ -92,4 +49,4 @@ class config extends facade.Control {
     }
 }
 
-exports = module.exports = config;
+exports = module.exports = lb;
