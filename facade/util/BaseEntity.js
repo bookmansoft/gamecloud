@@ -66,6 +66,19 @@ class BaseEntity
 	}
 
     /**
+     * 批量写操作：ORM对象属性
+     * @param {*} list 二维数组形式的多键值对 [[k, v]]
+     */
+	setAttrs(list) {
+        if(!!this.orm) {
+            for(let item of list) {
+                this.orm[item[0]] = item[1];
+            }
+            this.dirty = true;
+        }
+	}
+
+    /**
      * 脏数据存储
      */
     Save() {
