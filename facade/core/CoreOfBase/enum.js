@@ -180,6 +180,8 @@ const IndexType = {
     Name:3,             //Name-ID键值对
     Token:4,            //令牌
     Account:5,          //钱包账户
+    Phone: 6,           //手机号码
+    Terminal: 7,        //授权终端编号
 }
 
 /**

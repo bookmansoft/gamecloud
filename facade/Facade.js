@@ -96,21 +96,21 @@ class Facade
 
     /**
      * 系统主引导流程
-     * @param {*} options 启动参数数组
+     * @param {*} env 节点类型参数对象
      */
-    static async boot(options) {
-        options = options || {};
+    static async boot(env) {
+        env = env || {};
 
         //主程序启动，提供包括Http、Socket、路由解析等服务
-        let core = this.FactoryOfCore(options);
+        let core = this.FactoryOfCore({env: env});
 
         if(this.$addition) { //加载用户自定义模块
             await core.loadModel();
         }
 
         //将用户自定义表添加到自动加载列表中
-        if(options.loading) {
-            options.loading.map(table=>{
+        if(core.DynamicOptions().loading) {
+            core.DynamicOptions().loading.map(table=>{
                 core.addLoadingModel(table);
             });
         }
@@ -140,8 +140,8 @@ class Facade
         //载入持久化层数据，开放通讯服务端口，加载所有控制器相关的路由、中间件设定
         await core.Start(app);
 
-        if(options.static) {
-            for(let [route, path] of options.static) {
+        if(core.DynamicOptions().static) {
+            for(let [route, path] of core.DynamicOptions().static) {
                 core.addRouter(route, path);
             }
         }
