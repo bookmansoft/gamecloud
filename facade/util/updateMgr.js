@@ -32,19 +32,18 @@ class updateMgr
      */
     tick(interval, func){
         let recy = 0;
-        let prom = async ()=>{
+        let prom = async () => {
             if(!this.check()){
                 await wait(100);
                 prom();
-            }
-            else{
-                try{
-                    func(recy++);
-                }
-                catch(e){
+            } else {
+                try {
+                    await func(recy++);
+                } catch(e) {
                     console.log(e);
                 }
-                if(interval == 0 || recy < interval){
+
+                if(interval == 0 || recy < interval) {
                     prom();
                 }
             }

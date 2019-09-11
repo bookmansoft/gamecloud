@@ -71,8 +71,8 @@ class AutoTaskManager
 
         //tick检测
         let self = this;
-        (new um(1000)).tick(0, ()=>{ //每秒检测一次、持续不断
-            self.checkTask.apply(self);
+        (new um(1000)).tick(0, () => { //每秒检测一次、持续不断
+            return self.checkTask.apply(self);
         });
     }
 

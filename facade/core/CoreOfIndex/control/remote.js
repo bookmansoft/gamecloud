@@ -9,18 +9,35 @@ class remote extends facade.Control {
     }
 
     /**
+     * 从逻辑服发起的、调用另一个逻辑服上的远程函数
+     * @param {*} svr 
+     * @param {*} obj 
+     */
+    async routeCommand(svr, obj) {
+        let result = {};
+        if(!obj.msg.si.sid) { //如果没有限定服务器索引，则遍历同类型所有服务器
+            for(let sid of Object.keys(this.core.serversInfo[obj.msg.si.stype])) {
+                result[`${obj.msg.si.stype}.${sid}`] = await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, {stype:obj.msg.si.stype, sid:sid});
+            }
+        } else { //否则只调用同类型特定索引的服务器
+            result[`${obj.msg.si.stype}.${obj.msg.si.sid}`] = await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, obj.msg.si);
+        }
+
+        return result;
+    }
+
+    /**
      * 路由的社交消息
      * @param {*} svr 
      * @param {*} obj 
      */
     async userNotify(svr, obj){
-        try{
+        try {
             let sim = await this.core.getExcellentUser(obj.msg.openid); 
             if(!!sim){
                 return await this.core.remoteCall('remote.userNotify', obj.msg, msg=>{return msg}, sim);
             }
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
         }
     }
@@ -136,7 +153,7 @@ class remote extends facade.Control {
      * @param {*} svr 
      * @param {*} obj 
      */
-    async service(svr, obj){
+    async service(svr, obj) {
         let msg = obj.msg;
         if(!!msg && !!this.core.service[msg.sname] && !!this.core.service[msg.sname][msg.sfunc]){
             return await this.core.service[msg.sname][msg.sfunc](...msg.params);

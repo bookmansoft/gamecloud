@@ -822,14 +822,13 @@ class CoreOfBase
         };
 
         let connector = null;
-        if(this.options.serverType == 'Index'){
+        if(this.options.serverType == 'Index') {
             let svr = this.service.servers.getServer(si.stype, si.sid);
             if(!!svr){
                 connector = svr.socket;
             }
-        }
-        else {
-            if(!this.remoting.user){ //尚未登录，补充登录信息
+        } else {
+            if(!this.remoting.user) { //尚未登录，补充登录信息
                 attr.oemInfo = {openid:"system", openkey: this.options.admin.role.system};
                 attr.stype =  this.options.serverType;
                 attr.sid = this.options.serverId;
@@ -838,8 +837,8 @@ class CoreOfBase
             connector = this.remoting;
         }
 
-        if(!!connector){
-            if(!!$cb){
+        if(!!connector) {
+            if(!!$cb) {
                 let ret = await new Promise(resolve => {
                     connector.emit('req', attr, msg=>{
                         resolve(msg);
@@ -847,8 +846,7 @@ class CoreOfBase
                 });
 
                 return $cb(ret);
-            }
-            else{
+            } else {
                 connector.emit('notify', attr);
             }
         }
