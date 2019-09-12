@@ -1,32 +1,42 @@
-let facade = require('../Facade')
-let {EntityType, ReturnCode} = facade.const
-let CoreOfBase = facade.CoreOfBase
+let facade = require('../Facade');
+let {ReturnCode} = facade.const
 
 /**
  * Created by liub on 2017-03-26.
  */
-class indexCtrl extends facade.Control
+class indexCtrl extends facade.Control 
 {
+    async service(svr, obj) {
+        let func = obj.msg.func.split('.');
+        if(this.core.service[func[0]] && this.core.service[func[0]][func[1]]) {
+            return this.core.service[func[0]][func[1]](...obj.msg.msg);
+        } 
+        return;
+    }
+
     /**
      * 逻辑服发起、调用其他逻辑服的控制器方法
      * @param {*} svr   
      * @param {*} obj 
      */
     async routeCommand(svr, obj) {
-        let result = {};
-        if(!obj.msg.si.sid) {
-            for(let sid of Object.keys(this.core.serversInfo[obj.msg.si.stype])) {
-                if(svr.stype != obj.msg.si.stype || svr.sid != sid) { //不允许调用自身，避免闭环
-                    result[`${obj.msg.si.stype}.${sid}`] = await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, {stype:obj.msg.si.stype, sid:sid});
-                }
+        if(!obj.msg.si) {
+            let domainId = `${obj.msg.domain}.${obj.msg.openid}`;
+            let uList = await this.core.getUserIndexOfAll([domainId]);
+            if(uList[domainId]) {
+                return await this.core.remoteCall(obj.msg.func, obj.msg, msg=>{return msg}, uList[domainId]);
             }
         } else {
-            if(svr.stype != obj.msg.si.stype || svr.sid != obj.msg.si.sid) { //不允许调用自身，避免闭环
-                result[`${obj.msg.si.stype}.${obj.msg.si.sid}`] = await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, obj.msg.si);
+            if(!obj.msg.si.sid) {
+                let result = {};
+                for(let sid of Object.keys(this.core.serversInfo[obj.msg.si.stype])) {
+                    result[`${obj.msg.si.stype}.${sid}`] = await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, {stype:obj.msg.si.stype, sid:sid});
+                }
+                return result;
+            } else {
+                return await this.core.remoteCall(obj.msg.func, obj.msg.msg, msg=>{return msg}, obj.msg.si);
             }
         }
-
-        return result;
     }
     
     /**
@@ -73,7 +83,7 @@ class indexCtrl extends facade.Control
             }
         }
     }
-    
+
     /**
      * 可使用的控制台命令：屏显服务器信息
      */
@@ -87,27 +97,11 @@ class indexCtrl extends facade.Control
     }
 
     /**
-     * 路由的社交消息
-     * @param {*} svr 
-     * @param {*} obj 
-     */
-    async userNotify(svr, obj){
-        try {
-            let sim = await this.core.getExcellentUser(obj.msg.openid); 
-            if(!!sim){
-                return await this.core.remoteCall('remote.userNotify', obj.msg, msg=>{return msg}, sim);
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }
-
-    /**
      * 模拟接口：提供模拟的好友列表
      * @param svr
      * @param input
      */
-    getFriendList(svr, input){
+    getFriendList(svr, input) {
         let items = [], ids=[];
         for(let obj of this.core.cacheMgr.objects){
             //console.log(obj[0]);
@@ -136,7 +130,7 @@ class indexCtrl extends facade.Control
      * @param envelope
      * @returns {{code: number}}
      */
-    async newAttr(svr, envelope){
+    async newAttr(svr, envelope) {
         let ui = await this.core.getUserIndex(envelope.msg.domain, envelope.msg.openid);
         if(!!ui && !!envelope.msg.attr){
             if(envelope.msg.attr.constructor == Array){ //一次修改多个属性
@@ -159,7 +153,7 @@ class indexCtrl extends facade.Control
      *
      * @note 如果多个分组都存在相关记录，取分数最高的记录
      */
-    async getFriendRankList(svr, input){
+    async getFriendRankList(svr, input) {
         let uList = await this.core.getUserIndexOfAll(input.msg.list.reduce((sofar, cur) => {
             facade.CoreOfLogic.mapping.map(lt=>{
                 sofar.push(`tx.${lt}.${cur.openid}`);

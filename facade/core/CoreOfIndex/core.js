@@ -73,32 +73,12 @@ class CoreOfIndex extends facade.CoreOfBase
         let query = this.cacheMgr.get(list);
         if(!!query){
             query.map(uo=>{
-                if(!!uo){ //由于对用户领域进行了猜测，这里要判断下查询结果是否为空
+                if(!!uo) { //由于对用户领域进行了猜测，这里要判断下查询结果是否为空
                     ret[`${uo.domain}.${uo.openid}`] = uo;
                 }
             });
         }
         return ret;
-    }
-
-    async getExcellentUser(openid) {
-        let uList = await this.getUserIndexOfAll(facade.CoreOfLogic.mapping.reduce((sofar, cur)=>{
-            sofar.push(`tx.${cur}.${openid}`);
-            return sofar;
-        }, []));
-        
-        let sim = null;
-        facade.CoreOfLogic.mapping.map(lt=>{
-            let u = uList[`tx.${lt}.${openid}`];
-            if(!sim) {
-                sim = u;
-            }
-            if(!!sim && !!u) {
-                sim = u.score > sim.score ? u : sim;
-            }
-        });
- 
-        return sim;
     }
 
     /**

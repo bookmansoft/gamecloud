@@ -19,7 +19,7 @@ let InviteManager = require('../assistant/InviteMgr')
 let BaseEntity = facade.BaseEntity
 const crypto = require('crypto');
 
-//如果在 BaseUserEntity 的静态方法中，用 this.preList 形式使用，会造成 BaseUserEntity 的子类无法访问，因此前置为全局变量
+//@warning 如果在 BaseUserEntity 的静态方法中，用 this.preList 形式使用，会造成 BaseUserEntity 的子类无法访问，因此前置为全局变量
 let preList = {};
 
 /**
@@ -82,7 +82,7 @@ class BaseUserEntity extends BaseEntity
     /**
      * 固定时间间隔的滴答操作，由底层自动调用
      */
-    tick(){
+    tick() {
         this.baseMgr.vip.checkSweep(); //检测扫荡是否结束，如果结束则自动计算奖励
         this.baseMgr.slave.CheckStatus(); //释放到期奴隶，或者解放自身
     }
@@ -116,15 +116,17 @@ class BaseUserEntity extends BaseEntity
      */
     socialNotify(msg, openid){
         if(!openid || this.openid == openid){//发送给自己
-            this.$handleSocialMsg(msg);
+            this.core.notifyEvent('user.socialMsg', {user: this, data: msg});
         } else {
             let cls = this.domainClass();
             let domain = !!cls ? `${this.domainType}.${cls}` : this.domainType;
             let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
-            if(!!friend){//发送给同服的好友
-                friend.$handleSocialMsg(msg);
-            } else {//通过路由模式，发送给不同服的好友
-                this.core.remoteCall('remote.userNotify', {domain: domain, openid: openid, msg: msg});
+            if(!!friend){
+                //发送给同服的好友
+                this.core.notifyEvent('user.socialMsg', {user: friend, data: msg});
+            } else {
+                //通过路由模式，发送给不同服的好友
+                this.core.remoteCall('routeCommand', {func: 'userNotify', domain: domain, openid: openid, msg: msg});
             }
         }
     }
@@ -138,14 +140,6 @@ class BaseUserEntity extends BaseEntity
     get domainClass() {
         return this.domain.split('.')[1];
     }
-
-    /**
-	 * 处理收到的社交消息，包括直接收到的，以及通过索引服务器中转后收到的
-     * @param msg
-     */
-	$handleSocialMsg(msg){
-        this.core.notifyEvent('user.socialMsg', {user:this, data:msg});
-	}
 
     /**
      * 向客户端推送消息,格式固定为:{type, info}，其中type为推送消息类型，引用自NotifyType, info为推送消息内容

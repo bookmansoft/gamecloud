@@ -805,21 +805,50 @@ class CoreOfBase
     }
 
     /**
-     * 远程调用，支持req和notify两种方式
+     * 远程调用服务类方法
+     * @param {*} $func 
+     * @param {*} $params 
+     * @param {*} $cb 
+     */
+    async remoteService($func, $params, $cb) {
+        $cb = $cb || (msg => { return msg; });
+        return await this.remoteCall('service', {func: $func, msg: $params}, $cb);
+    }
+
+    /**
+     * 从一个逻辑节点，远程调用另一个逻辑节点的控制器方法
+     * @param {*} $func 
+     * @param {*} $params 
+     * @param {*} $si 
+     * @param {*} $cb 
+     */
+    async remoteLogic($func, $params, $si, $cb) {
+        $cb = $cb || (msg => { return msg; });
+        return await this.remoteCall('routeCommand', {func: $func, msg: $params, si: $si}, $cb);
+    }
+
+    /**
+     * 远程调用控制器方法，支持req和notify两种方式
      * @param $func         //远程函数名称
      * @param $params       //参数数组
      * @param $cb           //回调，为空则表示notify
      * @param si            //服务器类型、编号, 逻辑服到索引服不需填写
      * @returns {Promise.<{code: number}>}
      */
-    async remoteCall($func, $params, $cb, si){
+    async remoteCall($func, $params, $cb, si) {
         $params = $params || {};
+        $func = $func.split('.');
 
         let attr = {
-            control: "remote",
-            func: $func,
             msg: $params,
         };
+
+        attr.control = 'remote'; //锁定只能访问 remote 控制器
+        if($func.length >=2) {
+            attr.func = $func[1];
+        } else {
+            attr.func = $func[0];
+        }
 
         let connector = null;
         if(this.options.serverType == 'Index') {
