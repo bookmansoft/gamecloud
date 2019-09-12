@@ -268,7 +268,19 @@ class Facade
      * 基础控制器类
      */
     static get Control(){
-        return require('./util/baseCtl');
+        return require('./util/baseCtrl');
+    }
+    /**
+     * 索引服远程控制器类
+     */
+    static get RemoteIndexCtrl() {
+        return require('./util/indexCtrl');
+    }
+    /**
+     * 逻辑服远程控制器类
+     */
+    static get RemoteLogicCtrl() {
+        return require('./util/logicCtrl');
     }
     /**
      * 基础服务类
