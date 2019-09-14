@@ -3,10 +3,9 @@
  */
 let facade = require('../../Facade')
 let CoreOfBase = facade.CoreOfBase
-let {serverType, EntityType, ReturnCode, CommMode, ResType} = facade.const
+let {EntityType, ReturnCode, CommMode, ResType} = facade.const
 let TaskObject = facade.Util.TaskObject
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator
-let socketClient = require('socket.io-client')
 
 /**
  * 逻辑服对应的门面类
@@ -130,7 +129,7 @@ class CoreOfLogic extends CoreOfBase
         });
         
         //用户活动信息载入        
-        try{
+        try {
             let ret = await this.models.User(this.options.mysql).findAll();
             for(let i = 0; i++; i < ret.length){
                 let pUser = await this.GetObject(EntityType.User, ret[i].id);
@@ -145,8 +144,8 @@ class CoreOfLogic extends CoreOfBase
         }
         
         //关卡探险随机事件触发
-        this.autoTaskMgr.addCommonMonitor(fo=>{
-            for(let s of Object.values(this.service.server.connected)){
+        this.autoTaskMgr.addCommonMonitor(fo => {
+            for(let s of Object.values(this.service.server.connected)) {
                 if(!!s.user){
                     //触发随机事件
                     s.user.getEventMgr().RandomEvent(s.user);
@@ -161,54 +160,6 @@ class CoreOfLogic extends CoreOfBase
      */
     get numOfTotal(){
         return this.GetMapping(EntityType.User).total;
-    }
-
-    /**
-     * 创建进行远程访问的客户端
-     * @param stype     //远程服务器类型
-     * @param sid       //远程服务器编号
-     */
-    initConnector(stype, sid){
-        if(!!this.remoting){
-            this.remoting.removeAllListeners();
-            this.remoting.disconnect();
-            this.remoting = null;
-        }
-
-        //注意：访问的是目标服务器的mapping（外部映射）地址
-        this.remoting = socketClient(`${this.options.UrlHead}://${this.serversInfo[stype][sid].webserver.mapping}:${this.serversInfo[stype][sid].webserver.port}`, {'force new connection': true})
-        .on('req', (msg, fn) => {//监听JSONP请求 
-            this.onSocketReq(this.remoting, msg, fn).catch(e=>{console.log(e);});
-        })
-        .on('notify', msg => {//监听JSONP请求
-            this.onSocketReq(this.remoting, msg, null).catch(e=>{console.log(e);});
-        })
-        .on('disconnect', ()=>{//断线重连
-            console.log(`${this.options.serverType}.${this.options.serverId} disconnect`);
-            this.remoting.stamp = (new Date()).valueOf();
-            this.remoting.user = null;
-            this.remoting.needConnect = true;
-            setTimeout(()=>{
-                if(this.remoting.needConnect){
-                    this.remoting.needConnect = false;
-                    this.remoting.connect();
-                }
-            }, 1500);
-        })
-        .on('connect', ()=>{//向Index Server汇报自身的身份
-            console.log(`${this.options.serverType}.${this.options.serverId} connected`);
-            
-            this.remoteCall('serverLogin', {}, msg => {
-                if(msg.code == ReturnCode.Success){
-                    console.log(`${this.options.serverType}.${this.options.serverId} logined`);
-                    this.remoting.stamp = (new Date()).valueOf();
-                    this.remoting.user = {stype: this.options.serverType, sid: this.options.serverId, socket: this.remoting};
-                }
-                else{
-                    console.log(`${this.options.serverType}.${this.options.serverId} failed login: ${msg.code}`);
-                }
-            })
-        });
     }
 }
 

@@ -12,6 +12,7 @@ let Mapping = require('../../util/mixin/Mapping')
 let Ranking = require('../../util/mixin/Ranking')
 let ConfigManager = require('../../util/potential/ConfigManager')
 let {ConfigMgr} = require('../../util/battle/Action')
+let socketClient = require('socket.io-client')
 
 /**
  * 门面管理类
@@ -600,7 +601,7 @@ class CoreOfBase
      * 创建WS类型的Socket服务
      * @param app
      */
-    StartSocketServer(app){
+    StartSocketServer(app) {
         let httpObj = require(this.options.UrlHead); 
         httpObj.globalAgent.maxSockets = Infinity;
         let hrv = this.options.UrlHead == "https" ? 
@@ -680,6 +681,54 @@ class CoreOfBase
         this.autoTaskMgr.addMonitor(new connectMonitor());
         //排行榜监控
         this.autoTaskMgr.addCommonMonitor(this.GetRanking(this.entities.UserEntity));
+    }
+
+    /**
+     * 创建进行远程访问的客户端
+     * @param stype     //远程服务器类型
+     * @param sid       //远程服务器编号
+     */
+    initConnector(stype, sid){
+        if(!!this.remoting){
+            this.remoting.removeAllListeners();
+            this.remoting.disconnect();
+            this.remoting = null;
+        }
+
+        //注意：访问的是目标服务器的mapping（外部映射）地址
+        this.remoting = socketClient(`${this.options.UrlHead}://${this.serversInfo[stype][sid].webserver.mapping}:${this.serversInfo[stype][sid].webserver.port}`, {'force new connection': true})
+        .on('req', (msg, fn) => {//监听JSONP请求 
+            this.onSocketReq(this.remoting, msg, fn).catch(e=>{console.log(e);});
+        })
+        .on('notify', msg => {//监听JSONP请求
+            this.onSocketReq(this.remoting, msg, null).catch(e=>{console.log(e);});
+        })
+        .on('disconnect', ()=>{//断线重连
+            console.log(`${this.options.serverType}.${this.options.serverId} disconnect`);
+            this.remoting.stamp = (new Date()).valueOf();
+            this.remoting.user = null;
+            this.remoting.needConnect = true;
+            setTimeout(()=>{
+                if(this.remoting.needConnect){
+                    this.remoting.needConnect = false;
+                    this.remoting.connect();
+                }
+            }, 1500);
+        })
+        .on('connect', ()=>{//向Index Server汇报自身的身份
+            console.log(`${this.options.serverType}.${this.options.serverId} connected`);
+            
+            this.remoteCall('serverLogin', {}, msg => {
+                if(msg.code == ReturnCode.Success) {
+                    console.log(`${this.options.serverType}.${this.options.serverId} logined`);
+                    this.remoting.stamp = (new Date()).valueOf();
+                    this.remoting.user = {stype: this.options.serverType, sid: this.options.serverId, socket: this.remoting};
+                }
+                else{
+                    console.log(`${this.options.serverType}.${this.options.serverId} failed login: ${msg.code}`);
+                }
+            })
+        });
     }
 
     /**
