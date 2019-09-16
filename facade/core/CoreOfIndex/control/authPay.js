@@ -2,7 +2,6 @@
  * Created by liub on 2017-04-06.
  */
 let facade = require('../../../Facade')
-let {EntityType, IndexType, ReturnCode} = facade.const
 let {now, ms, sign} = facade.util
 
 /**
@@ -13,10 +12,7 @@ class authPay extends facade.Control
     get router() {
         return [
             ['/auth360.html', 'auth360'],         //模拟 360 网关下发签名集
-            ['/pay360.html', 'pay360'],           //360 发货回调路由
-            ['/txpay.html', 'txpay'],             //腾讯发货回调接口
             ['/authAdmin.html', 'authAdmin'],     //管理后台登录验证页面
-            ['/test/ping.html', 'ping'],          //PING测试接口
         ]
     }
 
@@ -69,22 +65,6 @@ class authPay extends facade.Control
         else{
             return {session:""};
         }
-    }
-
-    async mf(req) {
-        let openid		= req.openid || "";
-        let domain     = req.domain || "official";
-        let app_id		= req.app_id;
-        let server_id	= req.server_id;
-        let time		= req.time;
-        let sign 		= req.sign;
-
-        let pUser = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
-        if(pUser){
-            //	写入账号信息
-            pUser.WriteUserInfo(app_id, server_id, time, sign);
-        }
-        return ReturnCode.Success;
     }
 }
 
