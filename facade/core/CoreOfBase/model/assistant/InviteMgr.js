@@ -8,7 +8,7 @@ let baseMgr = facade.Assistant
 class InviteManager extends baseMgr
 {
     constructor(parent){
-        super(parent, 'invite');
+        super(parent, 'invite', 255);
         this.items = [];
     }
 
@@ -32,6 +32,8 @@ class InviteManager extends baseMgr
      * @return string
      */
     ToString() {
+        this.dirty = false;
+
         let $ret = '';
         for(let $value of this.items) {
             if($value['num'] <= 0){
@@ -41,7 +43,13 @@ class InviteManager extends baseMgr
             if($ret != ''){ $ret += ';'; }
             $ret += $value['type'] + ',' + $value['num'];
         }
-        return $ret;
+
+        if($ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+
+        return  $ret;
     }
 
     /**

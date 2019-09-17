@@ -3,11 +3,11 @@ let EffectManager = facade.Util.EffectManager
 let baseMgr = facade.Assistant;
 
 /**
- * 魔法效果管理器，管理持续性效果并持久化
+ * 持续性魔法效果管理器
  */
 class EffectTimerManager extends baseMgr
 {
-    constructor(parent){
+    constructor(parent) {
         super(parent);
 
         //Mixin EffectManager 的准备工作，以便在mixin时合并两者的构造函数

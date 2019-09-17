@@ -7,7 +7,7 @@ let baseMgr = facade.Assistant
  */
 class action extends baseMgr {
     constructor(parent){
-        super(parent, 'execInfo');
+        super(parent, 'execInfo', 500);
     }
 
     getInfo(){

@@ -21,7 +21,7 @@ class potential extends baseMgr
      * @param {UserEntity} parent 
      */
     constructor(parent){
-        super(parent, 'potential');
+        super(parent, 'potential', 2000);
 
         /**
          * 天赋（法宝）对象列表 map<int, PotentialItem> equList
@@ -206,6 +206,8 @@ class potential extends baseMgr
      * @return string
      */
     ToString() {
+        this.dirty = false;
+
         let $ret = '';
         for(let $key in this.equList){
             let $value = this.equList[$key];
@@ -254,7 +256,14 @@ class potential extends baseMgr
         }
         $ret5 += ';' + this.cpetActiveId + '@' + this.cpetLevel; //激活PVE伙伴ID、PVE伙伴的统一等级
 
-        return $ret + '|' + $ret1 + '|' + $ret2 + '|' + $ret3 + '|' + $ret4 + '|' + $ret5;
+        $ret = $ret + '|' + $ret1 + '|' + $ret2 + '|' + $ret3 + '|' + $ret4 + '|' + $ret5;
+
+        if($ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+
+        return  $ret;
     }
 
 	//#region 法宝相关功能

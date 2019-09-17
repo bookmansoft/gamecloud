@@ -4,7 +4,7 @@ let baseMgr = facade.Assistant;
 class txInfo extends baseMgr
 {
     constructor(parent){
-        super(parent, 'txInfo');
+        super(parent, 'txInfo', 500);
         //	数据
         this.v   = {
             openid: '',

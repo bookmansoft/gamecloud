@@ -25,7 +25,7 @@ let CheckValid = require('../../../../util/mixin/CheckValid')
 class tollgate extends baseMgr
 {
     constructor(parent){
-        super(parent, 'Tollgate');
+        super(parent, 'Tollgate', 500);
 
         /**
          * 当前关卡信息
@@ -349,20 +349,29 @@ class tollgate extends baseMgr
     /*
     * 对象序列化
     */
-    ToString(){
-        return this.curGateNo  + ','
-        +this.tollgateStatus.state + ','
-        +'0,'
-        +this.curMonsterNum + ','
-        +this.startTime + ','
-        +this.ExpiredTime + ','
-        +this.moneyOffline.base + ','
-        +this.moneyOffline.power + ','
-        +this.dropStone + ','
-        +this.revivalNum + ','
-        +this.revivalLeftNum + ','
-        +this.refreshTime + ','
-        +this.bossId;
+    ToString() {
+        this.dirty = false;
+
+        let $ret = this.curGateNo  + ','
+            +this.tollgateStatus.state + ','
+            +'0,'
+            +this.curMonsterNum + ','
+            +this.startTime + ','
+            +this.ExpiredTime + ','
+            +this.moneyOffline.base + ','
+            +this.moneyOffline.power + ','
+            +this.dropStone + ','
+            +this.revivalNum + ','
+            +this.revivalLeftNum + ','
+            +this.refreshTime + ','
+            +this.bossId;
+        
+        if($ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+
+        return  $ret;
     }
 
     /**

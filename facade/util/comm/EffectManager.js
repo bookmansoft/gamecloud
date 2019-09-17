@@ -46,7 +46,7 @@ class EffectManager
      * 对象序列化
      * @return string
      */
-    ToString(){
+    ToString() {
         let $ret = '';
         for(let $key in this.effectList){
             if($ret != ''){

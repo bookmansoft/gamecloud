@@ -14,7 +14,7 @@ class item extends baseMgr
      * @param {BaseUserEntity} parent 
      */
     constructor(parent){
-        super(parent, 'item');
+        super(parent, 'item', 500);
 
         /**
          * 背包内容存储对象

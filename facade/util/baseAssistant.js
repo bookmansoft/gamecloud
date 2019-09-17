@@ -5,13 +5,15 @@ class baseAssistant
 {
     /**
      * 构造函数
-     * @param {UserEntity} parent 
-     * @param {*} attribute 
+     * @param {UserEntity} parent   作为容器的用户对象
+     * @param {*} attribute         用于持久化的字段名
+     * @param {Number} maxLen       持久化字段的最大长度，超过该长度则拒绝入库
      */
-    constructor(parent, attribute){
+    constructor(parent, attribute, maxLen){
         this.parent = parent;
-        //用于持久化的字段名
         this.attribute = attribute;
+        this.maxLen = maxLen || 50;
+
         //存放需要持久化保存的属性的对象，存储时直接序列化该对象
         this.v = {};
     }
@@ -98,9 +100,14 @@ class baseAssistant
      * 获取序列化字符串，同时复位脏数据标志
      * @note 子类可重载此方法
      */
-    ToString(){
+    ToString() {
         this.dirty = false;
-        return JSON.stringify(this.v);
+        let ret = JSON.stringify(this.v);
+        if(ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+        return ret;
     }
     /**
      * 利用来自持久化层的数据进行初始化

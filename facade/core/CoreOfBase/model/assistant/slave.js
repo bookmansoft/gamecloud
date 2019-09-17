@@ -8,7 +8,7 @@ let baseMgr = facade.Assistant
  */
 class slave extends baseMgr {
     constructor(parent){
-        super(parent, 'friend');
+        super(parent, 'friend', 500);
         this.v = {
             master:[],          //主人
             slave:[],           //奴隶

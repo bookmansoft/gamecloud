@@ -11,7 +11,7 @@ class txFriend extends baseMgr
      * @param {UserEntity} parent 
      */
     constructor(parent){
-        super(parent, 'txFriend');
+        super(parent, 'txFriend', 2000);
         
         //	数据 最大容量在60个好友左右，建议外部取好友列表控制在50个以内
         this.v 	= {

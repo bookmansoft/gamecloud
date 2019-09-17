@@ -22,7 +22,7 @@ let TaskObject = facade.Util.TaskObject;
  */
 class task extends baseMgr {
     constructor(parent) {
-        super(parent, 'task');
+        super(parent, 'task', 500);
         this.taskList = {}; //当前可执行任务列表
     }
 
@@ -81,6 +81,8 @@ class task extends baseMgr {
       *  条件信息 = 条件编号，条件当前值[;更多条件]
       */
     ToString(){
+        this.dirty = false;
+
         let $ret = '';
         Object.keys(this.taskList).map($key=>{
             if($ret != ''){
@@ -88,7 +90,13 @@ class task extends baseMgr {
             }
             $ret = $ret + this.taskList[$key].ToString();
         });
-        return $ret;
+
+        if($ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+
+        return  $ret;
     }
 
     /**

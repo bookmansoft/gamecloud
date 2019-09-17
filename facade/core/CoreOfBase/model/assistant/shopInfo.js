@@ -14,7 +14,7 @@ class shopInfo extends baseMgr
      * @param {UserEntity} parent
      */
     constructor(parent){
-        super(parent, 'shopinfo');
+        super(parent, 'shopinfo', 2000);
 
         /**
          * 持久保存商店刷新时间、购买记录（用于实现限额购买）
@@ -85,6 +85,7 @@ class shopInfo extends baseMgr
      */
     ToString(){
         this.dirty = false;
+
         let $ret = '';
         for(let $key in this.list){
             let $shop = this.list[$key];
@@ -102,6 +103,12 @@ class shopInfo extends baseMgr
             }
             $ret += $key + '@' + $shop['time'] + '@' + $attrStr;
         }
+
+        if($ret.length > this.maxLen) {
+            console.log(`${this.attribute} over max length ${this.maxLen}`);
+            return '';
+        }
+
         return $ret;
     }
 

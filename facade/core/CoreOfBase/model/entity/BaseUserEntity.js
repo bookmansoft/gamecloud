@@ -400,12 +400,16 @@ class BaseUserEntity extends BaseEntity
             }
         }
 
-        for(let $key in this.baseMgr){
-			if(this.dirty || this.baseMgr[$key].dirty){
-				this.orm[this.baseMgr[$key].attribute] = this.baseMgr[$key].ToString();
-				this.baseMgr[$key].dirty = false;
-				isDirty = true;
-			}
+        for(let $key in this.baseMgr) {
+            if(this.baseMgr[$key].attribute) {
+                if(this.dirty || this.baseMgr[$key].dirty) {
+                    let newstr = this.baseMgr[$key].ToString(); //内置错误控制：如果辅助字段序列化后超长则禁止写库，避免对其它字段造成干扰
+                    if(!!newstr) {
+                        this.orm[this.baseMgr[$key].attribute] = newstr;
+                        isDirty = true;
+                    }
+                }
+            }
 		}
 
         if(isDirty){

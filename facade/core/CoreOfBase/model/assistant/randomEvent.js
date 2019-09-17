@@ -6,12 +6,7 @@ let GateEvent = require('../../../../util/tollgate/GateEvent')
 class randomEvent extends baseMgr
 {
     constructor(parent){
-        super(parent, 'login');
-        /**
-         * 事件列表
-         * @var array
-         */
-        this.events = {};
+        super(parent, 'login', 200);
     }
 
     /**
@@ -19,15 +14,15 @@ class randomEvent extends baseMgr
      * @return array
      */
     getList(){
-        for(let $key in this.events){
-            let $val = this.events[$key];
+        for(let $key in this.v){
+            let $val = this.v[$key];
             if($val.expiredTime > 0 && $val.expiredTime < facade.util.now()){ //清除过期事件
-                delete this.events[$val.type];
+                delete this.v[$val.type];
                 this.dirty = true;
             }
         }
 
-        return this.events;
+        return this.v;
     }
 
     /**
@@ -36,13 +31,13 @@ class randomEvent extends baseMgr
      * @return array 结果集
      */
     ExecuteResult($user, $eid) {
-        if(!!this.events[$eid]){
-            let $ret = this.events[$eid].Execute($user);
+        if(!!this.v[$eid]){
+            let $ret = this.v[$eid].Execute($user);
             if($ret['result'] == 0){
                 switch($eid){
                     case EventEnum.BossAppear: //转化为新事件
                     {
-                        delete this.events[$eid];
+                        delete this.v[$eid];
                         let $newId = (Math.random()*100 | 0) < 50 ? EventEnum.BossAttack : EventEnum.BossStoneAttack; //是金币宝箱怪还是魂石宝箱怪
                         let $newEvent = new GateEvent($newId);
                         let $config = EventConfig.getEvents();
@@ -61,7 +56,7 @@ class randomEvent extends baseMgr
                     case EventEnum.Enemy:
                     case EventEnum.Rabbit: //消除
                     {
-                        delete this.events[$eid];
+                        delete this.v[$eid];
                         break;
                     }
                 }
@@ -80,7 +75,7 @@ class randomEvent extends baseMgr
     addEvent($ev)
     {
         this.dirty = true;
-        this.events[$ev.type] = $ev;
+        this.v[$ev.type] = $ev;
     }
 
     /**
@@ -88,7 +83,7 @@ class randomEvent extends baseMgr
      * @param {UserEntity} $user
      */
     RandomEvent($user) {
-        if(Object.keys(this.events).length == 0){
+        if(Object.keys(this.v).length == 0){
             let $recy = true;
             let $config = EventConfig.getEvents();
             while($recy){//一直抽取出允许随机出现的事件为止。某些事件只能转化而来，不允许直接抽取
@@ -105,7 +100,7 @@ class randomEvent extends baseMgr
                 }
 
                 $recy = false;
-                if(!this.events[$_type]){//规定事件不能重入
+                if(!this.v[$_type]){//规定事件不能重入
                     if($config[$_type]['action'] == 0 || $user.getActionMgr().Execute($config[$_type]['action'], 1)){
                         let $event = new GateEvent($_type);
                         if($config[$_type]['action'] > 0){
