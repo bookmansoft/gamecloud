@@ -1,5 +1,5 @@
 let facade = require('../../../../Facade')
-let {IndexType, EntityType, UserStatus, ActivityType, ReturnCode} = facade.const
+let {IndexType, EntityType, UserStatus} = facade.const
 let BonusObject = facade.Util.BonusObject
 let {Mail} = require("../table/Mail")
 let BaseEntity = facade.BaseEntity

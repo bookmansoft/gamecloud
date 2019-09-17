@@ -186,8 +186,10 @@ class CoreOfBase
                         extendObj(this.$constList, en);
                     }
                 } catch(e) { }
+            }
 
-                if(facade.$addition) {
+            if(facade.$addition) {
+                for(let cls of this.GetInheritArray()) {
                     try {
                         let en = require(`${process.cwd()}/app/core/${cls}/enum`);
                         if(!!en) {
@@ -401,11 +403,6 @@ class CoreOfBase
 
         //战斗配置管理
         this.ConfigMgr = new ConfigMgr(this);
-
-        /**
-         * 角色升级配置表
-         */
-        this.upgradeChip = {1: Math.ceil(this.fileMap.constdata.getRoleNum.num)};
 
         for(let cls of this.GetInheritArray()) {
             //载入用户自定义的全局扩展服务对象

@@ -109,7 +109,7 @@ class item extends baseMgr
     /**
      * 计算复合索引值
      * @param {*} type 
-     * @param {*} id 
+     * @param {Number} id 
      * @return {Number} 非法类型返回-1，type小于100直接返回type，大于等于100返回 type+id
      */
     combineId(type, id=0) {
@@ -117,9 +117,9 @@ class item extends baseMgr
         if(type < 0) {
             return '';
         } else if(type < 100) {
-            return `${type}`; //非法类型，以及数值小于100的类型(单独索引)：直接返回 type
+            return type; //非法类型，以及数值小于100的类型为独立索引
         }
-        return `${type}.${id}`; //数值大于等于100的类型(复合索引)：返回 `type.id`
+        return type + parseInt(id); //数值大于等于100的类型返回复合索引
     }
 
     /**

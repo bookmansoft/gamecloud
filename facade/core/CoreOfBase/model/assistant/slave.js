@@ -1,5 +1,5 @@
 let facade = require('../../../../Facade')
-let {EntityType, ActionExecuteType, UserStatus, NotifyType, ActivityType, ResType, ReturnCode} = facade.const
+let {EntityType, ActionExecuteType, UserStatus, NotifyType, ResType, ReturnCode} = facade.const
 let baseMgr = facade.Assistant
 
 /**

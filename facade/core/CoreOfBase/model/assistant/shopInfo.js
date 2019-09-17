@@ -1,5 +1,5 @@
 let facade = require('../../../../Facade')
-let {ShopTypeEnum, em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode} = facade.const
+let {ShopTypeEnum, em_Effect_Comm, ResType, NotifyType, ReturnCode} = facade.const
 let Collection = facade.Collection
 let baseMgr = facade.Assistant
 let BonusObject = facade.Util.BonusObject

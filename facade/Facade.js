@@ -451,6 +451,10 @@ class Util
         return require('./util/potential/ConfigManager');
     }
 
+    static get CheckValid() {
+        return require('./util/mixin/CheckValid');
+    }
+
     static get ConfigMgr() {
         let {ConfigMgr} = require('./util/battle/Action');
         return ConfigMgr;
@@ -474,6 +478,14 @@ class Util
 
     static get OperationInfo() {
         return require('./util/tollgate/OperationInfo');
+    }
+
+    static get TollgateHangup() {
+        return require('./util/tollgate/TollgateHangup');
+    }
+
+    static get GateEvent() {
+        return require('./util/tollgate/GateEvent');
     }
 
     static get PotentialClientItem() {

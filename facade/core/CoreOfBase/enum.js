@@ -9,18 +9,7 @@
  */
 
 /**
- * 玩家特性字段，例如最高分数、默认角色等，统一由 baseMgr.info 管理
- */
-const RecordType = {
-    Role:'role',            //默认角色编号
-    Group:'group',          //默认使用的战斗卡组
-    Scene:'scene',          //默认场景
-    Road:'road',            //默认道路
-    address:'address'       //链上地址
-}
-
-/**
- * 资源类型 type, 约定100以内的为独立索引，100以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
+ * 资源类型 type, 约定 ResTypeInner 以内的为独立索引，以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
  */
 const ResType = {
     /**
@@ -39,18 +28,6 @@ const ResType = {
     Gold: 3,
     "L" : 3,
     /**
-     * 天赋点，也就是圣光。圣光可以在商城直接购买
-     */
-    Potential : 4,
-    /**
-     * 魂石
-     */
-    Stone: 5,
-    /**
-     * 荣誉值，用于工会管理
-     */
-    honor : 6,
-    /**
      * 用于升级PVP英雄的万能碎片
      */
     chip : 7,
@@ -64,68 +41,10 @@ const ResType = {
     Action : 9,
     "A": 9,
     /**
-     * 圣光分配
-     */
-    AssignPotential : 10,
-    /**
-     * 工会贡献
-     */
-    Devotion : 13,
-    /**
-     * 工会经验
-     */
-    ExpOfAlly : 14,
-    /**
-     * 工会战积分
-     */
-    PointOfAllyWar : 15,
-    /**
-     * 魔宠总经验
-     */
-    ExpForPetOfAll : 18,
-    /**
-     * 力量源泉
-     */
-    OriOfPower : 19,
-    /**
      * 'V' VIP特权（单位：天）
      */
     VIP: 20,
     "V": 20,
-    /**
-     * 英魂 转生后由魂石转化而来
-     */
-    StoneHero : 103,
-    /**
-     * "C" 用于升星的魔宠碎片
-     */
-    PetChipHead : 1000,     
-    "C": 1000,
-    /**
-     * 魔宠
-     */
-    PetHead : 1200,
-    /**
-     * 时效类技能
-     */
-    ActionHead : 1994,
-    FellowChipHead : 3000,  //PVE伙伴碎片
-    FellowHead : 3100,      //PVE伙伴
-    /**
-     * "road" 道路
-     */
-    Road: 10000,
-    "road": 10000,
-    /**
-     * "role" 角色
-     */
-    Role: 20000,
-    "role": 20000,
-    /**
-     * "scene" 场景
-     */
-    Scene: 30000,
-    "scene": 30000,
     /**
      * "I" 道具
      */
@@ -137,14 +56,28 @@ const ResType = {
     Box: 50000,
     "box": 50000,
 }
-
+/**
+ * 资源类型降序数组
+ */
+const ResTypeGroup = Object.keys(ResType).sort((a,b) => ResType[b] - ResType[a]);
+/**
+ * 定义一个常量，小于该常量的资源类型都属于独立索引
+ */
+const ResTypeInner = 200;
 /**
  * 从复合索引推导出资源类型
  * @param {*} val 
  */
 function GetResType(val) {
-    let tp = val.split('.');
-    return ResType[tp[0]];
+    if(val < ResTypeInner) {
+        return val;
+    }
+
+    for(let tp of ResTypeGroup) {
+        if(val > ResType[tp]) {
+            return ResType[tp];
+        };
+    }
 }
 
 /**
@@ -217,14 +150,6 @@ const UserStatus = {
      */
     gaming: 1<<7,
     /**
-     * 成为奴隶
-     */
-    slave: 1<<8,
-    /**
-     * 成为奴隶主
-     */
-    master: 1<<9,
-    /**
      * 是否执行了首次消费
      */
     isFirstPurchase: 1<<10,
@@ -240,22 +165,6 @@ const UserStatus = {
      * 是否领取过新用户奖励
      */
     isGetNewbieBonus: 1<<13,
-    /**
-     * 是否领取过节日礼包
-     */
-    isGetFestivalGift: 1<<14,
-    /**
-     * 是否解锁火影场景
-     */
-    unlockedNinjaScene: 1<<15,
-    /**
-     * 是否已领取国庆活动礼包
-     */
-    isGetNinjaGift: 1<<16,
-    /**
-     * 是否已领取国庆任务奖励
-     */
-    isGetNarutoGift: 1<<17,
     /**
      * 有新的已完成任务
      */
@@ -1129,21 +1038,6 @@ const TollgateState = {
 };
 
 /**
- * 关卡操作类型
- */
-const OperEnum = {
-    Require: 0,         //查询
-    Start: 1,           //开始
-    PassTollgate: 2,    //提交结果
-    Sweep: 3,           //扫荡
-    SweepBonus: 4,      //领取扫荡奖励
-    StartCatch: 5,      //抓捕开始
-    Catch:6,            //抓捕结束
-    StartEscape: 7,     //起义开始
-    Escape:8,           //起义结束
-};
-
-/**
  * 关卡操作类型(疯狂的悟空)
  */
 const OperEnumType = {
@@ -1199,8 +1093,6 @@ const OperEnumType = {
      */
     GuideFinish: 12,
 };
-
-
 
 /**
  * 直销类型定义
@@ -1272,26 +1164,6 @@ const AllyPower = {
     ap_Setting: 6,   //修改联盟设定
 }
 
-/**
- * 副本探险状态
- * Class StayStatus
- * @package App\Logic\UserEvent
- */
-const StayStatus = {
-    /**
-     * 新进入一个关卡，这个关卡可能未通关，也可能已经通过关了
-     */
-    newArrival: "newArrival",
-    /**
-     * 由于失败而退回本关卡
-     */
-    goBack: "goBack",
-    /**
-     * 挂机状态
-     */
-    hangup: "hangup",
-}
-
 /*
  * 用户事件枚举
  */
@@ -1330,60 +1202,6 @@ const EventConfig = {
     }
 }
 
-/*
- * 关卡相关的常量配置
- */
-const TollgateConstant = {
-    /**
-     * 检测体力和离线收益最小时间间隔，线上版应该为5
-     */
-    CheckTimer: 5,
-    /**
-     * 单位时间金币收益，线上版为10
-     */
-    UnitOfflineMoney: 10,
-    /**
-     * 最大累计重生次数，线上版应该为3
-     */
-    ReviveMaxTime: 3,
-    /**
-     * 每日登录可赠送的重生次数 线上版应该为1
-     */
-    ReviveLoginAdded: 1,
-}
-
-/**
- * 用户VIP等级枚举
- */
-const em_UserVipLevel = {
-    Normal: 1,
-    Silver: 2,
-    Gold: 3,
-    Diamond1: 4,
-    Diamond2: 5,
-    Diamond3: 6,
-    Diamond5: 7,
-    Crown1: 8,
-    Crown2: 9,
-    Crown3: 10,
-    Crown5: 11,
-}
-
-/**
- * VIP等级和用户经验对照表，经验值大于指定阈值表示达到该等级
- */
-let UserVipLevelSetting = {};
-UserVipLevelSetting[em_UserVipLevel.Normal] = 0;
-UserVipLevelSetting[em_UserVipLevel.Silver] = 400;
-UserVipLevelSetting[em_UserVipLevel.Gold] = 900;
-UserVipLevelSetting[em_UserVipLevel.Diamond1] = 1900;
-UserVipLevelSetting[em_UserVipLevel.Diamond2] = 2900;
-UserVipLevelSetting[em_UserVipLevel.Diamond3] = 4900;
-UserVipLevelSetting[em_UserVipLevel.Diamond5] = 6900;
-UserVipLevelSetting[em_UserVipLevel.Crown1] = 9900;
-UserVipLevelSetting[em_UserVipLevel.Crown2] = 19900;
-UserVipLevelSetting[em_UserVipLevel.Crown3] = 29900;
-UserVipLevelSetting[em_UserVipLevel.Crown5] = 49900;
 
 /**
  * 技能类型
@@ -1566,8 +1384,6 @@ const SkillType = {     // 技能类型枚举
     Insight:55,         //顿悟
 };
 
-const cid = 'd7e702f0-cedf-11e8-9a23-ad6cb6e286a0';
-
 /**
  * 卡牌稀有度
  */
@@ -1595,100 +1411,17 @@ const RarityType = {
 }
 
 /**
- * 服务器运行环境参数对象，此对象数据结构和 gameconfig.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
- */
-const env = {
-    serverType:"IOS",         //服务器类型
-    serverId:1,               //服务器编号
-    debug: true,              //本地测试模式
-    UrlHead: "http",          //协议选择: http/https
-    MaxConnection: 3000,      //最大并发连接
-    MaxRegister: 12000,       //单服最大注册用户数
-    PoolMax: 500,             //最大数据库并发连接
-    game_secret: "",          //加密密钥
-    game_name: "",         
-    clientPath: "./client",
-    adminPath: "./admin",
-    redis: {
-        host: "127.0.0.1",
-        port: 6379,
-        opts: {}
-    },
-    mysql: {
-        logging : false,
-        db: "",
-        sa: "",
-        pwd: "",
-        host: "127.0.0.1",
-        port: 3306
-    },
-    webserver: {
-        mapping: "127.0.0.1",
-        host: "127.0.0.1",
-        port: 9901
-    },
-    auth: {
-        openid: "555",
-        openkey: "555",
-        domain: "tx.IOS",
-        tokenExp: 600,
-        sessionExp: 7200,
-        pf: "wanba_ts"
-    },
-    admin:{
-        role:{
-            default: "chick.server",
-            system: "chick.server"
-        },
-        game_secret: ""
-    },
-    tx: {
-        appid: "",
-        appkey: "",
-        pay_appid: "",
-        pay_appkey: "",
-        reportApiUrl: "",
-        openApiUrl: "",
-        openApiUrlWithPay:""
-    },
-    360:{
-        appid:"",
-        game_key: "",
-        game_secret: ""
-    }    
-}
-
-/**
  * 活动的类型枚举，注意值要连续设置（base 0）
  */
 const ActivityType = {
-    /**
-     * 鸡小德
-     */
-    // Action: 0,       //累计花费的体力
-    // Money: 1,        //累计花费的金币
-    // Diamond:2,          //累计花费的钻石
-    // Gate:3,             //累计通关次数
-    // Revive:4,           //累计复活次数
-    // Slave:5,            //累计抓取奴隶
-    /**
-     * 猴子
-     */
-    Money:0,          //累计花费的金币
-    Diamond: 1,        //累计花费的钻石    
+    None: 0,
 };
 ActivityType.len = Object.keys(ActivityType).length; //枚举的数量
-
 /**
  * 不同类型活动的分数转化率
  */
 const ActivityScoreRate = {
-    0:10,
-    1:1,    
-    // 2:1,
-    // 3:1,
-    // 4:1,
-    // 5:1,
+    0:1,
 }
 
 /**
@@ -1719,13 +1452,11 @@ exports = module.exports = {
     ActivityStatus: ActivityStatus,
     ActivityScoreRate: ActivityScoreRate,
     DailyActivityStatus:DailyActivityStatus,
-    env: env,
     em_Ally_Oper:em_Ally_Oper,
     UserAuthorityNum:UserAuthorityNum,
     ResType: ResType,
     GetResType: GetResType,
     ActionType:ActionType,
-    UserVipLevelSetting:UserVipLevelSetting,
     AllyPower:AllyPower,
     AllyNewsType:AllyNewsType,
     AllyRelationEnum:AllyRelationEnum,
@@ -1749,14 +1480,11 @@ exports = module.exports = {
     ActionExecuteType: ActionExecuteType,
     TollgateType: TollgateType,
     TollgateState: TollgateState,
-    OperEnum: OperEnum,
     CommMode: CommMode,
     GuideList: GuideList,
     IndexType: IndexType,
-    StayStatus: StayStatus,
     EventConfig: EventConfig,
     EventEnum: EventEnum,
-    TollgateConstant:TollgateConstant,
     PotentialType:PotentialType,
     ActionStatus:ActionStatus,
     MAX_INT:MAX_INT,
@@ -1764,9 +1492,6 @@ exports = module.exports = {
     InviteType:InviteType,
     EntityType:EntityType,
     MiddlewareParam:MiddlewareParam,
-    em_UserVipLevel:em_UserVipLevel,
     SkillType:SkillType,
     RarityType:RarityType,
-    RecordType:RecordType,
-    cid:cid,
 };

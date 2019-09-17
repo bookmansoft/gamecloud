@@ -1,17 +1,14 @@
 let facade = require('../../../../Facade')
 let CommonFunc = facade.util
-let LargeNumberCalculator = facade.Util.LargeNumberCalculator
-let {UserVipLevelSetting, em_UserVipLevel, EntityType,IndexType, ResType, RankType, em_Effect_Comm, em_Condition_Type,em_Condition_Checkmode, UserStatus, ReturnCode} = facade.const
+let {EntityType,IndexType, ResType, RankType, UserStatus, ReturnCode} = facade.const
 let BonusObject = facade.Util.BonusObject;
 let EffectManager = facade.Util.EffectManager;
 let ChatPrivateManager = facade.Util.ChatPrivateManager;
 let TaskManager = require('../assistant/task')
 let potential =  require('../assistant/potential')
 let shopInfo =  require('../assistant/shopInfo')
-let tollgate =  require('../assistant/tollgate')
 let action =  require('../assistant/action')
 let info =  require('../assistant/info')
-let randomEvent =  require('../assistant/randomEvent')
 let item = require('../assistant/item')
 let vip = require('../assistant/vip')
 let {User} = require('../table/User')
@@ -457,25 +454,12 @@ class BaseUserEntity extends BaseEntity
     getTaskMgr(){
         return this.baseMgr.task;
     }
-    /**
-     * @return {tollgate}
-     */
-    getTollgateMgr() {
-        return this.baseMgr.tollgate;
-    }
 
     /**
      * @return {txFriend}
      */
     getTxFriendMgr(){
         return this.baseMgr.txFriend;
-    }
-    /**
-     * all events happened on exploring
-     * @return {randomEvent}
-     */
-    getEventMgr() {
-        return this.baseMgr.randomEvent;
     }
 
     /**
@@ -572,41 +556,6 @@ class BaseUserEntity extends BaseEntity
      */
     CalcResult($effectType, $oriValue) {
         return this.effect().CalcFinallyValue($effectType, $oriValue);
-    }
-
-    /**
-     * 获取当前战力
-     * @return {LargeNumberCalculator}
-     */
-    getPower() {
-        let $ret = this.getPotentialMgr().getPower();
-        //添加图腾对圣光加成的加持
-        $ret = $ret.CalcFinallyValue(this.effect(), [em_Effect_Comm.PotentialEffect]);
-        //添加科技对战力的加持
-        $ret = $ret.CalcFinallyValue(this.effect(), [em_Effect_Comm.Attack, em_Effect_Comm.AttackAndClick]);
-        //添加宠物科技的影响：和转生正相关的攻击加成
-        $ret = $ret._mul_(1 + this.effect().CalcFinallyValue(em_Effect_Comm.AttackForPveRevival, 0) * this.getTollgateMgr().revivalNum);
-        //添加内丹（英魂）对战力的加持
-        $ret = $ret._mul_(1 + this.effect().CalcFinallyValue(em_Effect_Comm.StoneEffect, this.getPocket().GetRes(ResType.StoneHero)*(0.1 + 0.005*this.getTollgateMgr().revivalNum)));
-        // //检测战力等级：战力等级为战力指数/10
-        // this.core.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:($ret.power/10)|0, mode:em_Condition_Checkmode.absolute}});
-        //检测战力等级：战力等级为战力指数
-        this.core.notifyEvent('user.task', {user:this, data:{type:em_Condition_Type.level, value:$ret.power|0, mode:em_Condition_Checkmode.absolute}});
-        return $ret;
-    }
-    /**
-     * @return {LargeNumberCalculator}
-     */
-    getClickPower() {
-        let $ef = this.effect();
-        let $eo = $ef[em_Effect_Comm.ConvertPveToClick];
-        let $ret = this.getPotentialMgr().getClickPower();    //宠物带来的点击攻击力
-        if($eo){
-            //加上PVE伙伴攻击力转换为点击攻击力部分
-            ret._add_(this.getPotentialMgr().getPower()._mul_($eo.value));
-        }
-        $ret.CalcFinallyValue($ef, [em_Effect_Comm.AttackForClick, em_Effect_Comm.AttackAndClick]); //再叠加外围的科技加成效果
-        return $ret;
     }
 
     /**
@@ -857,23 +806,6 @@ class BaseUserEntity extends BaseEntity
         
         preList[`${oemInfo.domain}.${oemInfo.openid}`] = oemInfo;
         return {code: ReturnCode.Success};
-    }
-
-    /**
-     * 根据用户经验返回相应的VIP等级
-     */
-    static GetVipLevel($exp) {
-        let $ret = em_UserVipLevel.Normal;
-        for(let $key in UserVipLevelSetting){
-            if($exp >= UserVipLevelSetting[$key]){
-                $ret = $key;
-                continue;
-            }
-            else{
-                break;
-            }
-        }
-        return $ret;
     }
 }
 

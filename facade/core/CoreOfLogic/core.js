@@ -142,16 +142,6 @@ class CoreOfLogic extends CoreOfBase
         catch(e){
             console.error(e);
         }
-        
-        //关卡探险随机事件触发
-        this.autoTaskMgr.addCommonMonitor(fo => {
-            for(let s of Object.values(this.service.server.connected)) {
-                if(!!s.user){
-                    //触发随机事件
-                    s.user.getEventMgr().RandomEvent(s.user);
-                }
-            }
-        }, 60000);
     }
 
     /**
