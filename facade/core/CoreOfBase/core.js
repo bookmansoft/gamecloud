@@ -814,6 +814,9 @@ class CoreOfBase
     async onSocketReq(socket, msg, fn){
         fn = fn || (()=>{});
         msg = msg || {};
+        if(typeof msg.oemInfo == 'string') {
+            msg.oemInfo = JSON.parse(decodeURIComponent(msg.oemInfo));
+        }
 
         if(!socket.user && !!msg.oemInfo && !!msg.oemInfo.token){
             //根据用户上行的token进行预登录
