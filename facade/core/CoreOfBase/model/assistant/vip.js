@@ -1,5 +1,5 @@
 let facade = require('../../../../Facade')
-let {GuideList, ActionExecuteType, UserStatus, NotifyType, TollgateState, ReturnCode} = facade.const
+let {GuideList, UserStatus, NotifyType, TollgateState, ReturnCode} = facade.const
 let baseMgr = facade.Assistant
 let EffectManager = require('../../../../util/comm/EffectManager');
 
@@ -187,7 +187,7 @@ class vip extends baseMgr
         let ret = {code:ReturnCode.Success, data:{bonus:null, valid:this.valid, time:this.time}};
 
         if(this.valid){ //处于VIP有效期内
-            if(this.parent.getActionMgr().Execute(ActionExecuteType.vipDaily, 1, true)) {
+            if(this.parent.getActionMgr().Execute(this.parent.core.const.ActionExecuteType.vipDaily, 1, true)) {
                 ret.data.bonus = this.parent.core.fileMap.vip.daily; //VIP每日奖励
                 this.parent.getBonus(ret.data.bonus);
             }

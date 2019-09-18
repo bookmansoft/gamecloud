@@ -1,5 +1,5 @@
 let facade = require('../../../../Facade')
-let {em_Effect_Comm, ActionExecuteType, NotifyType} = facade.const
+let {NotifyType} = facade.const
 let baseMgr = facade.Assistant
 
 /**
@@ -10,7 +10,9 @@ class action extends baseMgr {
         super(parent, 'execInfo', 500);
     }
 
-    getInfo(){
+    getInfo() {
+        let ActionExecuteType = this.parent.core.const.ActionExecuteType;
+
         let $now = facade.util.now();
         let ret = {};
 
@@ -180,29 +182,8 @@ class action extends baseMgr {
         let cur = 0;
         if(!!this.v.extNum){
             cur = !!this.v.extNum[$_type] ? this.v.extNum[$_type] : 0;
-            if(this.isInterOperation($_type) == em_Effect_Comm.InterOperation){
-                cur = this.parent.effect().CalcFinallyValue(em_Effect_Comm.InterOperation, cur);
-            }
         }
         return cur;
-    }
-
-    /**
-     * 获取互动行为的类型
-     * @param {*}  
-     */
-    isInterOperation($_type){
-        switch($_type){
-            case ActionExecuteType.slaveAvenge:
-            case ActionExecuteType.slaveCommend:
-            case ActionExecuteType.slaveFlattery:
-            case ActionExecuteType.slaveFood:
-            case ActionExecuteType.slaveLash:
-                return em_Effect_Comm.InterOperation;
-
-            default:
-                return em_Effect_Comm.None;
-        }
     }
 
     /**
