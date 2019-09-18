@@ -80,8 +80,7 @@ class action extends baseMgr {
 
                 this.parent.notify({type: NotifyType.actions, info: this.getInfo()});
             }
-        }
-        else{
+        } else {
             if($isExec){
                 this.v.num[$_type] = $sum;
                 if(this.GetCd($_type)>0){
@@ -90,8 +89,7 @@ class action extends baseMgr {
                 this.isDirty = true;
 
                 this.parent.notify({type: NotifyType.actions, info: this.getInfo()});
-            }
-            else{
+            } else {
                 this.v.num[$_type] = 0;
             }
         }

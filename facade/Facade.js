@@ -301,6 +301,7 @@ class Facade
     static get Assistants() {
         return {
             Pocket: require('./core/CoreOfBase/model/assistant/item'),
+            Action: require('./core/CoreOfBase/model/assistant/action'),
         }
     }
 
@@ -418,8 +419,8 @@ class Facade
      */
     static get const() {
         if(!this.$constList) {
-            this.$constList = require('./core/CoreOfBase/enum');
-            if(this.$addition) {
+            this.$constList = require('./core/CoreOfBase/enum'); //载入框架定义常量
+            if(this.$addition) { //载入用户自定义常量，注意先前载入的同名常量会被覆盖
                 extendObj(this.$constList, require(`${process.cwd()}/app/core/CoreOfBase/enum`));
             }
         }
@@ -449,6 +450,14 @@ class Util
 
     static get ConfigManager() {
         return require('./util/potential/ConfigManager');
+    }
+
+    static get PotentialItem() {
+        return require('./util/potential/PotentialItem');
+    }
+
+    static get ActionOfTimer() {
+        return require('./util/potential/ActionOfTimer');
     }
 
     static get CheckValid() {

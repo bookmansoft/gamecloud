@@ -9,7 +9,7 @@
  */
 
 /**
- * 资源类型 type, 约定 ResTypeInner 以内的为独立索引，以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
+ * 资源类型 type, 约定 200 以内的为独立索引，以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
  */
 const ResType = {
     /**
@@ -61,15 +61,11 @@ const ResType = {
  */
 const ResTypeGroup = Object.keys(ResType).sort((a,b) => ResType[b] - ResType[a]);
 /**
- * 定义一个常量，小于该常量的资源类型都属于独立索引
- */
-const ResTypeInner = 200;
-/**
- * 从复合索引推导出资源类型
+ * 从复合索引推导出资源类型(200以内为独立索引)
  * @param {*} val 
  */
 function GetResType(val) {
-    if(val < ResTypeInner) {
+    if(val < 200) {
         return val;
     }
 

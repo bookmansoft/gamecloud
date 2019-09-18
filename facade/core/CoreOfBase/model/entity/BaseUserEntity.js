@@ -509,7 +509,7 @@ class BaseUserEntity extends BaseEntity
     getTimeEffect() {
         return this.baseMgr.TimeEffect;
     }
-
+    
     /**
      * @return {shopInfo}
      */

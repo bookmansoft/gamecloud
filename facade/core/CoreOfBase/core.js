@@ -378,15 +378,16 @@ class CoreOfBase
     }
 
     /**
-     * 返回描述类继承关系的数组，以基类为首个元素
+     * 返回描述类继承关系的数组，以基类 CoreOfBase 为首个元素
      */
     GetInheritArray() {
         let proto = this.__proto__, clsInherit = [];
         while(proto) {
-            clsInherit.push(proto.constructor.name);
-            if(proto.constructor.name == 'CoreOfBase') { //处理到基类，停止迭代
+            if(proto.constructor.name == 'Object' || proto.constructor.name == 'Function' || proto.constructor.name == 'CoreOfBase') { //处理到基类，停止迭代
+                clsInherit.push('CoreOfBase');
                 break;
             }
+            clsInherit.push(proto.constructor.name);
             proto = proto.__proto__;
         }
         return clsInherit.reverse();
