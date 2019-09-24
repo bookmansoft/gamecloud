@@ -7,8 +7,9 @@ let baseMgr = facade.Assistant;
  */
 class EffectTimerManager extends baseMgr
 {
-    constructor(parent) {
-        super(parent);
+    constructor(parent, options) {
+        options = options || {};
+        super(parent, options);
 
         //Mixin EffectManager 的准备工作，以便在mixin时合并两者的构造函数
         EffectManager.prototype.mixin.apply(this);

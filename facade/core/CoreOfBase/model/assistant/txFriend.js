@@ -10,8 +10,9 @@ class txFriend extends baseMgr
      * 构造函数
      * @param {UserEntity} parent 
      */
-    constructor(parent){
-        super(parent, 'txFriend', 2000);
+    constructor(parent, options) {
+        options = options || {attr: 'txFriend', size: 2000};
+        super(parent, options);
         
         //	数据 最大容量在60个好友左右，建议外部取好友列表控制在50个以内
         this.v 	= {

@@ -20,8 +20,9 @@ class potential extends baseMgr
      * 
      * @param {UserEntity} parent 
      */
-    constructor(parent){
-        super(parent, 'potential', 2000);
+    constructor(parent, options) {
+        options = options || {attr: 'potential', size: 2000};
+        super(parent, options);
 
         /**
          * 天赋（法宝）对象列表 map<int, PotentialItem> equList

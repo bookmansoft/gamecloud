@@ -3,8 +3,10 @@ let baseMgr = facade.Assistant;
 
 class txInfo extends baseMgr
 {
-    constructor(parent){
-        super(parent, 'txInfo', 500);
+    constructor(parent, options) {
+        options = options || {attr: 'txInfo', size: 500};
+        super(parent, options);
+
         //	数据
         this.v   = {
             openid: '',

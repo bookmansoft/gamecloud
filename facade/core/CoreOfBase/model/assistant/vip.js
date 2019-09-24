@@ -30,7 +30,8 @@ class vip extends baseMgr
      * @param {UserEntity} parent 
      */
     constructor(parent) {
-        super(parent, 'vip', 500);
+        options = options || {attr: 'vip', size: 500};
+        super(parent, options);
 
         // 持久化数据
         this.v = {

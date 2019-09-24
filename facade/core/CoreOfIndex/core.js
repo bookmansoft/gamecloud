@@ -86,14 +86,14 @@ class CoreOfIndex extends facade.CoreOfBase
      * @param domainId
      * @param openid
      */
-    async getUserIndex(domain, openid, register=false){
+    async getUserIndex(domain, openid, register=null) {
         //计算用户唯一标识串
         let domainId = `${domain}.${openid}`;
 
         let uo = this.cacheMgr.get(domainId);
         if(!!uo) {
             uo.status = facade.tools.Indicator.inst(uo.status).unSet(UserStatus.isNewbie).value;
-        } else if(register) { //新用户注册
+        } else if(!!register) { //新用户注册
             //检测逻辑服类型
             let stype = 'IOS';
             let pl = domain.split('.');
@@ -105,25 +105,31 @@ class CoreOfIndex extends facade.CoreOfBase
                 return null;
             }
 
-            //负载均衡
-            let serverId = (facade.util.hashCode(domainId) % this.serverNum(stype)) + 1;   //通过hash计算命中服务器编号
-            let sn = `${stype}.${serverId}`;
+            let serverId = 0, sn = null;
+            if(!register.sid) {
+                //负载均衡
+                serverId = (facade.util.hashCode(domainId) % this.serverNum(stype)) + 1;   //通过hash计算命中服务器编号
+                sn = `${stype}.${serverId}`;
 
-            //避免新用户进入不合适的服务器（人数超限或状态不正常）
-            let recy = 0, isFind = false;
-            while(recy++ < this.serverNum(stype)){//检测服务器人数和运行状况
-                let svr = this.service.servers.getServer(stype, serverId);
-                if(!!svr && this.service.servers.userNum[sn] < this.options.MaxRegister){
-                    isFind = true;
-                    break;
+                //避免新用户进入不合适的服务器（人数超限或状态不正常）
+                let recy = 0, isFind = false;
+                while(recy++ < this.serverNum(stype)){//检测服务器人数和运行状况
+                    let svr = this.service.servers.getServer(stype, serverId);
+                    if(!!svr && this.service.servers.userNum[sn] < this.options.MaxRegister){
+                        isFind = true;
+                        break;
+                    }
+
+                    serverId = serverId % this.serverNum(stype) + 1; //循环递增
+                    sn = `${stype}.${serverId}`;
                 }
 
-                serverId = serverId % this.serverNum(stype) + 1; //循环递增
+                if(!isFind){
+                    return null;
+                }
+            } else {
+                serverId = register.sid; //注册时指定了服务器编号
                 sn = `${stype}.${serverId}`;
-            }
-            
-            if(!isFind){
-                return null;
             }
             
             //寻找到了合适的服务器，累计服务器人数

@@ -7,8 +7,9 @@ let baseMgr = facade.Assistant
  */
 class info extends baseMgr
 {
-	constructor(parent){
-		super(parent, 'info', 2000);
+	constructor(parent, options) {
+        options = options || {attr: 'info', size: 2000};
+		super(parent, options);
 
         //	数据
         this.v 				= {

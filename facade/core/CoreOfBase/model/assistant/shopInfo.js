@@ -13,8 +13,9 @@ class shopInfo extends baseMgr
      * 构造函数，反序列化
      * @param {UserEntity} parent
      */
-    constructor(parent){
-        super(parent, 'shopinfo', 2000);
+    constructor(parent, options) {
+        options = options || {attr: 'shopinfo', size: 2000};
+        super(parent, options);
 
         /**
          * 持久保存商店刷新时间、购买记录（用于实现限额购买）

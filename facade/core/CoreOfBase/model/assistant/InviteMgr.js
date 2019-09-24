@@ -7,8 +7,9 @@ let baseMgr = facade.Assistant
  */
 class InviteManager extends baseMgr
 {
-    constructor(parent){
-        super(parent, 'invite', 255);
+    constructor(parent, options) {
+        options = options || {attr:'invite', size:255};
+        super(parent, options);
         this.items = [];
     }
 

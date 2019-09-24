@@ -21,8 +21,9 @@ let TaskObject = facade.Util.TaskObject;
  * 从User表中获取任务完成情况表，从配置表中获取静态任务列表，两者联合处理，得出最终的待完成任务列表
  */
 class task extends baseMgr {
-    constructor(parent) {
-        super(parent, 'task', 500);
+    constructor(parent, options) {
+        options = options || {attr: 'task', size: 500};
+        super(parent, options);
         this.taskList = {}; //当前可执行任务列表
     }
 

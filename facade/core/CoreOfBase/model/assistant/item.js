@@ -13,8 +13,9 @@ class item extends baseMgr
      * 构造函数
      * @param {BaseUserEntity} parent 
      */
-    constructor(parent){
-        super(parent, 'item', 500);
+    constructor(parent, options) {
+        options = options || {attr: 'item', size: 1000};
+        super(parent, options);
 
         /**
          * 背包内容存储对象

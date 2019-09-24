@@ -131,7 +131,7 @@ class indexCtrl extends facade.Control
      * @returns {{code: number}}
      */
     async newAttr(svr, envelope) {
-        let ui = await this.core.getUserIndex(envelope.msg.domain, envelope.msg.openid);
+        let ui = await this.core.getUserIndex(envelope.msg.domain, envelope.msg.openid, {sid:svr.sid});
         if(!!ui && !!envelope.msg.attr){
             if(envelope.msg.attr.constructor == Array){ //一次修改多个属性
                 envelope.msg.attr.map(item=>{

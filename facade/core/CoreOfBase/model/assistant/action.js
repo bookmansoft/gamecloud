@@ -6,8 +6,9 @@ let baseMgr = facade.Assistant
  * 用户每日行为管理类，限制每日可执行次数限制
  */
 class action extends baseMgr {
-    constructor(parent){
-        super(parent, 'execInfo', 500);
+    constructor(parent, options) {
+        options = options || {attr: 'execInfo', size: 500};
+        super(parent, options);
     }
 
     getInfo() {

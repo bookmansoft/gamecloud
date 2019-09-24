@@ -5,14 +5,14 @@ class baseAssistant
 {
     /**
      * 构造函数
-     * @param {UserEntity} parent   作为容器的用户对象
-     * @param {*} attribute         用于持久化的字段名
-     * @param {Number} maxLen       持久化字段的最大长度，超过该长度则拒绝入库
+     * @param {UserEntity} parent           作为容器的用户对象
+     * @param {Object} options.attr         用于持久化的字段名
+     * @param {Number} options.size         持久化字段的最大长度，超过该长度则拒绝入库
      */
-    constructor(parent, attribute, maxLen){
+    constructor(parent, options) {
         this.parent = parent;
-        this.attribute = attribute;
-        this.maxLen = maxLen || 50;
+        this.attribute = options.attr;
+        this.maxLen = options.size || 50;
 
         //存放需要持久化保存的属性的对象，存储时直接序列化该对象
         this.v = {};

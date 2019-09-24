@@ -23,7 +23,7 @@ class lb extends facade.Control {
             }
 
             //判断是否已注册
-            let ui = await this.core.getUserIndex(info.oemInfo.domain, info.oemInfo.openid, true);
+            let ui = await this.core.getUserIndex(info.oemInfo.domain, info.oemInfo.openid, {});
             if(!!ui) {
                 //向目标逻辑服发送预登录信息
                 let ret = await this.core.remoteCall("userPreLogin", info.oemInfo, msg=>{return msg}, ui);
