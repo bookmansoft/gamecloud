@@ -29,7 +29,7 @@ class vip extends baseMgr
      * 构造函数
      * @param {UserEntity} parent 
      */
-    constructor(parent) {
+    constructor(parent, options) {
         options = options || {attr: 'vip', size: 500};
         super(parent, options);
 
