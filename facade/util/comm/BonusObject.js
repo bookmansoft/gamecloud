@@ -73,6 +73,10 @@ class BonusObject
             bonus = JSON.parse(bonus);
         }
 
+        if(typeof bonus.type == 'string') {
+            bonus.type = ResType[bonus.type];
+        }
+
         if(bonus.type == ResType.Box) {//包含多项奖励的礼盒，首先取得礼盒内容，然后调用 getBonus 进行领取
             let bi = user.core.fileMap.shopdata[bonus.id];
             if(!!bi){

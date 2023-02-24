@@ -4,7 +4,7 @@ let fs = require('fs')
 
 let facade = require('../../Facade')
 let extendObj = facade.tools.extend
-let {ReturnCode, EntityType, IndexType, CommMode, env} = facade.const
+let {ReturnCode, EntityType, IndexType, CommMode, env, ResType} = facade.const
 let Control = facade.Control
 let connectMonitor = require('../../util/autoExec/connectMonitor')
 let AutoTaskManager = require('../../util/taskManager')
@@ -322,6 +322,10 @@ class CoreOfBase
      * @param {*} bonus 
      */
     handleSpecialRes(user, bonus) {
+        if(typeof bonus.type == 'string') {
+            bonus.type = ResType[bonus.type];
+        }
+
         if(this.specialRes[bonus.type]) {
             this.specialRes[bonus.type](user, bonus).catch(e=>{
                 console.log(e);
