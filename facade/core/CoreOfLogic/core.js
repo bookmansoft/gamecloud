@@ -90,7 +90,7 @@ class CoreOfLogic extends CoreOfBase
      */
     static get mapping() {
         if(!this.$mapping) {
-            this.$mapping = ['IOS', 'Android'];
+            this.$mapping = ['CoreOfLogicIOS', 'CoreOfLogicAndroid'];
         }
         return this.$mapping;
     }
@@ -117,7 +117,7 @@ class CoreOfLogic extends CoreOfBase
             this.StartSocketServer(app);
             
             //建立内部RPC机制
-            this.initConnector("Index", 1);
+            this.initConnector("CoreOfIndex", 1);
         }).catch(e=>{
             throw e;
         });

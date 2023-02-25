@@ -25,7 +25,7 @@ let redis = {
 
 let config = {
     "servers":{
-        "Index":{
+        "CoreOfIndex":{
             "1":{
                 "debug": true,              //本地测试模式
                 "UrlHead": "http",          //协议选择: http/https
@@ -72,7 +72,7 @@ let config = {
                 }
             }
         },
-        "IOS":{
+        "CoreOfLogicIOS":{
             "1":{
                 "mysql": mysql,
                 "webserver": {

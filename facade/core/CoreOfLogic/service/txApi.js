@@ -1,7 +1,7 @@
 ﻿let crypto = require('crypto'); //加密模块
 let facade = require('../../../Facade')
 let req = require('../../../util/req') //异步http请求
-let sys = facade.ini.servers["Index"][1]; //索引服运行参数
+let sys = facade.ini.servers["CoreOfIndex"][1]; //索引服运行参数
 
 /**
  * 腾讯移动大厅接入API

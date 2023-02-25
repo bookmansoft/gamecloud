@@ -15,7 +15,7 @@ if(env.constructor == String){
     if(env.portal) { //如果该服务器兼任门户，则启动索引服务
         await facade.boot({
             env:{
-                serverType: "Index",
+                serverType: "CoreOfIndex",
                 serverId: 1
             }
         });

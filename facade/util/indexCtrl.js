@@ -55,7 +55,7 @@ class indexCtrl extends facade.Control
                 if(info.data.length >= 2) { 
                     //如果指定了服务器，就只在该服务器上执行指令
                     let si = info.data.splice(0,2);
-                    if(si[0] == "Index"){
+                    if(si[0] == "CoreOfIndex") {
                         result[`${si[0]}.${si[1]}`] = this[func](info.data);
                     } else {
                         info.data.unshift(func);
@@ -71,13 +71,13 @@ class indexCtrl extends facade.Control
                     //否则，首先在所有逻辑服务器上执行指令，然后在Index上执行指令
                     info.data.unshift(func);
                     for(let stype of Object.keys(this.core.serversInfo)) {
-                        if(stype != "Index") {
+                        if(stype != "CoreOfIndex") {
                             for(let sid of Object.keys(this.core.serversInfo[stype])) {
                                 result[`${stype}.${sid}`] = await this.core.remoteCall(func, info.data, msg=>{return msg}, {stype:stype, sid:sid});
                             }
                         }
                     }
-                    result['Index'] = this[func](info.data);
+                    result['CoreOfIndex.1'] = this[func](info.data);
                 }
                 return result;
             }
@@ -106,8 +106,8 @@ class indexCtrl extends facade.Control
         for(let obj of this.core.cacheMgr.objects){
             //console.log(obj[0]);
             let ui = this.core.cacheMgr.get(obj[0]);
-            if(!!ui && !!ui.openid){
-                ids.push(ui.openid);
+            if(!!ui && !!ui.openid) {
+                ids.push(ui);
             }
 
             if(ids.length > 10){
@@ -116,9 +116,9 @@ class indexCtrl extends facade.Control
         }
         //console.log(ids);
 
-        for(let key of ids){
-            if(input.msg.openid != key){
-                items.push({openid:key});
+        for(let ui of ids) {
+            if(input.msg.openid != ui.openid) {
+                items.push({domain:ui.domain, openid:ui.openid});
             }
         }
         return {ret:0, items: items}
@@ -155,17 +155,17 @@ class indexCtrl extends facade.Control
      */
     async getFriendRankList(svr, input) {
         let uList = await this.core.getUserIndexOfAll(input.msg.list.reduce((sofar, cur) => {
-            facade.CoreOfLogic.mapping.map(lt=>{
-                sofar.push(`tx.${lt}.${cur.openid}`);
+            facade.serverTypeMapping[svr.stype].mapping.map(st=>{
+                sofar.push(`${st}.${cur.openid}`);
             });
             return sofar;
         }, [])); //需要查询的好友列表
-
+        
         let list = []; //最终的查询结果
         input.msg.list.map(item => {
             let sim = null;
-            facade.CoreOfLogic.mapping.map(lt=>{
-                let u = uList[`tx.${lt}.${item.openid}`];
+            facade.serverTypeMapping[svr.stype].mapping.map(st=>{
+                let u = uList[`${st}.${item.openid}`];
                 if(!sim) {
                     sim = u;
                 }

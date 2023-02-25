@@ -905,7 +905,7 @@ class CoreOfBase
         }
 
         let connector = null;
-        if(this.options.serverType == 'Index') {
+        if(this.options.serverType == 'CoreOfIndex') {
             let svr = this.service.servers.getServer(si.stype, si.sid);
             if(!!svr){
                 connector = svr.socket;

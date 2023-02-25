@@ -21,15 +21,13 @@ class CoreOfIndex extends facade.CoreOfBase
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
      * @returns {Array}
+     * 
+     * @note 索引服务器mapping取固定值
      */
     static get mapping() {
-        if(!this.$mapping) {
-            this.$mapping = ['Index'];
-        }
-        return this.$mapping;
+        return ['CoreOfIndex'];
     }
     static set mapping(val) {
-        this.$mapping = val;
     }
 
     routeList(){
@@ -66,7 +64,8 @@ class CoreOfIndex extends facade.CoreOfBase
 
     /**
      * 根据DomainId列表，批量查询并返回用户对象列表
-     * @param {*} list 
+     * @param {*} list 传入openid集合，注意并没有携带域信息，因为我们认为社交好友是可以同时注册多个服的
+     * @returns 返回键值对集合形式的对象: domain.openid: user
      */
     async getUserIndexOfAll(list){
         let ret = {};

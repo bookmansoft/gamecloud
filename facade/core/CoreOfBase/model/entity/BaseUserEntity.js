@@ -95,9 +95,8 @@ class BaseUserEntity extends BaseEntity
         if(!openid || openid == this.openid) {
             cb(this);
         } else {
-            let cls = this.domainClass();
-            let fid = !!cls ? `${this.domainType}.${cls}.${openid}` : `${this.domainType}.${openid}`;
-            let friend = this.core.GetObject(EntityType.User, fid,IndexType.Domain);
+            let fid = `${this.domain}.${openid}`;
+            let friend = this.core.GetObject(EntityType.User, fid, IndexType.Domain);
             if(!!friend) {
                 cb(friend);
             }
@@ -109,31 +108,26 @@ class BaseUserEntity extends BaseEntity
      * @param {*} msg       消息体
      * @param {*} openid    收件人，填空为发给自己
      */
-    socialNotify(msg, openid){
+    socialNotify(msg, openid) {
         if(!openid || this.openid == openid){//发送给自己
             this.core.notifyEvent('user.socialMsg', {user: this, data: msg});
         } else {
-            let cls = this.domainClass();
-            let domain = !!cls ? `${this.domainType}.${cls}` : this.domainType;
-            let friend = this.core.GetObject(EntityType.User, `${domain}.${openid}`, IndexType.Domain);
+            let friend = this.core.GetObject(EntityType.User, `${this.domain}.${openid}`, IndexType.Domain);
             if(!!friend){
                 //发送给同服的好友
                 this.core.notifyEvent('user.socialMsg', {user: friend, data: msg});
             } else {
                 //通过路由模式，发送给不同服的好友
-                this.core.remoteCall('routeCommand', {func: 'userNotify', domain: domain, openid: openid, msg: msg});
+                this.core.remoteCall('routeCommand', {func: 'userNotify', domain: this.domain, openid: openid, msg: msg});
             }
         }
     }
 
     /**
-     * 获取当前用户的领域类型
+     * 获取当前用户的校验模式
      */
     get domainType() {
-        return this.domain.split('.')[0];
-    }
-    get domainClass() {
-        return this.domain.split('.')[1];
+        return this.openid.split('.')[0];
     }
 
     /**
@@ -206,6 +200,9 @@ class BaseUserEntity extends BaseEntity
             this.dirty = true;
         }
 	}
+    /**
+     * 获取当前用户的门面类型
+     */
 	get domain(){
         return !!this.orm ? this.orm.domain : '';
     }

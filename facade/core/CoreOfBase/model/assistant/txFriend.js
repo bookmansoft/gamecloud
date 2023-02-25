@@ -201,7 +201,7 @@ class txFriend extends baseMgr
             if(this.parent.core.options.debug){
                 try{
                     //从索引服务器获取模拟的好友列表
-                    let apiRet = await this.parent.core.remoteCall('getFriendList', {openid: this.parent.openid}, msg=>{return msg});
+                    let apiRet = await this.parent.core.remoteCall('getFriendList', {domainType: this.parent.domainType, openid: this.parent.openid}, msg=>{return msg});
                     if (!!apiRet && apiRet.ret == 0) {
                         this.dirty = true;
                         apiRet.items.map(item=>{
@@ -215,8 +215,7 @@ class txFriend extends baseMgr
                 catch(e){
                     console.log(e);
                 }
-            }
-            else{
+            } else {
                 try{
                     let apiRet = await this.parent.core.service.txApi.Get_App_Friends(
                         this.parent.openid,

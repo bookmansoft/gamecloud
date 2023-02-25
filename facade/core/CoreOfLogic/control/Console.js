@@ -10,7 +10,7 @@ class Console extends facade.Control
      * 可使用的控制台命令：屏显服务器信息
      */
     printInfo(param){
-        if(this.core.options.serverType == "Index"){//打印索引服连接对象信息
+        if(this.core.options.serverType == "CoreOfIndex"){//打印索引服连接对象信息
             let srvList = "";
             this.core.service.servers.forServers(srv=>{
                 srvList += `${srv.stype}.${srv.sid} `;

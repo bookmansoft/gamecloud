@@ -193,7 +193,7 @@ class Facade
         if(!!this.serverTypeMapping[env.serverType] && !!this.ini.servers[env.serverType] && !!this.ini.servers[env.serverType][env["serverId"]]) {
             let ret = new this.serverTypeMapping[env.serverType](this.tools.extend(
                 {serverType: env.serverType, serverId: env.serverId},
-                this.ini.servers["Index"][1],
+                this.ini.servers["CoreOfIndex"][1],
                 this.ini.servers[env.serverType][env["serverId"]]
             ));
             extendObj(ret.options, options);
