@@ -2,7 +2,7 @@
  * Created by Administrator on 2017-05-13.
  */
 let facade = require('../../Facade')
-let {UserStatus, CommMode} = facade.const
+let {UserStatus} = facade.const
 
 /**
  * 索引服对应的门面类
@@ -82,8 +82,8 @@ class CoreOfIndex extends facade.CoreOfBase
 
     /**
      * 检索用户所在服务器信息, 如果是新用户则采用负载均衡模式分配目标服务器
-     * @param domainId
-     * @param openid
+     * @param domain    登录域
+     * @param openid    验证域
      */
     async getUserIndex(domain, openid, register=null) {
         //计算用户唯一标识串
@@ -94,41 +94,35 @@ class CoreOfIndex extends facade.CoreOfBase
             uo.status = facade.tools.Indicator.inst(uo.status).unSet(UserStatus.isNewbie).value;
         } else if(!!register) { //新用户注册
             //检测逻辑服类型
-            let stype = 'IOS';
-            let pl = domain.split('.');
-            if(pl.length > 1) {
-                stype = pl[1];
-            }
-
-            if(!this.serversInfo[stype]) {//非法类型
+            if(!this.serversInfo[domain]) {//非法类型
                 return null;
             }
 
             let serverId = 0, sn = null;
             if(!register.sid) {
                 //负载均衡
-                serverId = (facade.util.hashCode(domainId) % this.serverNum(stype)) + 1;   //通过hash计算命中服务器编号
-                sn = `${stype}.${serverId}`;
+                serverId = (facade.util.hashCode(domainId) % this.serverNum(domain)) + 1;   //通过hash计算命中服务器编号
+                sn = `${domain}.${serverId}`;
 
                 //避免新用户进入不合适的服务器（人数超限或状态不正常）
                 let recy = 0, isFind = false;
-                while(recy++ < this.serverNum(stype)){//检测服务器人数和运行状况
-                    let svr = this.service.servers.getServer(stype, serverId);
+                while(recy++ < this.serverNum(domain)){//检测服务器人数和运行状况
+                    let svr = this.service.servers.getServer(domain, serverId);
                     if(!!svr && this.service.servers.userNum[sn] < this.options.MaxRegister){
                         isFind = true;
                         break;
                     }
 
-                    serverId = serverId % this.serverNum(stype) + 1; //循环递增
-                    sn = `${stype}.${serverId}`;
+                    serverId = serverId % this.serverNum(domain) + 1; //循环递增
+                    sn = `${domain}.${serverId}`;
                 }
 
-                if(!isFind){
+                if(!isFind) {
                     return null;
                 }
             } else {
                 serverId = register.sid; //注册时指定了服务器编号
-                sn = `${stype}.${serverId}`;
+                sn = `${domain}.${serverId}`;
             }
             
             //寻找到了合适的服务器，累计服务器人数
@@ -140,12 +134,12 @@ class CoreOfIndex extends facade.CoreOfBase
                 role: 1001,
                 name: '',
                 icon: '',
-                stype:stype, 
-                sid:serverId, 
-                score:0, 
+                stype: domain, 
+                sid: serverId, 
+                score: 0, 
                 status: UserStatus.isNewbie,
-                domain:domain, 
-                openid:openid
+                domain: domain, 
+                openid: openid,
             }
             this.setUserIndex(uo);
         }

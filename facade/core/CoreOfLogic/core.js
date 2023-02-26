@@ -73,7 +73,7 @@ class CoreOfLogic extends CoreOfBase
                 for(let rid of Object.keys(user.core.fileMap.HeroList)) {
                     cur += parseFloat(user.core.fileMap.HeroList[rid].rate); //从角色表中获取掉率并进行累计
                     if(rate < cur) { //本次随机数小于累计概率，找到符合条件的碎片
-                        bonus.id = (parseInt(rid) + 1).toString(); 
+                        bonus.id = user.core.fileMap.HeroList[rid].id; 
                         break;
                     }
                 }
