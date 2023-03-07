@@ -53,15 +53,15 @@ class CoreOfLogic extends CoreOfBase
             //VIP有效期，做特殊处理
             user.baseMgr.vip.increase(bonus.num);
         });
-        this.RegisterResHandle(ResType.FellowHead, async (user, bonus) => {
-            //直接购买宠物，而非碎片合成
-            user.getPotentialMgr().ActiveCPet(bonus.id, false);
-        });
-        this.RegisterResHandle(ResType.ActionHead, async (user, bonus) => {
-            //购买技能
-            user.getPotentialMgr().ActionAdd(bonus.id, 1);
-            user.getPotentialMgr().Action(bonus.id);
-        });
+        // this.RegisterResHandle(ResType.FellowHead, async (user, bonus) => {
+        //     //直接购买宠物，而非碎片合成
+        //     user.getPotentialMgr().ActiveCPet(bonus.id, false);
+        // });
+        // this.RegisterResHandle(ResType.ActionHead, async (user, bonus) => {
+        //     //购买技能
+        //     user.getPotentialMgr().ActionAdd(bonus.id, 1);
+        //     user.getPotentialMgr().Action(bonus.id);
+        // });
         this.RegisterResHandle(ResType.Gold, async (user, bonus) => {
             //大数型虚拟币，将num作为指数
             user.getPocket().AddRes(LargeNumberCalculator.instance(1, bonus.num), false, ResType.Gold); //可以超过上限
@@ -103,13 +103,16 @@ class CoreOfLogic extends CoreOfBase
      * @param {*} app 
      */
     async Start(app){
-        super.Start(app);
+        await super.Start(app);
 
         //加载持久化层的数据
         console.time(`Load Db On ${this.constructor.name}`);
+
         await this.service.activity.loadDb(); //首先载入活动信息，后续的用户积分信息才能顺利注册
 
-        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll())).then(()=>{
+        try {
+            await Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll()));
+
             console.timeEnd(`Load Db On ${this.constructor.name}`);
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 
@@ -118,18 +121,13 @@ class CoreOfLogic extends CoreOfBase
             
             //建立内部RPC机制
             this.initConnector("CoreOfIndex", 1);
-        }).catch(e=>{
-            throw e;
-        });
 
-        //活动检测
-        this.autoTaskMgr.addCommonMonitor(fo=>{
-            fo.service.activity.checkStatus();
-            return false;
-        });
-        
-        //用户活动信息载入        
-        try {
+            //活动检测
+            this.autoTaskMgr.addCommonMonitor(fo=>{
+                fo.service.activity.checkStatus();
+                return false;
+            });
+
             let ret = await this.models.User(this.options.mysql).findAll();
             for(let i = 0; i++; i < ret.length){
                 let pUser = await this.GetObject(EntityType.User, ret[i].id);
@@ -138,9 +136,9 @@ class CoreOfLogic extends CoreOfBase
                     this.service.activity.setScore(pUser, pUser.getVipMgr().v.aId, pUser.getVipMgr().v.aScore, pUser.getVipMgr().v.aLv);
                 }
             }
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
+            throw e;
         }
     }
 

@@ -42,7 +42,7 @@ class CoreOfIndex extends facade.CoreOfBase
     }
 
     async Start(app){
-        super.Start(app);
+        await super.Start(app);
 
         //缓存管理器
         this.cacheMgr = new facade.tools.cache(this);
